@@ -1,0 +1,14 @@
+{
+    "name": "PhotonUnityNetworking.Utilities.Culling.Editor",
+    "references": [
+        "PhotonUnityNetworking.Utilities",
+        "PhotonRealtime",
+        "PhotonUnityNetworking"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
