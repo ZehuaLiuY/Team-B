@@ -242,7 +242,7 @@ MonoBehaviour:
   ShoulderOffset: {x: 0.7, y: -0.35, z: 0}
   VerticalArmLength: 0.4
   CameraSide: 0.567
-  CameraDistance: 1.2
+  CameraDistance: 1.8
   CameraCollisionFilter:
     serializedVersion: 2
     m_Bits: 1
@@ -660,7 +660,7 @@ Transform:
   m_GameObject: {fileID: 2046209201794072196}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.33223143, y: 1.6770958, z: -4.250297}
+  m_LocalPosition: {x: 0.33223143, y: 1.6770958, z: -6.375446}
   m_LocalScale: {x: 3.333333, y: 3.333333, z: 3.333333}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1219,7 +1219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 0.91119623, a: 1}
+  m_Color: {r: 0.7924528, g: 0.10965135, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2614,7 +2614,7 @@ Transform:
   m_GameObject: {fileID: 7960985150387781316}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.33223143, y: 1.6770958, z: -4.250297}
+  m_LocalPosition: {x: 0.33223143, y: 1.6770958, z: -6.375446}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2979,7 +2979,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4137882184946442784
 Transform:
   m_ObjectHideFlags: 0
@@ -3043,7 +3043,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.8
+  m_Height: 1.7
   m_Radius: 0.28
   m_SlopeLimit: 45
   m_StepOffset: 0.25
@@ -3063,7 +3063,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 2
-  SprintSpeed: 5
+  SprintSpeed: 3
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
@@ -3130,6 +3130,7 @@ MonoBehaviour:
   sprint: 0
   aim: 0
   shoot: 0
+  open: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
