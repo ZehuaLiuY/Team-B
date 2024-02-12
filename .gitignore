@@ -1,7 +1,8 @@
-# This .gitignore file should be placed at the root of your Unity project directory
-#
-# Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
-#
+#General
+*.swp
+*.log
+
+# Editor config folder
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -26,6 +27,12 @@
 # Visual Studio cache directory
 .vs/
 
+# Rider
+.idea/
+
+# Visual Studio Code
+.vscode/
+
 # Gradle cache directory
 .gradle/
 
@@ -46,6 +53,14 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+
+# MacOS
+.DS_Store*
+._*
+
+# Windows
+[Tt]humbs.db
+[Dd]esktop.ini
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -70,3 +85,6 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Unity Editor Layouts
+/[Uu]ser[Ss]ettings/
