@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 
 
 public class FightManager : MonoBehaviour
@@ -9,54 +10,96 @@ public class FightManager : MonoBehaviour
     // Start is called before the first frame update
     private bool gameOver = false; // 游戏是否已经结束
     private float captureDistance = 2f; // 抓住奶酪的距离阈值
+
+    public Transform pointTf; // respawn points
+    private PhotonView photonView;
+
+    void Awake()
+    {
+        photonView = GetComponent<PhotonView>();
+    }
+
     void Start()
     {
         Game.uiManager.CloseAllUI();
         Game.uiManager.ShowUI<FightUI>("FightUI");
 
+        #if UNITY_EDITOR
         Transform pointTf = GameObject.Find("Point").transform;
 
-        // get the respawn points
+        Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
+
+        PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
+        #else
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // not sure if check the player in the room is necessary
+            AssignCharactersAndSpawnPoints();
+        };
+
+        #endif
+    }
+
+    [PunRPC]
+    void SpawnCharacter(string characterType, Vector3 position, int actorNumber)
+    {
+        // 只有当当前客户端的玩家ID与传入的actorNumber匹配时才实例化对象
+        if (PhotonNetwork.LocalPlayer.ActorNumber == actorNumber)
+        {
+            PhotonNetwork.Instantiate(characterType, position, Quaternion.identity);
+        }
+    }
+
+    void AssignCharactersAndSpawnPoints()
+    {
+
         List<Transform> availablePoints = new List<Transform>();
         for (int i = 0; i < pointTf.childCount; i++)
         {
             availablePoints.Add(pointTf.GetChild(i));
         }
 
-        // random one point to Human
-        int humanIndex = UnityEngine.Random.Range(0, availablePoints.Count);
-        Vector3 humanPos = availablePoints[humanIndex].position;
-        PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
+        // Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
 
-        // delete the point
-        availablePoints.RemoveAt(humanIndex);
+        // PhotonNetwork.Instantiate("Player", pos, Quaternion.identity);
+        // TODO: optimise the logic to assign characters and spawn points, also for the RPC calls
 
-        // random one point to Cheese
-        int cheeseIndex = UnityEngine.Random.Range(0, availablePoints.Count);
-        Vector3 cheesePos = availablePoints[cheeseIndex].position;
-        PhotonNetwork.Instantiate("Cheese", cheesePos, Quaternion.identity);
-        
-        
-        
-       
+        // random select one Human player
+        int humanIndex = Random.Range(0, PhotonNetwork.PlayerList.Length);
+        Player humanPlayer = PhotonNetwork.PlayerList[humanIndex];
 
-        
+        int humanSpawnIndex = Random.Range(0, availablePoints.Count);
+        Vector3 humanPos = availablePoints[humanSpawnIndex].position;
+        availablePoints.RemoveAt(humanSpawnIndex); // remove the used spawn point
 
+        // notify all clients to spawn the Human player
+        photonView.RPC("SpawnCharacter", RpcTarget.All, "Human", humanPos, humanPlayer.ActorNumber);
+
+        // spawn the Cheese players
+        foreach (var player in PhotonNetwork.PlayerList)
+        {
+            if (player != humanPlayer) // if the player is not the human player
+            {
+                int cheeseSpawnIndex = Random.Range(0, availablePoints.Count);
+                Vector3 cheesePos = availablePoints[cheeseSpawnIndex].position;
+                availablePoints.RemoveAt(cheeseSpawnIndex); // remove the used spawn point
+
+                // notify all clients to spawn the Cheese player
+                photonView.RPC("SpawnCharacter", RpcTarget.All, "Cheese", cheesePos, player.ActorNumber);
+            }
+        }
     }
-
 
     // Update is called once per frame
     void Update()
     {
         if (!gameOver)
         {
-
             // 检查游戏结果
             CheckGameResult();
 
         }
-
-
     }
 
     void CheckGameResult()
