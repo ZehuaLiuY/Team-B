@@ -23,7 +23,7 @@ public class DoorInteraction : MonoBehaviour
     {
         if (isPlayerNear && Keyboard.current.eKey.wasPressedThisFrame)
         {
-            Debug.LogError("E is Pressed");
+            //Debug.LogError("E is Pressed");
             doorAnimator.SetBool("IsOpen", !doorAnimator.GetBool("IsOpen")); // 切换门的开闭状态
         }
     }
