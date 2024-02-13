@@ -27,7 +27,7 @@ public class FightManager : MonoBehaviour
         int humanIndex = UnityEngine.Random.Range(0, availablePoints.Count);
         Vector3 humanPos = availablePoints[humanIndex].position;
         PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
-        Debug.Log("instantiate human");
+
         // delete the point
         availablePoints.RemoveAt(humanIndex);
 
@@ -35,7 +35,12 @@ public class FightManager : MonoBehaviour
         int cheeseIndex = UnityEngine.Random.Range(0, availablePoints.Count);
         Vector3 cheesePos = availablePoints[cheeseIndex].position;
         PhotonNetwork.Instantiate("Cheese", cheesePos, Quaternion.identity);
-        Debug.Log("instantiate cheese");
+        
+        
+        
+       
+
+        
 
     }
 
