@@ -44,7 +44,7 @@ public class FightManager : MonoBehaviour
     [PunRPC]
     void SpawnCharacter(string characterType, Vector3 position, int actorNumber)
     {
-        // 只有当当前客户端的玩家ID与传入的actorNumber匹配时才实例化对象
+        // if the local player is the one to spawn the character
         if (PhotonNetwork.LocalPlayer.ActorNumber == actorNumber)
         {
             PhotonNetwork.Instantiate(characterType, position, Quaternion.identity);

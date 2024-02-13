@@ -4,46 +4,46 @@ using UnityEngine;
 
 public class UIManager
 {
-    private Transform canvasTf;//画布的变换组件
+    private Transform canvasTf; // Canvas transform component
 
-    private List<GameObject> uiList;//存储加载过的界面的集合
+    private List<GameObject> uiList; // Collection to store loaded interfaces
 
     public void Init()
     {
-        //找世界中的画布
+        // Find the canvas in the world
         canvasTf = GameObject.Find("Canvas").transform;
-        //初始化集合
+        // Initialize the collection
         uiList = new List<GameObject>();
     }
 
-    //显示
+    // Show
     public T ShowUI<T>(string uiName) where T : Component
     {
         T ui = Find<T>(uiName);
         if (ui == null)
         {
-            //集合中没有 需要从Resources/UI文件夹中加载
+            // Not in the collection, need to load from Resources/UI folder
             GameObject obj = Object.Instantiate(Resources.Load("UI/" + uiName), canvasTf) as GameObject;
 
-            //改名字
+            // Rename
             obj.name = uiName;
 
-            //添加需要的脚本
+            // Add the required script
             ui = obj.AddComponent<T>();
 
-            //添加到集合进行存储
+            // Add to the collection for storage
             uiList.Add(obj);
         }
         else
         {
-            //显示
+            // Show
             ui.gameObject.SetActive(true);
         }
 
         return ui;
     }
 
-    //隐藏
+    // Hide
     public void HideUI(string uiName)
     {
         GameObject ui = Find(uiName);
@@ -53,7 +53,7 @@ public class UIManager
         }
     }
 
-    //关闭所有界面
+    // Close all interfaces
     public void CloseAllUI()
     {
         for (int i = uiList.Count - 1; i >= 0; i--)
@@ -61,10 +61,10 @@ public class UIManager
             Object.Destroy(uiList[i].gameObject);
         }
 
-        uiList.Clear();//清空集合
+        uiList.Clear();// Clear the collection
     }
 
-    //关闭某个界面
+    // Close a specific interface
     public void CloseUI(string uiName)
     {
         GameObject ui = Find(uiName);
@@ -75,7 +75,7 @@ public class UIManager
         }
     }
 
-    //从集合中找到名字对应的界面脚本
+    // Find a specific interface
     public T Find<T>(string uiName) where T : Component
     {
         for (int i = 0; i < uiList.Count; i++)
@@ -100,7 +100,7 @@ public class UIManager
         return null;
     }
 
-    //获得某个界面的脚本
+    // Get the required component from the interface
     public T GetUI<T>(string uiName) where T : Component
     {
         GameObject ui = Find(uiName);
