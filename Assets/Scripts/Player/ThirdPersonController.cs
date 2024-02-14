@@ -401,7 +401,18 @@ namespace StarterAssets
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-
+            if (stream.IsWriting)
+            {
+                // We own this player: send the others our data
+                stream.SendNext(_cinemachineTargetYaw);
+                stream.SendNext(_cinemachineTargetPitch);
+            }
+            else
+            {
+                // Network player, receive data
+                _cinemachineTargetYaw = (float)stream.ReceiveNext();
+                _cinemachineTargetPitch = (float)stream.ReceiveNext();
+            }
         }
     }
 }
