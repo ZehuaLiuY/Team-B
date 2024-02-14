@@ -17,7 +17,11 @@ public class FightUI : MonoBehaviour
     {
         iscount = true;
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        
+        //--------------------------
+        // top left placeholder components
+        // transform.Find("hp/fill").GetComponent<Image>().fillAmount =
+        // transform.Find("hp/Text").GetComponent<Text>().text =
+        //--------------------------
 
     }
 

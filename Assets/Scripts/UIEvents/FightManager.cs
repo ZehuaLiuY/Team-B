@@ -12,11 +12,11 @@ public class FightManager : MonoBehaviour
     private float captureDistance = 2f; // 抓住奶酪的距离阈值
 
     public Transform pointTf; // respawn points
-    private PhotonView photonView;
+    private PhotonView _photonView;
 
     void Awake()
     {
-        photonView = GetComponent<PhotonView>();
+        _photonView = GetComponent<PhotonView>();
     }
 
     void Start()
@@ -74,7 +74,7 @@ public class FightManager : MonoBehaviour
         availablePoints.RemoveAt(humanSpawnIndex); // remove the used spawn point
 
         // notify all clients to spawn the Human player
-        photonView.RPC("SpawnCharacter", RpcTarget.All, "Human", humanPos, humanPlayer.ActorNumber);
+        _photonView.RPC("SpawnCharacter", RpcTarget.All, "Human", humanPos, humanPlayer.ActorNumber);
 
         // spawn the Cheese players
         foreach (var player in PhotonNetwork.PlayerList)
@@ -86,7 +86,7 @@ public class FightManager : MonoBehaviour
                 availablePoints.RemoveAt(cheeseSpawnIndex); // remove the used spawn point
 
                 // notify all clients to spawn the Cheese player
-                photonView.RPC("SpawnCharacter", RpcTarget.All, "Cheese", cheesePos, player.ActorNumber);
+                _photonView.RPC("SpawnCharacter", RpcTarget.All, "Cheese", cheesePos, player.ActorNumber);
             }
         }
     }
