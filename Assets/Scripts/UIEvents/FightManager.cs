@@ -74,7 +74,7 @@ public class FightManager : MonoBehaviour
         availablePoints.RemoveAt(humanSpawnIndex); // remove the used spawn point
 
         // notify all clients to spawn the Human player
-        _photonView.RPC("SpawnCharacter", RpcTarget.All, "Human", humanPos, humanPlayer.ActorNumber);
+        _photonView.RPC("SpawnCharacter", RpcTarget.All, "Cheese", humanPos, humanPlayer.ActorNumber);
 
         // spawn the Cheese players
         foreach (var player in PhotonNetwork.PlayerList)
@@ -86,7 +86,7 @@ public class FightManager : MonoBehaviour
                 availablePoints.RemoveAt(cheeseSpawnIndex); // remove the used spawn point
 
                 // notify all clients to spawn the Cheese player
-                _photonView.RPC("SpawnCharacter", RpcTarget.All, "Cheese", cheesePos, player.ActorNumber);
+                _photonView.RPC("SpawnCharacter", RpcTarget.All, "Human", cheesePos, player.ActorNumber);
             }
         }
     }

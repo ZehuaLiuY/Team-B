@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviourPun, IPunObservable
 {
     Rigidbody rb;
     public float movementSpeed = 5f;
@@ -49,5 +50,19 @@ public class PlayerMovement : MonoBehaviour
     {
         // 检测是否接触地面
         return Physics.CheckSphere(groundCheck.position, 0.1f, ground);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(rb.position);
+            stream.SendNext(rb.rotation);
+        }
+        else
+        {
+            rb.position = (Vector3)stream.ReceiveNext();
+            rb.rotation = (Quaternion)stream.ReceiveNext();
+        }
     }
 }
