@@ -404,14 +404,39 @@ namespace StarterAssets
             if (stream.IsWriting)
             {
                 // We own this player: send the others our data
+                // view
                 stream.SendNext(_cinemachineTargetYaw);
                 stream.SendNext(_cinemachineTargetPitch);
+                // player data
+                stream.SendNext(_speed);
+                stream.SendNext(_targetRotation);
+                stream.SendNext(_verticalVelocity);
+                stream.SendNext(_rotationVelocity);
+                // timeouts, states
+                stream.SendNext(_jumpTimeoutDelta);
+                stream.SendNext(_fallTimeoutDelta);
+                stream.SendNext(Grounded);
+                // animator
+                stream.SendNext(_animationBlend);
+                stream.SendNext(_animIDSpeed);
             }
             else
             {
                 // Network player, receive data
                 _cinemachineTargetYaw = (float)stream.ReceiveNext();
                 _cinemachineTargetPitch = (float)stream.ReceiveNext();
+                // player data
+                _speed = (float)stream.ReceiveNext();
+                _targetRotation = (float)stream.ReceiveNext();
+                _verticalVelocity = (float)stream.ReceiveNext();
+                _rotationVelocity = (float)stream.ReceiveNext();
+                // timeouts, states
+                _jumpTimeoutDelta = (float)stream.ReceiveNext();
+                _fallTimeoutDelta = (float)stream.ReceiveNext();
+                Grounded = (bool)stream.ReceiveNext();
+                // animator
+                _animationBlend = (float)stream.ReceiveNext();
+                _animIDSpeed = (int)stream.ReceiveNext();
             }
         }
     }
