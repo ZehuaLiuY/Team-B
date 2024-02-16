@@ -335,8 +335,8 @@ MonoBehaviour:
   m_StreamingVersion: 20170927
   m_Priority: 10
   m_StandbyUpdate: 2
-  m_LookAt: {fileID: 3183285090198756357}
-  m_Follow: {fileID: 5332103860975491328}
+  m_LookAt: {fileID: 0}
+  m_Follow: {fileID: 0}
   m_CommonLens: 1
   m_Lens:
     FieldOfView: 40
@@ -1519,7 +1519,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &5328184503357162908
 MonoBehaviour:
@@ -1884,7 +1884,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7987517023970042481}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00569494, y: 0.003551924, z: -0.000020228448, w: 0.99997747}
+  m_LocalRotation: {x: 0.0056949398, y: 0.0035519241, z: -0.000020228448, w: 0.99997747}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

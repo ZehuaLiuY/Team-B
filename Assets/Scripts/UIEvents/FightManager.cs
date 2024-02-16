@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using Cinemachine;
 
 
 public class FightManager : MonoBehaviour
@@ -32,7 +33,16 @@ public class FightManager : MonoBehaviour
 
         Transform pointTf = GameObject.Find("Point").transform;
         Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
-        PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
+        // GameObject cheese1 = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
+        //
+        // CinemachineFreeLook vc = GameObject.Find("FreeLook Camera").GetComponent<CinemachineFreeLook>();
+        // vc.Follow = cheese1.transform;
+        // vc.LookAt = cheese1.transform.Find("eye").transform;
+        GameObject human1 = PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
+
+        CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+        vc.Follow = human1.transform.Find("PlayerRoot").transform;
+        // vc.LookAt = human1.transform.Find("Skeleton/Hips/Spine/Chest").transform;
 
     }
 

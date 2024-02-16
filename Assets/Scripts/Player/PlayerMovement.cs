@@ -72,7 +72,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
         {
             UpdatePosition();
-            UpdateRotation();
+            // UpdateRotation();
             InputCtl();
         }
         else
