@@ -298,7 +298,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6550574313424592261
 Transform:
   m_ObjectHideFlags: 0
@@ -1217,7 +1217,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &289443985654472100
 Transform:
   m_ObjectHideFlags: 0
@@ -1226,7 +1226,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4425094421107637766}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.005694942, y: 0.003551924, z: -0.000020228454, w: 0.9999775}
+  m_LocalRotation: {x: 0.005694942, y: 0.0035519244, z: -0.00002022845, w: 0.9999775}
   m_LocalPosition: {x: 0, y: 0.050000004, z: -0.1625}
   m_LocalScale: {x: 0.014815, y: 0.014815001, z: 0.014815001}
   m_ConstrainProportionsScale: 0
@@ -1299,7 +1299,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4425094421107637766}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
   m_Name: 
@@ -1461,7 +1461,7 @@ GameObject:
   - component: {fileID: 9107056869017899890}
   - component: {fileID: 5328184503357162908}
   - component: {fileID: -8561026874445258082}
-  - component: {fileID: 7786904273794684163}
+  - component: {fileID: -8113926435183464552}
   m_Layer: 9
   m_Name: Cheese
   m_TagString: Player
@@ -1533,13 +1533,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a00090ca546454ec58f833882a2d4ecf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 3
+  body: {fileID: 0}
+  cameraTf: {fileID: 0}
+  moveSpeed: 3.5
+  H: 0
+  V: 0
+  dir: {x: 0, y: 0, z: 0}
   jumpForce: 3
+  offset: {x: 0, y: 0.33, z: -0.76}
+  Mouse_X: 0
+  Mouse_Y: 0
+  Angle_X: 0
+  Angle_Y: 0
+  camRotation: {x: 0, y: 0, z: 0, w: 0}
   groundCheck: {fileID: 5447055114106476119}
   ground:
     serializedVersion: 2
     m_Bits: 0
-  cameraTransform: {fileID: 289443985654472100}
+  currentPos: {x: 0, y: 0, z: 0}
+  currentRot: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &-8561026874445258082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1558,12 +1570,13 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 5328184503357162908}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!65 &7786904273794684163
-BoxCollider:
+--- !u!136 &-8113926435183464552
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1580,9 +1593,11 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.02716279, y: 0.04039651, z: 0.033631682}
-  m_Center: {x: 0.0005233288, y: 0.021846898, z: 0}
+  serializedVersion: 2
+  m_Radius: 0.005
+  m_Height: 0.04
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.025, z: 0}
 --- !u!1 &5165616503941127096
 GameObject:
   m_ObjectHideFlags: 0
@@ -1869,7 +1884,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7987517023970042481}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0056949374, y: 0.0035519234, z: -0.000020228435, w: 0.99997747}
+  m_LocalRotation: {x: 0.00569494, y: 0.003551924, z: -0.000020228448, w: 0.99997747}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

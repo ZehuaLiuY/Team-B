@@ -9,7 +9,7 @@ public class FightManager : MonoBehaviour
 {
     // Start is called before the first frame update
     private bool gameOver = false; // 游戏是否已经结束
-    private float captureDistance = 2f; // 抓住奶酪的距离阈值
+    // private float captureDistance = 2f; // 抓住奶酪的距离阈值
 
     public Transform pointTf; // respawn points
     private PhotonView _photonView;
@@ -24,72 +24,65 @@ public class FightManager : MonoBehaviour
         Game.uiManager.CloseAllUI();
         Game.uiManager.ShowUI<FightUI>("FightUI");
 
-        #if UNITY_EDITOR
+        // if (PhotonNetwork.IsMasterClient)
+        // {
+        //     // not sure if check the player in the room is necessary
+        //     AssignCharactersAndSpawnPoints();
+        // };
+
         Transform pointTf = GameObject.Find("Point").transform;
-
         Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
+        PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
 
-        PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
-        #else
-
-        if (PhotonNetwork.IsMasterClient)
-        {
-            // not sure if check the player in the room is necessary
-            AssignCharactersAndSpawnPoints();
-        };
-
-        #endif
     }
 
-    [PunRPC]
-    void SpawnCharacter(string characterType, Vector3 position, int actorNumber)
-    {
-        // if the local player is the one to spawn the character
-        if (PhotonNetwork.LocalPlayer.ActorNumber == actorNumber)
-        {
-            PhotonNetwork.Instantiate(characterType, position, Quaternion.identity);
-        }
-    }
-
-    void AssignCharactersAndSpawnPoints()
-    {
-
-        List<Transform> availablePoints = new List<Transform>();
-        for (int i = 0; i < pointTf.childCount; i++)
-        {
-            availablePoints.Add(pointTf.GetChild(i));
-        }
-
-        // Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
-
-        // PhotonNetwork.Instantiate("Player", pos, Quaternion.identity);
-        // TODO: optimise the logic to assign characters and spawn points, also for the RPC calls
-
-        // random select one Human player
-        int humanIndex = Random.Range(0, PhotonNetwork.PlayerList.Length);
-        Player humanPlayer = PhotonNetwork.PlayerList[humanIndex];
-
-        int humanSpawnIndex = Random.Range(0, availablePoints.Count);
-        Vector3 humanPos = availablePoints[humanSpawnIndex].position;
-        availablePoints.RemoveAt(humanSpawnIndex); // remove the used spawn point
-
-        // notify all clients to spawn the Human player
-        _photonView.RPC("SpawnCharacter", RpcTarget.All, "Human", humanPos, humanPlayer.ActorNumber);
-
-        // spawn the Cheese players
-        foreach (var player in PhotonNetwork.PlayerList)
-        {
-            if (player != humanPlayer) // if the player is not the human player
-            {
-                int cheeseSpawnIndex = Random.Range(0, availablePoints.Count);
-                Vector3 cheesePos = availablePoints[cheeseSpawnIndex].position;
-                availablePoints.RemoveAt(cheeseSpawnIndex); // remove the used spawn point
-
-                // notify all clients to spawn the Cheese player
-                _photonView.RPC("SpawnCharacter", RpcTarget.All, "Cheese", cheesePos, player.ActorNumber);
-            }
-        }
-    }
+    // [PunRPC]
+    // void SpawnCharacter(string characterType, Vector3 position, int actorNumber)
+    // {
+    //     // if the local player is the one to spawn the character
+    //     if (PhotonNetwork.LocalPlayer.ActorNumber == actorNumber)
+    //     {
+    //         PhotonNetwork.Instantiate(characterType, position, Quaternion.identity);
+    //     }
+    // }
+    //
+    // void AssignCharactersAndSpawnPoints()
+    // {
+    //
+    //     // get all the spawn points
+    //     List<Transform> availablePoints = new List<Transform>();
+    //     for (int i = 0; i < pointTf.childCount; i++)
+    //     {
+    //         availablePoints.Add(pointTf.GetChild(i));
+    //     }
+    //
+    //     // TODO: optimise the logic to assign characters and spawn points, also for the RPC calls
+    //
+    //     // random select one Human player
+    //     int humanIndex = Random.Range(0, PhotonNetwork.PlayerList.Length);
+    //     Player humanPlayer = PhotonNetwork.PlayerList[humanIndex];
+    //
+    //     int humanSpawnIndex = Random.Range(0, availablePoints.Count);
+    //     Vector3 humanPos = availablePoints[humanSpawnIndex].position;
+    //     availablePoints.RemoveAt(humanSpawnIndex); // remove the used spawn point
+    //
+    //     // notify all clients to spawn the Human player
+    //     _photonView.RPC("SpawnCharacter", RpcTarget.All, "Human", humanPos, humanPlayer.ActorNumber);
+    //
+    //     // spawn the Cheese players
+    //     foreach (var player in PhotonNetwork.PlayerList)
+    //     {
+    //         if (player != humanPlayer) // if the player is not the human player
+    //         {
+    //             int cheeseSpawnIndex = Random.Range(0, availablePoints.Count);
+    //             Vector3 cheesePos = availablePoints[cheeseSpawnIndex].position;
+    //             availablePoints.RemoveAt(cheeseSpawnIndex); // remove the used spawn point
+    //
+    //             // notify all clients to spawn the Cheese player
+    //             _photonView.RPC("SpawnCharacter", RpcTarget.All, "Cheese", cheesePos, player.ActorNumber);
+    //         }
+    //     }
+    // }
 
     // Update is called once per frame
     void Update()
