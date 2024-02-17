@@ -37,12 +37,13 @@ public class FightManager : MonoBehaviour
         // CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
         // vc.Follow = human1.transform.Find("PlayerRoot").transform;
 
-        int humanIndex = UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length);
 
+        int humanIndex = UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length);
+        
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
-
+        
             if (i == humanIndex)
             {
                 // 为选定的玩家实例化Human
@@ -54,10 +55,16 @@ public class FightManager : MonoBehaviour
             else
             {
                 // 为其他玩家实例化Cheese
+                // Old Version
+                // GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
+                // CinemachineFreeLook vc = GameObject.Find("FreeLook Camera").GetComponent<CinemachineFreeLook>();
+                // vc.Follow = cheese.transform;
+                // vc.LookAt = cheese.transform.Find("eye").transform;
+                
+                // New Version
                 GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
-                CinemachineFreeLook vc = GameObject.Find("FreeLook Camera").GetComponent<CinemachineFreeLook>();
-                vc.Follow = cheese.transform;
-                vc.LookAt = cheese.transform.Find("eye").transform;
+                CinemachineFreeLook vc = GameObject.Find("Cheese VC").GetComponent<CinemachineFreeLook>();
+                vc.Follow = cheese.transform.Find("PlayerRoot").transform;
             }
         }
     }
