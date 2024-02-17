@@ -4,9 +4,12 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using Cinemachine;
+using UnityEditor.Rendering;
+using Photon.Pun.UtilityScripts;
+using System.Runtime.CompilerServices;
 
 
-public class FightManager : MonoBehaviour
+public class FightManager : MonoBehaviourPun
 {
     // Start is called before the first frame update
     private bool gameOver = false; // 游戏是否已经结束
@@ -14,6 +17,9 @@ public class FightManager : MonoBehaviour
 
     public Transform pointTf; // respawn points
     private PhotonView _photonView;
+
+    private FightUI fightUI;
+    public static float countdownTimer = 180f;
 
     void Awake()
     {
@@ -23,7 +29,9 @@ public class FightManager : MonoBehaviour
     void Start()
     {
         Game.uiManager.CloseAllUI();
-        Game.uiManager.ShowUI<FightUI>("FightUI");
+        fightUI = Game.uiManager.ShowUI<FightUI>("FightUI");
+        
+        //Game.uiManager.ShowUI<FightUI>("FightUI");
 
         Transform pointTf = GameObject.Find("Point").transform;
         // Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
@@ -76,15 +84,35 @@ public class FightManager : MonoBehaviour
         {
             // 检查游戏结果
             CheckGameResult();
-
+            // 检查当前客户端是否是房主
+            if (PhotonNetwork.IsMasterClient)
+            {
+                // 如果是房主，更新倒计时并发送 RPC
+                float newTimer = UpdateCountdownTimer();
+                fightUI.SetCountdownTimer(newTimer);
+                photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.Others, newTimer);
+            }
         }
+    }
+    private float UpdateCountdownTimer()
+    {
+
+        countdownTimer -= Time.deltaTime;
+        return countdownTimer;
+    }
+
+    [PunRPC]
+    private void UpdateCountdownTimerRPC(float newTimer)
+    {
+        // 在所有客户端上同步倒计时
+        fightUI.SetCountdownTimer(newTimer);
     }
 
     void CheckGameResult()
     {
 
         // 如果倒计时结束
-        if (FightUI.countdownTimer <= 0f)
+        if (countdownTimer <= 0f)
         {
             gameOver = true; // 设置游戏结束标志为 true
             Debug.Log("gameover: " + gameOver);
