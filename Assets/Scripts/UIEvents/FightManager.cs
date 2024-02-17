@@ -25,74 +25,42 @@ public class FightManager : MonoBehaviour
         Game.uiManager.CloseAllUI();
         Game.uiManager.ShowUI<FightUI>("FightUI");
 
-        // if (PhotonNetwork.IsMasterClient)
-        // {
-        //     // not sure if check the player in the room is necessary
-        //     AssignCharactersAndSpawnPoints();
-        // };
-
         Transform pointTf = GameObject.Find("Point").transform;
-        Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
+        // Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
         // GameObject cheese1 = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
         //
         // CinemachineFreeLook vc = GameObject.Find("FreeLook Camera").GetComponent<CinemachineFreeLook>();
         // vc.Follow = cheese1.transform;
         // vc.LookAt = cheese1.transform.Find("eye").transform;
-        GameObject human1 = PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
+        // GameObject human1 = PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
+        //
+        // CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+        // vc.Follow = human1.transform.Find("PlayerRoot").transform;
 
-        CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
-        vc.Follow = human1.transform.Find("PlayerRoot").transform;
-        // vc.LookAt = human1.transform.Find("Skeleton/Hips/Spine/Chest").transform;
+        int humanIndex = UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length);
 
+        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        {
+            Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
+
+            if (i == humanIndex)
+            {
+                // 为选定的玩家实例化Human
+                GameObject human = PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
+                // 设置相机跟随
+                CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+                vc.Follow = human.transform.Find("PlayerRoot").transform;
+            }
+            else
+            {
+                // 为其他玩家实例化Cheese
+                GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
+                CinemachineFreeLook vc = GameObject.Find("FreeLook Camera").GetComponent<CinemachineFreeLook>();
+                vc.Follow = cheese.transform;
+                vc.LookAt = cheese.transform.Find("eye").transform;
+            }
+        }
     }
-
-    // [PunRPC]
-    // void SpawnCharacter(string characterType, Vector3 position, int actorNumber)
-    // {
-    //     // if the local player is the one to spawn the character
-    //     if (PhotonNetwork.LocalPlayer.ActorNumber == actorNumber)
-    //     {
-    //         PhotonNetwork.Instantiate(characterType, position, Quaternion.identity);
-    //     }
-    // }
-    //
-    // void AssignCharactersAndSpawnPoints()
-    // {
-    //
-    //     // get all the spawn points
-    //     List<Transform> availablePoints = new List<Transform>();
-    //     for (int i = 0; i < pointTf.childCount; i++)
-    //     {
-    //         availablePoints.Add(pointTf.GetChild(i));
-    //     }
-    //
-    //     // TODO: optimise the logic to assign characters and spawn points, also for the RPC calls
-    //
-    //     // random select one Human player
-    //     int humanIndex = Random.Range(0, PhotonNetwork.PlayerList.Length);
-    //     Player humanPlayer = PhotonNetwork.PlayerList[humanIndex];
-    //
-    //     int humanSpawnIndex = Random.Range(0, availablePoints.Count);
-    //     Vector3 humanPos = availablePoints[humanSpawnIndex].position;
-    //     availablePoints.RemoveAt(humanSpawnIndex); // remove the used spawn point
-    //
-    //     // notify all clients to spawn the Human player
-    //     _photonView.RPC("SpawnCharacter", RpcTarget.All, "Human", humanPos, humanPlayer.ActorNumber);
-    //
-    //     // spawn the Cheese players
-    //     foreach (var player in PhotonNetwork.PlayerList)
-    //     {
-    //         if (player != humanPlayer) // if the player is not the human player
-    //         {
-    //             int cheeseSpawnIndex = Random.Range(0, availablePoints.Count);
-    //             Vector3 cheesePos = availablePoints[cheeseSpawnIndex].position;
-    //             availablePoints.RemoveAt(cheeseSpawnIndex); // remove the used spawn point
-    //
-    //             // notify all clients to spawn the Cheese player
-    //             _photonView.RPC("SpawnCharacter", RpcTarget.All, "Cheese", cheesePos, player.ActorNumber);
-    //         }
-    //     }
-    // }
 
     // Update is called once per frame
     void Update()

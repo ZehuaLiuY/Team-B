@@ -102,7 +102,7 @@ namespace StarterAssets
 #endif
         private Animator _animator;
         private CharacterController _controller;
-        private StarterAssetsInputs _input;
+        public StarterAssetsInputs input;
         private GameObject _mainCamera;
 
         private const float _threshold = 0.01f;
@@ -129,6 +129,7 @@ namespace StarterAssets
 
         private void Awake()
         {
+            input = GetComponent<StarterAssetsInputs>();
             // get a reference to our main camera
             if (_mainCamera == null)
             {
@@ -142,7 +143,7 @@ namespace StarterAssets
 
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _input = GetComponent<StarterAssetsInputs>();
+
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -154,6 +155,9 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+            currentPos = transform.position;
+            currentRot = transform.rotation;
         }
 
         private void Update()
@@ -178,7 +182,8 @@ namespace StarterAssets
 
         void UpdateLogic()
         {
-
+            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
+            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
         }
 
         private void AssignAnimationIDs()
@@ -208,13 +213,13 @@ namespace StarterAssets
         private void CameraRotation()
         {
             // if there is an input and camera position is not fixed
-            if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+            if (input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
                 //Don't multiply mouse input by Time.deltaTime;
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * Sensitivity;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * Sensitivity;
+                _cinemachineTargetYaw += input.look.x * deltaTimeMultiplier * Sensitivity;
+                _cinemachineTargetPitch += input.look.y * deltaTimeMultiplier * Sensitivity;
             }
 
             // clamp our rotations so our values are limited 360 degrees
@@ -229,19 +234,19 @@ namespace StarterAssets
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed = input.sprint ? SprintSpeed : MoveSpeed;
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+            if (input.move == Vector2.zero) targetSpeed = 0.0f;
 
             // a reference to the players current horizontal velocity
             float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
             float speedOffset = 0.1f;
-            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+            float inputMagnitude = input.analogMovement ? input.move.magnitude : 1f;
 
             // accelerate or decelerate to target speed
             if (currentHorizontalSpeed < targetSpeed - speedOffset ||
@@ -264,11 +269,11 @@ namespace StarterAssets
             if (_animationBlend < 0.01f) _animationBlend = 0f;
 
             // normalise input direction
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+            Vector3 inputDirection = new Vector3(input.move.x, 0.0f, input.move.y).normalized;
 
             // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is a move input rotate player when the player is moving
-            if (_input.move != Vector2.zero)
+            if (input.move != Vector2.zero)
             {
                 _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
                                   _mainCamera.transform.eulerAngles.y;
@@ -418,10 +423,22 @@ namespace StarterAssets
         {
             if (stream.IsWriting)
             {
+                stream.SendNext(input.move.x);
+                stream.SendNext(input.move.y);
+                stream.SendNext(transform.position);
+                stream.SendNext(transform.rotation);
+                // animation
+
 
             }
             else
             {
+                input.move.x = (float)stream.ReceiveNext();
+                input.move.y = (float)stream.ReceiveNext();
+                currentPos = (Vector3)stream.ReceiveNext();
+                currentRot = (Quaternion)stream.ReceiveNext();
+
+
 
             }
         }

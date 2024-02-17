@@ -3143,6 +3143,7 @@ MonoBehaviour:
   CameraAngleOverride: 0
   Sensitivity: 1
   LockCameraPosition: 0
+  input: {fileID: 0}
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7040989241601351007
