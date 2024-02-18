@@ -15,6 +15,7 @@ namespace StarterAssets
 		public bool aim;
 		public bool shoot;
 		public bool open;
+		public bool pickup;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -50,6 +51,10 @@ namespace StarterAssets
 		{
 			AimInput(value.isPressed);
 		}
+		public void OnPickup(InputValue value)
+		{
+			PickupInput(value.isPressed);
+		}
 		public void OnShoot(InputValue value)
 		{
 			ShootInput(value.isPressed);
@@ -84,7 +89,11 @@ namespace StarterAssets
 		{
 			aim = newAimState;
 		}
-		
+		public void PickupInput(bool newPickupState)
+		{
+			pickup = newPickupState;
+		}
+
 		public void ShootInput(bool newShootState)
 		{
 			shoot = newShootState;

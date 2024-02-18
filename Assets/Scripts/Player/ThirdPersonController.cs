@@ -105,6 +105,8 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
 
+        
+
         private const float _threshold = 0.01f;
         private bool _rotateOnMove = true;
 
@@ -172,11 +174,27 @@ namespace StarterAssets
                 JumpAndGravity();
                 GroundedCheck();
                 Move();
+                pickup();
             }
             else
             {
                 UpdateOther();
             }
+        }
+
+        private void pickup()
+        {
+            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame)
+            {
+                _animator.SetTrigger("pickup");
+                photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
+            }
+        }
+
+        [PunRPC]
+        void TriggerPickupAnimation()
+        {
+            _animator.SetTrigger("pickup");
         }
 
         private void LateUpdate()
