@@ -392,8 +392,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 stream.SendNext(_input.move.y);
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
-                _input.look.x = (float)stream.ReceiveNext();
-                _input.look.y = (float)stream.ReceiveNext();
+                stream.SendNext(_input.look.x);
+                stream.SendNext(_input.look.y);
                 // animation
                 stream.SendNext(_animator.GetFloat(_animIDSpeed));
                 stream.SendNext(_animator.GetBool(_animIDGrounded));
