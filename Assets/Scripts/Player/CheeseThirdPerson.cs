@@ -96,7 +96,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 #endif
         private Animator _animator;
         private CharacterController _controller;
-        public CheeseControllerInputs input;
+        private CheeseControllerInputs _input;
         private GameObject _mainCamera;
         private bool IsWalking = false; // 添加isRunning布尔值
         
@@ -120,27 +120,36 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         private void Awake()
         {
+            _input = GetComponent<CheeseControllerInputs>();
             // get a reference to our main camera
             if (_mainCamera == null)
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
+
+            _hasAnimator = TryGetComponent(out _animator);
+
+            if (_hasAnimator)
+            {
+                AssignAnimationIDs();
+            }
+
         }
 
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
-            _hasAnimator = TryGetComponent(out _animator);
+            // _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            input = GetComponent<CheeseControllerInputs>();
+            _input = GetComponent<CheeseControllerInputs>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
 
-            AssignAnimationIDs();
+            // AssignAnimationIDs();
 
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
@@ -199,13 +208,13 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private void CameraRotation()
         {
             // if there is an input and camera position is not fixed
-            if (input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+            if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
                 //Don't multiply mouse input by Time.deltaTime;
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetYaw += input.look.x * deltaTimeMultiplier;
-                _cinemachineTargetPitch += input.look.y * deltaTimeMultiplier;
+                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
+                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
             }
 
             // clamp our rotations so our values are limited 360 degrees
@@ -220,19 +229,19 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is no input, set the target speed to 0
-            if (input.move == Vector2.zero) targetSpeed = 0.0f;
+            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
             // a reference to the players current horizontal velocity
             float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
             float speedOffset = 0.1f;
-            float inputMagnitude = input.analogMovement ? input.move.magnitude : 1f;
+            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
             // accelerate or decelerate to target speed
             if (currentHorizontalSpeed < targetSpeed - speedOffset ||
@@ -255,13 +264,13 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             if (_animationBlend < 0.01f) _animationBlend = 0f;
 
             // normalise input direction
-            Vector3 inputDirection = new Vector3(input.move.x, 0.0f, input.move.y).normalized;
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
             
             IsWalking = inputDirection.magnitude > 0;
             // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is a move input rotate player when the player is moving
-            if (input.move != Vector2.zero)
+            if (_input.move != Vector2.zero)
             {
                 _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
                                   _mainCamera.transform.eulerAngles.y;
@@ -308,7 +317,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 }
 
                 // Jump - DISABLED
-                if (input.jump && _jumpTimeoutDelta <= 0.0f)
+                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
                 
@@ -344,7 +353,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 }
 
                 // if we are not grounded, do not jump
-                input.jump = false; //- This line is now unnecessary as jumping is disabled
+                _input.jump = false; //- This line is now unnecessary as jumping is disabled
             }
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
@@ -379,18 +388,33 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         {
             if (stream.IsWriting)
             {
-                stream.SendNext(input.move.x);
-                stream.SendNext(input.move.y);
+                stream.SendNext(_input.move.x);
+                stream.SendNext(_input.move.y);
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
+                _input.look.x = (float)stream.ReceiveNext();
+                _input.look.y = (float)stream.ReceiveNext();
                 // animation
+                stream.SendNext(_animator.GetFloat(_animIDSpeed));
+                stream.SendNext(_animator.GetBool(_animIDGrounded));
+                stream.SendNext(_animator.GetBool(_animIDJump));
+                stream.SendNext(_animator.GetBool(_animIDFreeFall));
+                stream.SendNext(_animator.GetFloat(_animIDMotionSpeed));
             }
             else
             {
-                input.move.x = (float)stream.ReceiveNext();
-                input.move.y = (float)stream.ReceiveNext();
+                _input.move.x = (float)stream.ReceiveNext();
+                _input.move.y = (float)stream.ReceiveNext();
                 currentPos = (Vector3)stream.ReceiveNext();
                 currentRot = (Quaternion)stream.ReceiveNext();
+                _input.look.x = (float)stream.ReceiveNext();
+                _input.look.y = (float)stream.ReceiveNext();
+
+                _animator.SetFloat(_animIDSpeed, (float)stream.ReceiveNext());
+                _animator.SetBool(_animIDGrounded, (bool)stream.ReceiveNext());
+                _animator.SetBool(_animIDJump, (bool)stream.ReceiveNext());
+                _animator.SetBool(_animIDFreeFall, (bool)stream.ReceiveNext());
+                _animator.SetFloat(_animIDMotionSpeed, (float)stream.ReceiveNext());
             }
         }
     }

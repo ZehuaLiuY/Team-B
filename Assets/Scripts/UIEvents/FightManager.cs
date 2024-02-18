@@ -29,7 +29,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
         Game.uiManager.CloseAllUI();
         fightUI = Game.uiManager.ShowUI<FightUI>("FightUI");
-        
+
         if (PhotonNetwork.IsMasterClient)
         {
             AssignRoles();
@@ -60,12 +60,23 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void SpawnPlayer(int humanPlayerActorNumber)
     {
-        Transform spawnPoint = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount));
-        Vector3 pos = spawnPoint.position;
+        List<Transform> availableSpawnPoints = new List<Transform>();
+        for (int i = 0; i < pointTf.childCount; i++)
+        {
+            availableSpawnPoints.Add(pointTf.GetChild(i));
+        }
+
+        Transform humanSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
+        Vector3 humanPos = humanSpawnPoint.position;
+
+        availableSpawnPoints.Remove(humanSpawnPoint);
+
+        Transform cheeseSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
+        Vector3 pos = cheeseSpawnPoint.position;
 
         if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)
         {
-            GameObject human = PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
+            GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             vc.Follow = human.transform.Find("PlayerRoot").transform;
         }
@@ -76,6 +87,20 @@ public class FightManager : MonoBehaviourPunCallbacks
             cheeseVC.Follow = cheese.transform.Find("PlayerRoot").transform;
         }
     }
+
+    // void getInstantiate(Vector3 humanPosition, Transform pointTf
+    // {
+    //     List<KeyValuePair<Transform, float>> spawnPointsAndDistances = new List<KeyValuePair<Transform, float>>();
+    //     foreach (Transform spawnPoint in pointTf) {
+    //         float distance = Vector3.Distance(spawnPoint.position, humanPosition);
+    //         spawnPointsAndDistances.Add(new KeyValuePair<Transform, float>(spawnPoint, distance));
+    //     }
+    //
+    //     spawnPointsAndDistances.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
+    //
+    //     Vector3 cheesePosition = spawnPointsAndDistances[0].Key.position;
+    //
+    // }
 
     // Update is called once per frame
     void Update()
