@@ -10,7 +10,7 @@ namespace CheeseController
 #if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
 #endif
-public class CheeseThirdPerson : MonoBehaviour
+public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 {
         [Header("Player")] [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -88,12 +88,15 @@ public class CheeseThirdPerson : MonoBehaviour
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
+        public Vector3 currentPos;
+        public Quaternion currentRot;
+
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
         private Animator _animator;
         private CharacterController _controller;
-        private CheeseControllerInputs _input;
+        public CheeseControllerInputs input;
         private GameObject _mainCamera;
         private bool IsWalking = false; // 添加isRunning布尔值
         
@@ -130,7 +133,7 @@ public class CheeseThirdPerson : MonoBehaviour
 
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _input = GetComponent<CheeseControllerInputs>();
+            input = GetComponent<CheeseControllerInputs>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -147,14 +150,26 @@ public class CheeseThirdPerson : MonoBehaviour
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
+            if(photonView.IsMine){
+                JumpAndGravity();
+                GroundedCheck();
+                Move();
+            }
+            else
+            {
+                UpdateOther();
+            }
         }
 
         private void LateUpdate()
         {
             CameraRotation();
+        }
+
+        void UpdateOther()
+        {
+            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
+            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
         }
 
         private void AssignAnimationIDs()
@@ -184,13 +199,13 @@ public class CheeseThirdPerson : MonoBehaviour
         private void CameraRotation()
         {
             // if there is an input and camera position is not fixed
-            if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+            if (input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
                 //Don't multiply mouse input by Time.deltaTime;
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+                _cinemachineTargetYaw += input.look.x * deltaTimeMultiplier;
+                _cinemachineTargetPitch += input.look.y * deltaTimeMultiplier;
             }
 
             // clamp our rotations so our values are limited 360 degrees
@@ -205,19 +220,19 @@ public class CheeseThirdPerson : MonoBehaviour
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed = input.sprint ? SprintSpeed : MoveSpeed;
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+            if (input.move == Vector2.zero) targetSpeed = 0.0f;
 
             // a reference to the players current horizontal velocity
             float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
             float speedOffset = 0.1f;
-            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+            float inputMagnitude = input.analogMovement ? input.move.magnitude : 1f;
 
             // accelerate or decelerate to target speed
             if (currentHorizontalSpeed < targetSpeed - speedOffset ||
@@ -240,13 +255,13 @@ public class CheeseThirdPerson : MonoBehaviour
             if (_animationBlend < 0.01f) _animationBlend = 0f;
 
             // normalise input direction
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+            Vector3 inputDirection = new Vector3(input.move.x, 0.0f, input.move.y).normalized;
 
             
             IsWalking = inputDirection.magnitude > 0;
             // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is a move input rotate player when the player is moving
-            if (_input.move != Vector2.zero)
+            if (input.move != Vector2.zero)
             {
                 _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
                                   _mainCamera.transform.eulerAngles.y;
@@ -293,7 +308,7 @@ public class CheeseThirdPerson : MonoBehaviour
                 }
 
                 // Jump - DISABLED
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+                if (input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
                 
@@ -329,7 +344,7 @@ public class CheeseThirdPerson : MonoBehaviour
                 }
 
                 // if we are not grounded, do not jump
-                _input.jump = false; //- This line is now unnecessary as jumping is disabled
+                input.jump = false; //- This line is now unnecessary as jumping is disabled
             }
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
@@ -364,40 +379,18 @@ public class CheeseThirdPerson : MonoBehaviour
         {
             if (stream.IsWriting)
             {
-                // We own this player: send the others our data
-                // view
-                stream.SendNext(_cinemachineTargetYaw);
-                stream.SendNext(_cinemachineTargetPitch);
-                // player data
-                stream.SendNext(_speed);
-                stream.SendNext(_targetRotation);
-                stream.SendNext(_verticalVelocity);
-                stream.SendNext(_rotationVelocity);
-                // timeouts, states
-                stream.SendNext(_jumpTimeoutDelta);
-                stream.SendNext(_fallTimeoutDelta);
-                stream.SendNext(Grounded);
-                // animator
-                stream.SendNext(_animationBlend);
-                stream.SendNext(_animIDSpeed);
+                stream.SendNext(input.move.x);
+                stream.SendNext(input.move.y);
+                stream.SendNext(transform.position);
+                stream.SendNext(transform.rotation);
+                // animation
             }
             else
             {
-                // Network player, receive data
-                _cinemachineTargetYaw = (float)stream.ReceiveNext();
-                _cinemachineTargetPitch = (float)stream.ReceiveNext();
-                // player data
-                _speed = (float)stream.ReceiveNext();
-                _targetRotation = (float)stream.ReceiveNext();
-                _verticalVelocity = (float)stream.ReceiveNext();
-                _rotationVelocity = (float)stream.ReceiveNext();
-                // timeouts, states
-                _jumpTimeoutDelta = (float)stream.ReceiveNext();
-                _fallTimeoutDelta = (float)stream.ReceiveNext();
-                Grounded = (bool)stream.ReceiveNext();
-                // animator
-                _animationBlend = (float)stream.ReceiveNext();
-                _animIDSpeed = (int)stream.ReceiveNext();
+                input.move.x = (float)stream.ReceiveNext();
+                input.move.y = (float)stream.ReceiveNext();
+                currentPos = (Vector3)stream.ReceiveNext();
+                currentRot = (Quaternion)stream.ReceiveNext();
             }
         }
     }

@@ -171,7 +171,7 @@ namespace StarterAssets
             }
             else
             {
-                UpdateLogic();
+                UpdateOther();
             }
         }
 
@@ -180,7 +180,7 @@ namespace StarterAssets
             CameraRotation();
         }
 
-        void UpdateLogic()
+        void UpdateOther()
         {
             transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
             transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
@@ -427,8 +427,9 @@ namespace StarterAssets
                 stream.SendNext(input.move.y);
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
-                // animation
-
+                stream.SendNext(input.shoot);
+                stream.SendNext(input.look.x);
+                stream.SendNext(input.look.y);
 
             }
             else
@@ -437,8 +438,9 @@ namespace StarterAssets
                 input.move.y = (float)stream.ReceiveNext();
                 currentPos = (Vector3)stream.ReceiveNext();
                 currentRot = (Quaternion)stream.ReceiveNext();
-
-
+                input.shoot = (bool)stream.ReceiveNext();
+                input.look.x = (float)stream.ReceiveNext();
+                input.look.y = (float)stream.ReceiveNext();
 
             }
         }

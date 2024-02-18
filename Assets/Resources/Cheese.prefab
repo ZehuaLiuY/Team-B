@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2221096966769897720}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,6 +104,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7333071873568306520, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -5414214464699539081, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -3484088379041197161, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -3185893182312783842, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -1105396436775387661, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -998086021393785683, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 176488540162759290, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Name
@@ -112,12 +147,27 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Layer
-      value: 9
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_TagString
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023291235687469889, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2147647442112616339, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2305014742411516022, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
@@ -128,6 +178,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CullingMode
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6618739068099589813, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6752047836710137028, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -252,6 +312,9 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
+  currentPos: {x: 0, y: 0, z: 0}
+  currentRot: {x: 0, y: 0, z: 0, w: 0}
+  input: {fileID: 0}
 --- !u!114 &1178353275039107980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,7 +353,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 9024344183414355805}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

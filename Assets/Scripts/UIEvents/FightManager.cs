@@ -9,9 +9,8 @@ using Photon.Pun.UtilityScripts;
 using System.Runtime.CompilerServices;
 
 
-public class FightManager : MonoBehaviourPun
+public class FightManager : MonoBehaviourPunCallbacks
 {
-    // Start is called before the first frame update
     private bool gameOver = false; // 游戏是否已经结束
     // private float captureDistance = 2f; // 抓住奶酪的距离阈值
 
@@ -31,49 +30,50 @@ public class FightManager : MonoBehaviourPun
         Game.uiManager.CloseAllUI();
         fightUI = Game.uiManager.ShowUI<FightUI>("FightUI");
         
-        //Game.uiManager.ShowUI<FightUI>("FightUI");
-
-        Transform pointTf = GameObject.Find("Point").transform;
-        // Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
-        // GameObject cheese1 = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
-        //
-        // CinemachineFreeLook vc = GameObject.Find("FreeLook Camera").GetComponent<CinemachineFreeLook>();
-        // vc.Follow = cheese1.transform;
-        // vc.LookAt = cheese1.transform.Find("eye").transform;
-        // GameObject human1 = PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
-        //
-        // CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
-        // vc.Follow = human1.transform.Find("PlayerRoot").transform;
-
-
-        int humanIndex = UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length);
-        
-        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        if (PhotonNetwork.IsMasterClient)
         {
-            Vector3 pos = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount)).position;
-        
-            if (i == humanIndex)
-            {
-                // 为选定的玩家实例化Human
-                GameObject human = PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
-                // 设置相机跟随
-                CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
-                vc.Follow = human.transform.Find("PlayerRoot").transform;
-            }
-            else
-            {
-                // 为其他玩家实例化Cheese
-                // Old Version
-                // GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
-                // CinemachineFreeLook vc = GameObject.Find("FreeLook Camera").GetComponent<CinemachineFreeLook>();
-                // vc.Follow = cheese.transform;
-                // vc.LookAt = cheese.transform.Find("eye").transform;
-                
-                // New Version
-                GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
-                CinemachineFreeLook vc = GameObject.Find("Cheese VC").GetComponent<CinemachineFreeLook>();
-                vc.Follow = cheese.transform.Find("PlayerRoot").transform;
-            }
+            AssignRoles();
+        }
+
+        Game.uiManager.ShowUI<FightUI>("FightUI");
+
+    }
+
+    void AssignRoles()
+    {
+        var players = PhotonNetwork.PlayerList;
+        List<int> playerIndices = new List<int>();
+        for (int i = 0; i < players.Length; i++)
+        {
+            playerIndices.Add(i);
+        }
+
+        // random select a human player
+        int humanIndex = playerIndices[Random.Range(0, playerIndices.Count)];
+        playerIndices.RemoveAt(humanIndex);
+
+        // set human player
+        var customProperties = new ExitGames.Client.Photon.Hashtable();
+        customProperties["HumanPlayer"] = players[humanIndex].ActorNumber;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+    }
+
+    void SpawnPlayer(int humanPlayerActorNumber)
+    {
+        Transform spawnPoint = pointTf.GetChild(UnityEngine.Random.Range(0, pointTf.childCount));
+        Vector3 pos = spawnPoint.position;
+
+        if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)
+        {
+            GameObject human = PhotonNetwork.Instantiate("Human", pos, Quaternion.identity);
+            CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+            vc.Follow = human.transform.Find("PlayerRoot").transform;
+        }
+        else
+        {
+            GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
+            CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+            cheeseVC.Follow = cheese.transform.Find("PlayerRoot").transform;
         }
     }
 
@@ -118,6 +118,8 @@ public class FightManager : MonoBehaviourPun
             Debug.Log("gameover: " + gameOver);
             //CheckGameResult(); // 检查游戏结果
             Game.uiManager.ShowUI<WinUI>("WinUI");
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         // 获取场景中所有带有 "Player" 标签的对象
@@ -143,5 +145,14 @@ public class FightManager : MonoBehaviourPun
         //        }
         //    }
         //}
+    }
+
+    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+    {
+        if (propertiesThatChanged.ContainsKey("HumanPlayer"))
+        {
+            int humanPlayerActorNumber = (int)propertiesThatChanged["HumanPlayer"];
+            SpawnPlayer(humanPlayerActorNumber);
+        }
     }
 }
