@@ -3182,6 +3182,7 @@ MonoBehaviour:
   aim: 0
   shoot: 0
   open: 0
+  pickup: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
