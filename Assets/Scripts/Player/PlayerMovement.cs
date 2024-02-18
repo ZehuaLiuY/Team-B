@@ -1,53 +1,183 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+// sync the player's position and rotation
+using Photon.Pun;
+using Photon.Realtime;
+
+public class PlayerController : MonoBehaviourPun, IPunObservable
 {
-    Rigidbody rb;
-    public float movementSpeed = 5f;
+
+    // components
+    // public Animator ani;
+    public Rigidbody body;
+    public Transform cameraTf;
+    public float moveSpeed = 3.5f;
+
+    // movement and rotation
+    public float H;
+    public float V;
+    public Vector3 dir;
     public float jumpForce = 5f;
+
+    // camera offset
+    public Vector3 offset;
+
+    // mouse movement
+    public float Mouse_X;
+    public float Mouse_Y;
+    public float Angle_X;
+    public float Angle_Y;
+
+    public Quaternion camRotation;
+
     public Transform groundCheck;
     public LayerMask ground;
-    public Transform cameraTransform; // 摄像机的Transform
 
-    private Vector3 moveDirection = Vector3.zero;
+    // the current position and rotation
+    public Vector3 currentPos;
+    public Quaternion currentRot;
 
+    // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        // ani = GetComponent<Animator>();
+        body = GetComponent<Rigidbody>();
+        cameraTf = Camera.main.transform;
+
+
+        Angle_X = transform.eulerAngles.x;
+        Angle_Y = transform.eulerAngles.y;
+
+        currentPos = transform.position;
+        currentRot = transform.rotation;
+
+        // update the UI
+
     }
 
+    // private void LateUpdate()
+    // {
+    //     ani.SetFloat("Horizontal", H);
+    //     ani.SetFloat("Vertical", V);
+    // }
+
+    // Update is called once per frame
     void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-
-        // 根据摄像机的朝向计算移动方向
-        Vector3 cameraForward = cameraTransform.forward;
-        Vector3 cameraRight = cameraTransform.right;
-        cameraForward.y = 0; // 确保移动仅在水平面上
-        cameraRight.y = 0;
-        Vector3 direction = (cameraForward * vertical + cameraRight * horizontal).normalized;
-
-        moveDirection = direction;
-
-        // 跳跃逻辑
-        if (Input.GetButtonDown("Jump") && IsGrounded())
+        // if the player is not mine, return
+        // player only can be controlled by the local player
+        if (photonView.IsMine)
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            UpdatePosition();
+            // UpdateRotation();
+            InputCtl();
+        }
+        else
+        {
+            // update the other player's position and rotation
+            UpdateLogic();
         }
     }
 
-    void FixedUpdate()
+    // other player's position and rotation
+    public void UpdateLogic()
     {
-        // 在FixedUpdate中应用物理相关的移动
-        rb.MovePosition(rb.position + moveDirection * movementSpeed * Time.fixedDeltaTime);
+        transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * moveSpeed * 10);
+        transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
+    }
+
+    // update the current position and rotation
+    public void UpdatePosition()
+    {
+        H = Input.GetAxisRaw("Horizontal");
+        V = Input.GetAxisRaw("Vertical");
+        dir = cameraTf.forward * V + cameraTf.right * H;
+        body.MovePosition(transform.position + dir.normalized * moveSpeed * Time.deltaTime);
+    }
+
+    public void UpdateRotation()
+    {
+        Mouse_X = Input.GetAxis("Mouse X");
+        Mouse_Y = Input.GetAxis("Mouse Y");
+
+        Angle_X = Angle_X + Mouse_X;
+        Angle_Y = Angle_Y + Mouse_Y;
+
+        // limit the angle
+        Angle_X = ClampAngle(Angle_X, -60, 60);
+        Angle_Y = ClampAngle(Angle_Y, -360, 360);
+
+        camRotation = Quaternion.Euler(Angle_X, Angle_Y, 0);
+
+        cameraTf.rotation = camRotation;
+
+        cameraTf.position = transform.position + cameraTf.rotation * offset;
+
+        transform.eulerAngles = new Vector3(0, cameraTf.eulerAngles.y, 0);
+    }
+
+    float ClampAngle(float angle, float min, float max)
+    {
+        if (angle < -360)
+        {
+            angle += 360;
+        }
+        if (angle > 360)
+        {
+            angle -= 360;
+        }
+        return Mathf.Clamp(angle, min, max);
     }
 
     bool IsGrounded()
     {
         // 检测是否接触地面
         return Physics.CheckSphere(groundCheck.position, 0.1f, ground);
+    }
+
+    void InputCtl()
+    {
+        if (Input.GetButtonDown("Jump") && IsGrounded())
+        {
+            body.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
+
+
+    // private void gameOver()
+    // {
+    //     // display mouse
+    //     Cursor.lockState = CursorLockMode.None;
+    //     Cursor.visible = true;
+    //
+    //     Game.uiManager.ShowUI<LossUI>("LossUI");
+    // }
+
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // send the current position and rotation
+            stream.SendNext(H);
+            stream.SendNext(V);
+            stream.SendNext(Angle_X);
+            stream.SendNext(Angle_Y);
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            // receive the current position and rotation
+            H = (float)stream.ReceiveNext();
+            V = (float)stream.ReceiveNext();
+            Angle_X = (float)stream.ReceiveNext();
+            Angle_Y = (float)stream.ReceiveNext();
+            currentPos = (Vector3)stream.ReceiveNext();
+            currentRot = (Quaternion)stream.ReceiveNext();
+        }
     }
 }

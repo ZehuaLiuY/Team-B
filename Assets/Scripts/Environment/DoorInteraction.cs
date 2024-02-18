@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem; // 确保导入了Input System命名空间
 using StarterAssets;
+using Photon.Pun;
 
 public class DoorInteraction : MonoBehaviour
 {
@@ -12,19 +13,20 @@ public class DoorInteraction : MonoBehaviour
     private Animator doorAnimator;
     private bool isPlayerNear;
     private bool doorIsOpen;
+    private PhotonView photonView;
 
     void Awake()
     {
         doorAnimator = door.GetComponent<Animator>();
         test.SetActive(false); // 开始时禁用提示
+        photonView = transform.parent.GetComponent<PhotonView>();
     }
 
     void Update()
     {
         if (isPlayerNear && Keyboard.current.eKey.wasPressedThisFrame)
         {
-            //Debug.LogError("E is Pressed");
-            doorAnimator.SetBool("IsOpen", !doorAnimator.GetBool("IsOpen")); // 切换门的开闭状态
+            photonView.RPC("ToggleDoor", RpcTarget.All); // Call the RPC method
         }
     }
 
@@ -46,5 +48,10 @@ public class DoorInteraction : MonoBehaviour
             isPlayerNear = false;
             test.SetActive(false); // 隐藏提示
         }
+    }
+
+    [PunRPC]
+    void ToggleDoor() {
+        doorAnimator.SetBool("IsOpen", !doorAnimator.GetBool("IsOpen")); // Toggle door state
     }
 }

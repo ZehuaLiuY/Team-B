@@ -1,4 +1,5 @@
-﻿ using UnityEngine;
+﻿using UnityEngine;
+using Photon.Pun;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -12,7 +13,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class ThirdPersonController : MonoBehaviour
+    public class ThirdPersonController : MonoBehaviourPun, IPunObservable
     {
         [Header("Player")] [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -104,10 +105,16 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
 
+        
+
         private const float _threshold = 0.01f;
         private bool _rotateOnMove = true;
 
         private bool _hasAnimator;
+
+        // current pos and rot
+        public Vector3 currentPos;
+        public Quaternion currentRot;
 
         private bool IsCurrentDeviceMouse
         {
@@ -124,10 +131,18 @@ namespace StarterAssets
 
         private void Awake()
         {
+            _input = GetComponent<StarterAssetsInputs>();
             // get a reference to our main camera
             if (_mainCamera == null)
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+            }
+
+            _hasAnimator = TryGetComponent(out _animator);
+
+            if (_hasAnimator)
+            {
+                AssignAnimationIDs();
             }
         }
 
@@ -135,34 +150,62 @@ namespace StarterAssets
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
-            _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _input = GetComponent<StarterAssetsInputs>();
+
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
 
-            AssignAnimationIDs();
-
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+            currentPos = transform.position;
+            currentRot = transform.rotation;
         }
 
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
 
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
+            if(photonView.IsMine){
+                JumpAndGravity();
+                GroundedCheck();
+                Move();
+                pickup();
+            }
+            else
+            {
+                UpdateOther();
+            }
+        }
+
+        private void pickup()
+        {
+            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame)
+            {
+                _animator.SetTrigger("pickup");
+                photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
+            }
+        }
+
+        [PunRPC]
+        void TriggerPickupAnimation()
+        {
+            _animator.SetTrigger("pickup");
         }
 
         private void LateUpdate()
         {
             CameraRotation();
+        }
+
+        void UpdateOther()
+        {
+            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
+            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
         }
 
         private void AssignAnimationIDs()
@@ -395,6 +438,43 @@ namespace StarterAssets
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+            }
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(_input.move.x);
+                stream.SendNext(_input.move.y);
+                stream.SendNext(transform.position);
+                stream.SendNext(transform.rotation);
+                stream.SendNext(_input.shoot);
+                stream.SendNext(_input.look.x);
+                stream.SendNext(_input.look.y);
+
+                stream.SendNext(_animator.GetFloat(_animIDSpeed));
+                stream.SendNext(_animator.GetBool(_animIDGrounded));
+                stream.SendNext(_animator.GetBool(_animIDJump));
+                stream.SendNext(_animator.GetBool(_animIDFreeFall));
+                stream.SendNext(_animator.GetFloat(_animIDMotionSpeed));
+
+            }
+            else
+            {
+                _input.move.x = (float)stream.ReceiveNext();
+                _input.move.y = (float)stream.ReceiveNext();
+                currentPos = (Vector3)stream.ReceiveNext();
+                currentRot = (Quaternion)stream.ReceiveNext();
+                _input.shoot = (bool)stream.ReceiveNext();
+                _input.look.x = (float)stream.ReceiveNext();
+                _input.look.y = (float)stream.ReceiveNext();
+
+                _animator.SetFloat(_animIDSpeed, (float)stream.ReceiveNext());
+                _animator.SetBool(_animIDGrounded, (bool)stream.ReceiveNext());
+                _animator.SetBool(_animIDJump, (bool)stream.ReceiveNext());
+                _animator.SetBool(_animIDFreeFall, (bool)stream.ReceiveNext());
+                _animator.SetFloat(_animIDMotionSpeed, (float)stream.ReceiveNext());
             }
         }
     }

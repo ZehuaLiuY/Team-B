@@ -47,6 +47,13 @@ public class ThirdPersonshooterController : MonoBehaviour
             Vector3 worldAimTarget = mouseWorldPosition;
             worldAimTarget.y = transform.position.y;
             Vector3 aimDirection = (worldAimTarget - transform.position).normalized;
+            
+            if (starterAssetsInputs.shoot)
+            {
+                Vector3 aimDir = (mouseWorldPosition - spawnBulletPosition.position).normalized;
+                Instantiate(pfBulletProjectile, spawnBulletPosition.position,Quaternion.LookRotation(aimDir,Vector3.up));
+                starterAssetsInputs.shoot = false;
+            } 
 
             transform.forward = Vector3.Lerp(transform.forward,aimDirection,Time.deltaTime*20f);
         }else{
@@ -56,12 +63,5 @@ public class ThirdPersonshooterController : MonoBehaviour
             thirdPersonController.SetRotateOnMove(true);
             animator.SetLayerWeight(1,Mathf.Lerp(animator.GetLayerWeight(1),0f,Time.deltaTime * 10f));
         }
-
-        if (starterAssetsInputs.shoot)
-        {
-            Vector3 aimDir = (mouseWorldPosition - spawnBulletPosition.position).normalized;
-            Instantiate(pfBulletProjectile, spawnBulletPosition.position,Quaternion.LookRotation(aimDir,Vector3.up));
-            starterAssetsInputs.shoot = false;
-        } 
     }
 }

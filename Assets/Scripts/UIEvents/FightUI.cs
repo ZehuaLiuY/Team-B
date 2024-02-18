@@ -12,12 +12,16 @@ public class FightUI : MonoBehaviour
 
     private float previousTime;
     private bool iscount;
-    public static float countdownTimer = 180f;
+    //public static float countdownTimer = 180f;
     private void Start()
     {
         iscount = true;
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        
+        //--------------------------
+        // top left placeholder components
+        // transform.Find("hp/fill").GetComponent<Image>().fillAmount =
+        // transform.Find("hp/Text").GetComponent<Text>().text =
+        //--------------------------
 
     }
 
@@ -27,18 +31,10 @@ public class FightUI : MonoBehaviour
     //// Update is called once per frame
     void Update()
     {
-        countdownTimer -= Time.deltaTime;
-        //if (!gameManager.isGameOver)
-        //{
-        //    // 更新倒计时文本内容
-        //    UpdateCountdownText();
-
-        //}
-        UpdateCountdownText();
 
     }
 
-    void UpdateCountdownText()
+    public void SetCountdownTimer(float countdownTimer) 
     {
         // 获取 GameManager 中的倒计时时间
         //float countdownTime = gameManager.GetCountdownTime();
@@ -81,9 +77,5 @@ public class FightUI : MonoBehaviour
         }
     }
 
-    public float GetFightUITimer()
-    {
-        // 返回倒计时时间
-        return countdownTimer;
-    }
+
 }
