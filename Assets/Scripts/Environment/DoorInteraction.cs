@@ -33,20 +33,27 @@ public class DoorInteraction : MonoBehaviour
     // 当玩家进入触发区域
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) // 确保是玩家触发了这个区域
+        if (other.CompareTag("Player") || other.CompareTag("Target") ) // 确保是玩家触发了这个区域
         {
-            isPlayerNear = true;
-            test.SetActive(true); // 显示提示
+            if (other.GetComponent<PhotonView>().IsMine)
+            {
+                isPlayerNear = true;
+                test.SetActive(true); // 显示提示
+            }
+
         }
     }
 
     // 当玩家离开触发区域
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Target"))
         {
-            isPlayerNear = false;
-            test.SetActive(false); // 隐藏提示
+            if (other.GetComponent<PhotonView>().IsMine)
+            {
+                isPlayerNear = false;
+                test.SetActive(false); // 隐藏提示
+            }
         }
     }
 
