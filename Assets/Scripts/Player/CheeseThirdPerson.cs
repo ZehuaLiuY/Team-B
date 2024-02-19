@@ -417,5 +417,13 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 _animator.SetFloat(_animIDMotionSpeed, (float)stream.ReceiveNext());
             }
         }
+
+        [PunRPC]
+        public void ReduceSpeed()
+        {
+            MoveSpeed -= 0.5f;
+            SprintSpeed = 0f;
+            MoveSpeed = Mathf.Max(MoveSpeed, 0);
+        }
     }
 }
