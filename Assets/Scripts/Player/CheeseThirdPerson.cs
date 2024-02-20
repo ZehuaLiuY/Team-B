@@ -65,6 +65,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+        private FightManager _fightManager;
+
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -138,6 +140,9 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         private void Start()
         {
+
+            _fightManager = FindObjectOfType<FightManager>();
+
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
             // _hasAnimator = TryGetComponent(out _animator);
@@ -154,7 +159,11 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+
         }
+
+       
 
         private void Update()
         {
@@ -421,8 +430,22 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [PunRPC]
         public void showDeiUI()
         {
-            Debug.Log("showDeiUI");
             Game.uiManager.ShowUI<DieUI>("DieUI");
+            gameObject.SetActive(false);
+
+            // 通过 RPC 通知其他客户端隐藏奶酪对象
+            photonView.RPC("HideCheese", RpcTarget.OthersBuffered);
+        }
+
+        [PunRPC]
+        private void HideCheese()
+        {
+            // 隐藏奶酪对象
+            gameObject.SetActive(false);
+
+
+            _fightManager.CheeseDied();
+
         }
 
         [PunRPC]
