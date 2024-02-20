@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Photon.Pun;
 #if ENABLE_INPUT_SYSTEM 
@@ -16,7 +17,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         public float MoveSpeed = 2.0f;
 
         [Tooltip("Sprint speed of the character in m/s")]
-        public float SprintSpeed = 5.335f;
+        public float SprintSpeed = 3.0f;
 
         [Tooltip("How fast the character turns to face movement direction")] [Range(0.0f, 0.3f)]
         public float RotationSmoothTime = 0.12f;
@@ -451,9 +452,19 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [PunRPC]
         public void ReduceSpeed()
         {
-            MoveSpeed -= 0.5f;
+            MoveSpeed -= 0.2f;
             SprintSpeed = 0f;
             MoveSpeed = Mathf.Max(MoveSpeed, 0);
+
+            StartCoroutine(RestoreSpeedAfterDelay(5)); // 5秒后恢复速度
+        }
+        
+        private IEnumerator RestoreSpeedAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            
+            MoveSpeed = 2.0f;
+            SprintSpeed = 3.0f;
         }
     }
 }

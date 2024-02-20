@@ -2700,7 +2700,7 @@ Camera:
     height: 1
   near clip plane: 0.2
   far clip plane: 500
-  field of view: 33.398487
+  field of view: 33.398483
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -3333,6 +3333,7 @@ MonoBehaviour:
     type: 3}
   spawnBulletPosition: {fileID: 4012368057150038986}
   aimPoint: {fileID: 2258315242870082078}
+  shootCooldown: 0.5
 --- !u!114 &1674636136170161686
 MonoBehaviour:
   m_ObjectHideFlags: 0

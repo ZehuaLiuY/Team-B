@@ -7,6 +7,7 @@ TagManager:
   - GrapplePoint
   - Target
   - CinemachineTarget
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Desk
   - Door
   - Cheeses
-  - 
+  - aimColliderLayerMask
   - 
   - 
   - 
