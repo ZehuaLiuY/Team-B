@@ -13,14 +13,14 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class FightManager : MonoBehaviourPunCallbacks
 {
-    private bool gameOver = false; // 游戏是否已经结束
+    private bool _gameOver = false; // 游戏是否已经结束
     // private float captureDistance = 2f; // 抓住奶酪的距离阈值
 
     public Transform pointTf; // respawn points
     private PhotonView _photonView;
 
     private FightUI fightUI;
-    public static float countdownTimer = 30f;
+    public static float countdownTimer = 180f;
     private bool _isHumanWin;
     private int humanPlayerActorNumber;
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
@@ -122,7 +122,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        if (!gameOver)
+        if (!_gameOver)
         {
             // 检查游戏结果
             CheckGameResult();
@@ -155,9 +155,11 @@ public class FightManager : MonoBehaviourPunCallbacks
         if (_remainingCheeseCount <= 0)
         {
             _isHumanWin = true;
-            gameOver = true;
+            _gameOver = true;
             _allCheeseDie = true;
+           
             Debug.Log("human win!");
+            
         }
     }
 
@@ -168,9 +170,13 @@ public class FightManager : MonoBehaviourPunCallbacks
         fightUI.SetCountdownTimer(newTimer);
     }
 
+    
+
     [PunRPC]
     void EndGame(bool isHumanWin)
     {
+
+        Game.uiManager.CloseUI("DieUI");
 
         if (isHumanWin)
         {
@@ -189,13 +195,12 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             if (PhotonNetwork.LocalPlayer.ActorNumber != humanPlayerActorNumber)
             {
-                Game.uiManager.CloseUI("DieUI");
+                
                 Game.uiManager.ShowUI<WinUI>("WinUI");
                 //Debug.Log("showCheeseWinUI");
             }
             else
             {
-                Game.uiManager.CloseUI("DieUI");
                 Game.uiManager.ShowUI<LossUI>("LossUI");
                 //Debug.Log("showCheeseLossUI");
             }
@@ -212,9 +217,9 @@ public class FightManager : MonoBehaviourPunCallbacks
         // 如果倒计时结束
         if (countdownTimer <= 0f)
         {
-            gameOver = true; // 设置游戏结束标志为 true
+            _gameOver = true; // 设置游戏结束标志为 true
             _isHumanWin = false;
-            Debug.Log("gameover: " + gameOver);
+            Debug.Log("gameover: " + _gameOver);
         }
         
         
