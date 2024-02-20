@@ -66,6 +66,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+
         private FightManager _fightManager;
 
         // cinemachine
@@ -93,6 +94,9 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         public Vector3 currentPos;
         public Quaternion currentRot;
+
+        
+
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -173,6 +177,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 JumpAndGravity();
                 GroundedCheck();
                 Move();
+                
             }
             else
             {
@@ -185,11 +190,15 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             CameraRotation();
         }
 
+
+
         void UpdateOther()
         {
             transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
             transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
         }
+
+        
 
         private void AssignAnimationIDs()
         {

@@ -72598,6 +72598,12 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 6645148184008043546, guid: e5e3a6a0d333c4c33861eb7fb18050fa,
+        type: 3}
+      propertyPath: smellParticlePrefab
+      value: 
+      objectReference: {fileID: 933692525627313500, guid: 86d93ff91531b4842aa17d0847d6a1b6,
+        type: 3}
     - target: {fileID: 7597148537561415016, guid: e5e3a6a0d333c4c33861eb7fb18050fa,
         type: 3}
       propertyPath: m_Layer

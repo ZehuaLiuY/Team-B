@@ -221,6 +221,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2549046913564611917}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6645148184008043546}
   m_SourcePrefab: {fileID: 100100000, guid: 76b1db43dfbc346c5b159481488ae965, type: 3}
 --- !u!1 &1695888432212909204 stripped
 GameObject:
@@ -383,6 +387,20 @@ MonoBehaviour:
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0
+--- !u!114 &6645148184008043546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1695888432212909204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4291624b42bcf8b4d915f57d221dabca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smellParticlePrefab: {fileID: 933692525627313500, guid: 86d93ff91531b4842aa17d0847d6a1b6,
+    type: 3}
 --- !u!4 &2072448746763765294 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 76b1db43dfbc346c5b159481488ae965,
