@@ -419,6 +419,13 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         }
 
         [PunRPC]
+        public void showDeiUI()
+        {
+            Debug.Log("showDeiUI");
+            Game.uiManager.ShowUI<DieUI>("DieUI");
+        }
+
+        [PunRPC]
         public void ReduceSpeed()
         {
             MoveSpeed -= 0.5f;

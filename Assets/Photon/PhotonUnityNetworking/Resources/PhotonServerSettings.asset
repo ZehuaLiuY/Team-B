@@ -46,6 +46,9 @@ MonoBehaviour:
   - TriggerPickupAnimation
   - ToggleDoor
   - ReduceSpeed
+  - EndGame
+  - ShowDieUI
+  - showDeiUI
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

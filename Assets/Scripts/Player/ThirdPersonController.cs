@@ -191,6 +191,23 @@ namespace StarterAssets
             }
         }
 
+        private void OnControllerColliderHit(ControllerColliderHit hit)
+        {
+            if (hit.gameObject.CompareTag("Target"))
+            {
+
+                PhotonView targetPhotonView = hit.gameObject.GetComponent<PhotonView>();
+
+
+                if (targetPhotonView != null && Input.GetKeyDown(KeyCode.R))
+                {
+                    
+                    // 调用目标上的RPC方法来显示DeiUI
+                    targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+                }
+            }
+        }
+
         [PunRPC]
         void TriggerPickupAnimation()
         {
@@ -421,7 +438,7 @@ namespace StarterAssets
             _rotateOnMove = newRotateOnMove;
         }
 
-    private void OnFootstep(AnimationEvent animationEvent)
+        private void OnFootstep(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
@@ -440,6 +457,8 @@ namespace StarterAssets
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
         }
+
+        
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {

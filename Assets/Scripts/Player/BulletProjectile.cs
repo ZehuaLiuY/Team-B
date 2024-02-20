@@ -33,7 +33,7 @@ public class BulletProjectile : MonoBehaviour
             if (targetPhotonView != null)
             {
                 // 调用目标上的RPC方法来减少速度
-                targetPhotonView.RPC("ReduceSpeed", RpcTarget.AllBuffered, null);
+                targetPhotonView.RPC("ReduceSpeed", targetPhotonView.Owner, null);
             }
             // 销毁子弹
             Destroy(gameObject);

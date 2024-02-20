@@ -7,6 +7,8 @@ using Cinemachine;
 using UnityEditor.Rendering;
 using Photon.Pun.UtilityScripts;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class FightManager : MonoBehaviourPunCallbacks
@@ -18,22 +20,27 @@ public class FightManager : MonoBehaviourPunCallbacks
     private PhotonView _photonView;
 
     private FightUI fightUI;
-    public static float countdownTimer = 180f;
+    public static float countdownTimer = 100f;
+    private bool isHumanWin;
+    private int humanPlayerActorNumber;
+    //private List<int> _cheesePlayersActorNumber = new List<int>();
+    //private int _cheeseIndex = 0;
+    GameObject human;
+    //Dictionary<GameObject, int> cheeses = new Dictionary<GameObject, int>();
 
     void Awake()
     {
         _photonView = GetComponent<PhotonView>();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            AssignRoles();
+        }
     }
 
     void Start()
     {
         Game.uiManager.CloseAllUI();
         fightUI = Game.uiManager.ShowUI<FightUI>("FightUI");
-
-        if (PhotonNetwork.IsMasterClient)
-        {
-            AssignRoles();
-        }
 
         Game.uiManager.ShowUI<FightUI>("FightUI");
 
@@ -52,10 +59,20 @@ public class FightManager : MonoBehaviourPunCallbacks
         int humanIndex = playerIndices[Random.Range(0, playerIndices.Count)];
         playerIndices.RemoveAt(humanIndex);
 
+        List<int> cheesePlayers = new List<int>();
         // set human player
         var customProperties = new ExitGames.Client.Photon.Hashtable();
         customProperties["HumanPlayer"] = players[humanIndex].ActorNumber;
+        foreach(int i in playerIndices)
+        {
+            cheesePlayers.Add(players[i].ActorNumber);
+            
+        }
+       
+        int[] cheesePlayersArray = cheesePlayers.ToArray();
+        customProperties["CheesePlayers"] = cheesePlayersArray;
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+
     }
 
     void SpawnPlayer(int humanPlayerActorNumber)
@@ -76,15 +93,21 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)
         {
-            GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
+            human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             vc.Follow = human.transform.Find("PlayerRoot").transform;
+            
         }
         else
         {
             GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
             CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             cheeseVC.Follow = cheese.transform.Find("PlayerRoot").transform;
+            //Debug.Log(cheese.name);
+            //Debug.Log("PhotonNetwork.LocalPlayer.ActorNumber:" + PhotonNetwork.LocalPlayer.ActorNumber);
+            //cheeses.Add(cheese, _cheesePlayersActorNumber[_cheeseIndex]);
+            //_cheeseIndex++;
+
         }
     }
 
@@ -118,6 +141,10 @@ public class FightManager : MonoBehaviourPunCallbacks
                 photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.Others, newTimer);
             }
         }
+        else
+        {
+            photonView.RPC("EndGame", RpcTarget.All, isHumanWin);
+        }
     }
     private float UpdateCountdownTimer()
     {
@@ -133,6 +160,41 @@ public class FightManager : MonoBehaviourPunCallbacks
         fightUI.SetCountdownTimer(newTimer);
     }
 
+    [PunRPC]
+    void EndGame(bool isHumanWin)
+    {
+
+        // 获取当前客户端的玩家对象
+        Player localPlayer = PhotonNetwork.LocalPlayer;
+
+        if (localPlayer.ActorNumber == humanPlayerActorNumber)
+        {
+            if (isHumanWin)
+            {
+                Game.uiManager.ShowUI<WinUI>("WinUI");
+            }
+            else
+            {
+                Game.uiManager.ShowUI<LossUI>("LossUI");
+            }
+        }
+        else
+        {
+            if (isHumanWin)
+            {
+                Game.uiManager.ShowUI<LossUI>("LossUI");
+            }
+            else
+            {
+                Game.uiManager.ShowUI<WinUI>("WinUI");
+            }
+        }
+
+       
+    }
+
+ 
+
     void CheckGameResult()
     {
 
@@ -140,44 +202,75 @@ public class FightManager : MonoBehaviourPunCallbacks
         if (countdownTimer <= 0f)
         {
             gameOver = true; // 设置游戏结束标志为 true
+            isHumanWin = false;
             Debug.Log("gameover: " + gameOver);
-            //CheckGameResult(); // 检查游戏结果
-            Game.uiManager.ShowUI<WinUI>("WinUI");
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+
         }
-
-        // 获取场景中所有带有 "Player" 标签的对象
-        //GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("Player");
-        //PlayerControl human = GetComponent<PlayerControl>();
-
-        //// 遍历所有的玩家对象
-        //foreach (GameObject playerObject in playerObjects)
+        //else
         //{
-        //    // 如果对象不是人类
-        //    if (playerObject != human.gameObject)
+        //    // 获取当前客户端的玩家对象
+        //    Player localPlayer = PhotonNetwork.LocalPlayer;
+
+        //    if (localPlayer.ActorNumber == humanPlayerActorNumber)
         //    {
-        //        // 计算人类和奶酪的距离
-        //        float distance = Vector3.Distance(human.gameObject.transform.position, playerObject.transform.position);
-        //        // 如果距离小于抓住距离阈值
-        //        if (distance < captureDistance)
+        //        Vector3 humanPosition = human.transform.position;
+        //        if (cheeses != null)
         //        {
-        //            // 游戏结束，人类胜利
-        //            gameOver = true;
-        //            Debug.Log("Human Win!");
-        //            // 设置奶酪的画面为 "You Die"
-        //            //playerObject.GetComponentInChildren<TextMesh>().text = "You Die";
+        //            Debug.Log("cheeses is not null");
+        //            Debug.Log("cheese number: " + cheeses.Count);
+        //            foreach (GameObject cheese in cheeses.Keys)
+        //            {
+        //                float distance = Vector3.Distance(humanPosition, cheese.transform.position);
+        //                Debug.Log("distance: " + distance);
+
+        //                // 如果距离小于2f且按下了R键
+        //                if (distance <= 20f)
+        //                {
+        //                    Debug.Log("capture");
+        //                    // 使用 RPC 通知奶酪对象显示 "DieUI"
+        //                    cheese.GetComponent<PhotonView>().RPC("ShowDieUI", RpcTarget.All, cheeses[cheese]);
+
+        //                }
+        //            }
         //        }
         //    }
         //}
+
+        
+
+
     }
+
+    //[PunRPC]
+    //void ShowDieUI(int cheeseNumber)
+    //{
+    //    // 获取当前客户端的玩家对象
+    //    Player localPlayer = PhotonNetwork.LocalPlayer;
+
+    //    if (localPlayer.ActorNumber == cheeseNumber)
+    //    {
+    //        Game.uiManager.ShowUI<DieUI>("DieUI");
+    //    }
+    //}
 
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
+
+       
         if (propertiesThatChanged.ContainsKey("HumanPlayer"))
         {
-            int humanPlayerActorNumber = (int)propertiesThatChanged["HumanPlayer"];
+            humanPlayerActorNumber = (int)propertiesThatChanged["HumanPlayer"];
             SpawnPlayer(humanPlayerActorNumber);
         }
+        //if (propertiesThatChanged.ContainsKey("CheesePlayers"))
+        //{
+
+        //    int[] cheesePlayers = (int[])propertiesThatChanged["CheesePlayers"];
+        //    foreach (int cheeseNumber in cheesePlayers)
+        //    {
+        //        _cheesePlayersActorNumber.Add(cheeseNumber);
+        //    }
+
+        //}
     }
 }
