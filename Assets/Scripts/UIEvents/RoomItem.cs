@@ -41,6 +41,8 @@ public class RoomItem : MonoBehaviour
 
         ChangeReady(IsReady);
 
+        nameInputField.interactable = !IsReady;
+
     }
 
     public void ChangeReady(bool isReady)
