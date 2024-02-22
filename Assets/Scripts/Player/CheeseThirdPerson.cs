@@ -66,6 +66,10 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+        private CheeseSmellController _cheeseSmellController;
+
+        //cheese state
+        public bool isDie = false;
 
         private FightManager _fightManager;
 
@@ -165,7 +169,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
 
-
+            _cheeseSmellController = GetComponent<CheeseSmellController>();
         }
 
        
@@ -440,19 +444,26 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [PunRPC]
         public void showDeiUI()
         {
+            isDie = true;
+
             Game.uiManager.ShowUI<DieUI>("DieUI");
+
             gameObject.SetActive(false);
 
-            // 通过 RPC 通知其他客户端隐藏奶酪对象
-            photonView.RPC("HideCheese", RpcTarget.OthersBuffered);
+            // 通过 RPC 通知其他客户端隐藏奶酪对象和它的smell
+            photonView.RPC("HideCheeseAndSmell", RpcTarget.Others);
         }
 
         [PunRPC]
-        private void HideCheese()
+        private void HideCheeseAndSmell()
         {
-            // 隐藏奶酪对象
+            // 停止生成粒子系统
+            _cheeseSmellController.setEnable(false);
+
             gameObject.SetActive(false);
 
+            // 停止粒子系统
+            _cheeseSmellController.StopParticles();
 
             _fightManager.CheeseDied();
 

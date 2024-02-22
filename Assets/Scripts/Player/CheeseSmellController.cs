@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using CheeseController;
 
 public class CheeseSmellController : MonoBehaviourPun
 {
@@ -9,21 +10,34 @@ public class CheeseSmellController : MonoBehaviourPun
 
     private int _smellGenerateInterval = 10;
 
+    public List<ParticleSystem> smellParticles = new List<ParticleSystem>();
+
+    private bool _enable = true;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
         // 在 Update 方法中控制气味生成的频率
-        if (Time.frameCount % _smellGenerateInterval == 0)
+        if (_enable)
         {
-            photonView.RPC("GenerateSmell", RpcTarget.All);
-            
+            if (Time.frameCount % _smellGenerateInterval == 0)
+            {
+                photonView.RPC("GenerateSmell", RpcTarget.All);
+            }
         }
+        
+       
+    }
+
+    public void setEnable(bool enable)
+    {
+        _enable = enable;
     }
 
     [PunRPC]
@@ -35,15 +49,37 @@ public class CheeseSmellController : MonoBehaviourPun
         // 持续释放气味
         smellParticle.Play();
 
-        // 添加气味消散效果
-        StartCoroutine(DisappearAfter(smellParticle, 1f)); // 1秒后消散
+        // 将生成的粒子系统加入列表
+        smellParticles.Add(smellParticle);
 
+        // 添加气味消散效果, 延迟1秒后关闭粒子系统
+        Invoke("StopParticle", 1f);
 
     }
 
-    IEnumerator DisappearAfter(ParticleSystem particleSystem, float duration)
+
+    void StopParticle()
     {
-        yield return new WaitForSeconds(duration);
-        particleSystem.Stop();
+        if (smellParticles.Count > 0)
+        {
+            ParticleSystem particleSystem = smellParticles[0];
+            smellParticles.RemoveAt(0);
+            particleSystem.Stop();
+        }
     }
+
+    //用于停止粒子系统
+    public void StopParticles()
+    {
+        if(smellParticles.Count > 0)
+        {
+            foreach (ParticleSystem particleSystem in smellParticles)
+            {
+                particleSystem.Stop();
+            }
+        }
+        
+    }
+
+
 }

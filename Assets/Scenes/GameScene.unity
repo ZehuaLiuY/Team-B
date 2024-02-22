@@ -3330,7 +3330,7 @@ GameObject:
   - component: {fileID: 593331857}
   - component: {fileID: 593331856}
   - component: {fileID: 593331855}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: mvb211_doors:mvb211:floor_mvb211 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3346,7 +3346,7 @@ Transform:
   m_GameObject: {fileID: 593331853}
   serializedVersion: 2
   m_LocalRotation: {x: 1, y: -0, z: 0, w: 6.123234e-17}
-  m_LocalPosition: {x: -0, y: 0.053, z: 0.96527165}
+  m_LocalPosition: {x: -0, y: 0.371, z: 0.96527165}
   m_LocalScale: {x: 199.28189, y: 1.0322771, z: 193.05434}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10636,7 +10636,7 @@ MonoBehaviour:
   CameraDistance: 2
   CameraCollisionFilter:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 2049
   IgnoreTag: 
   CameraRadius: 0.2
   DampingIntoCollision: 0

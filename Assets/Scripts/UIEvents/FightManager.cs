@@ -177,7 +177,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
 
         Game.uiManager.CloseUI("DieUI");
-
+        
         if (isHumanWin)
         {
             if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)

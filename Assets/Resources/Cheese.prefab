@@ -301,8 +301,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e21035be6e1d34600aa02f266cba85e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 2
-  SprintSpeed: 3
+  MoveSpeed: 1.5
+  SprintSpeed: 2
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   JumpHeight: 0.2
@@ -314,12 +314,13 @@ MonoBehaviour:
   GroundedRadius: 0.28
   GroundLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 129
   CinemachineCameraTarget: {fileID: 274595904318390932}
   TopClamp: 70
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
+  isDie: 0
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &1178353275039107980
@@ -401,6 +402,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   smellParticlePrefab: {fileID: 933692525627313500, guid: 86d93ff91531b4842aa17d0847d6a1b6,
     type: 3}
+  smellParticles: []
 --- !u!4 &2072448746763765294 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 76b1db43dfbc346c5b159481488ae965,
