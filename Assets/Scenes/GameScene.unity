@@ -11371,6 +11371,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 465735179838287277, guid: 0e4a1692e46f8491fb1f4af67111edd4,
+        type: 3}
+      propertyPath: sceneViewId
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 2506379521729966861, guid: 0e4a1692e46f8491fb1f4af67111edd4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -11490,6 +11495,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.r
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6711015268543986615, guid: 0e4a1692e46f8491fb1f4af67111edd4,
+        type: 3}
+      propertyPath: sceneViewId
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7131917450065123431, guid: 0e4a1692e46f8491fb1f4af67111edd4,
         type: 3}
@@ -69043,7 +69053,7 @@ GameObject:
   - component: {fileID: 1555483970}
   m_Layer: 7
   m_Name: platform
-  m_TagString: Untagged
+  m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
