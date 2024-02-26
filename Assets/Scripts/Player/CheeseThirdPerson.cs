@@ -452,6 +452,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
             // 通过 RPC 通知其他客户端隐藏奶酪对象和它的smell
             photonView.RPC("HideCheeseAndSmell", RpcTarget.Others);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         [PunRPC]
