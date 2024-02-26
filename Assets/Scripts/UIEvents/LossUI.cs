@@ -10,8 +10,8 @@ public class LossUI : MonoBehaviour
     {
         transform.Find("resetBtn").GetComponent<Button>().onClick.AddListener(OnQuitBtn);
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        // Cursor.lockState = CursorLockMode.None;
+        // Cursor.visible = true;
     }
     public void OnQuitBtn()
     {
