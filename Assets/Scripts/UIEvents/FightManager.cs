@@ -20,7 +20,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private PhotonView _photonView;
 
     private FightUI fightUI;
-    public static float countdownTimer = 18f;
+    public static float countdownTimer = 180f;
     private bool _isHumanWin;
     private int humanPlayerActorNumber;
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
