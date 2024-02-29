@@ -42,4 +42,3 @@ public class Flamethrower : MonoBehaviourPun
         AttackRadius.gameObject.SetActive(false);
     }
 }
-

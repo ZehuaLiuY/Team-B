@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem; // 确保导入了Input System命名空间
+using UnityEngine.UI;
 using StarterAssets;
 using Photon.Pun;
 
 public class DoorInteraction : MonoBehaviour
 {
     public GameObject door; // 门的引用
-    public GameObject test; // 开门提示的UI元素引用
+    public GameObject text; // 开门提示的UI元素引用
 
     private Animator doorAnimator;
     private bool isPlayerNear;
@@ -18,7 +19,7 @@ public class DoorInteraction : MonoBehaviour
     void Awake()
     {
         doorAnimator = door.GetComponent<Animator>();
-        test.SetActive(false); // 开始时禁用提示
+        text.SetActive(false); // 开始时禁用提示
         photonView = transform.parent.GetComponent<PhotonView>();
     }
 
@@ -38,7 +39,7 @@ public class DoorInteraction : MonoBehaviour
             if (other.GetComponent<PhotonView>().IsMine)
             {
                 isPlayerNear = true;
-                test.SetActive(true); // 显示提示
+                text.SetActive(true); // 显示提示
             }
 
         }
@@ -52,7 +53,7 @@ public class DoorInteraction : MonoBehaviour
             if (other.GetComponent<PhotonView>().IsMine)
             {
                 isPlayerNear = false;
-                test.SetActive(false); // 隐藏提示
+                text.SetActive(false); // 隐藏提示
             }
         }
     }
