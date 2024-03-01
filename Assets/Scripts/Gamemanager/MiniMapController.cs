@@ -11,11 +11,12 @@ public class MiniMapController : MonoBehaviourPunCallbacks, IPunObservable
     public RectTransform minimapRect;
     public GameObject humanIconPrefab;
     public GameObject cheeseIconPrefab;
-    private Dictionary<GameObject, RectTransform> playerIcons = new Dictionary<GameObject, RectTransform>();
+    private RectTransform _playerIcon;
+    private Dictionary<GameObject, RectTransform> _playerIcons = new Dictionary<GameObject, RectTransform>();
 
     private float _mapScale;
     private string _localPlayerType;
-
+    private Vector2 _minimapPosition;
 
     private void InitializeMiniMap()
     {
@@ -51,32 +52,27 @@ public class MiniMapController : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("AddPlayerIcon called, localPlayerType: " + _localPlayerType);
 
         GameObject iconPrefab = playerType == "Human" ? humanIconPrefab : cheeseIconPrefab;
-        RectTransform playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
-        playerIcons[player] = playerIcon;
-        Debug.Log("playerIcons[player]: " + playerIcons[player]);
-        UpdatePlayerIcon(player.transform.position, playerIcon);
+        _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
+        _playerIcons[player] = _playerIcon;
+        Debug.Log("playerIcons[player]: " + _playerIcons[player]);
+        UpdatePlayerIcon(player.transform.position, _playerIcon);
         Debug.Log("AddPlayerIcon");
 
     }
 
     void Update()
     {
-        foreach (var kvp in playerIcons)
+        foreach (var kvp in _playerIcons)
         {
-            PhotonView playerPhotonView = kvp.Key.GetComponent<PhotonView>();
-
-            if (playerPhotonView != null && (string)playerPhotonView.Owner.CustomProperties["PlayerType"] == _localPlayerType)
-            {
-                UpdatePlayerIcon(kvp.Key.transform.position, kvp.Value);
-            }
+            UpdatePlayerIcon(kvp.Key.transform.position, kvp.Value);
         }
     }
 
     private void UpdatePlayerIcon(Vector3 playerWorldPosition, RectTransform playerIcon)
     {
-        Vector2 minimapPosition = new Vector2(playerWorldPosition.x, playerWorldPosition.z) * _mapScale;
-        playerIcon.anchoredPosition = minimapPosition;
-        Debug.Log(playerIcon.anchoredPosition);
+        _minimapPosition = new Vector2(playerWorldPosition.x, playerWorldPosition.z) * _mapScale;
+        playerIcon.anchoredPosition = _minimapPosition;
+        // Debug.Log(playerIcon.anchoredPosition == _minimapPosition);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -85,25 +81,17 @@ public class MiniMapController : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
             {
-                stream.SendNext(transform.position);
+                stream.SendNext(_playerIcon);
+                stream.SendNext(_minimapPosition);
             }
         }
         else
         {
-            if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string != _localPlayerType)
+            if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
             {
-                foreach (var playerIconKvp in playerIcons)
-                {
-                    PhotonView playerPhotonView = playerIconKvp.Key.GetComponent<PhotonView>();
-
-                    if (playerPhotonView != null && (string)playerPhotonView.Owner.CustomProperties["PlayerType"] == _localPlayerType)
-                    {
-                        Vector3 remotePlayerPosition = (Vector3)stream.ReceiveNext();
-                        UpdatePlayerIcon(remotePlayerPosition, playerIconKvp.Value);
-                    }
-                }
+                _playerIcon = (RectTransform)stream.ReceiveNext();
+                _minimapPosition = (Vector2)stream.ReceiveNext();
             }
         }
     }
-
 }
