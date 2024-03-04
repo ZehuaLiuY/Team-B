@@ -65,6 +65,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
+        
+        public ParticleSystem OnFireSystemPrefab;
 
         private CheeseSmellController _cheeseSmellController;
 
@@ -470,23 +472,40 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             _fightManager.CheeseDied();
 
         }
-
         [PunRPC]
         public void ReduceSpeed()
         {
-            MoveSpeed -= 0.2f;
-            SprintSpeed = 0f;
-            MoveSpeed = Mathf.Max(MoveSpeed, 0);
+            if (!OnFireSystemPrefab.gameObject.activeSelf)
+            {
+                photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
+            }
+            MoveSpeed -= 0.2f; // 减少MoveSpeed
+            MoveSpeed = Mathf.Max(MoveSpeed, 0.1f); // 确保MoveSpeed不会小于0
+            SprintSpeed = MoveSpeed; // 将SprintSpeed设置为MoveSpeed的当前值
 
             StartCoroutine(RestoreSpeedAfterDelay(5)); // 5秒后恢复速度
         }
         
+        [PunRPC]
+        public void ActivateOnFireSystem()
+        {
+            OnFireSystemPrefab.gameObject.SetActive(true);
+        }
+        
+        [PunRPC]
         private IEnumerator RestoreSpeedAfterDelay(float delay)
         {
             yield return new WaitForSeconds(delay);
-            
+            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
+     
+            OnFireSystemPrefab.gameObject.SetActive(false);
             MoveSpeed = 2.0f;
             SprintSpeed = 3.0f;
+        }
+        [PunRPC]
+        public void DeactivateOnFireSystem()
+        {
+            OnFireSystemPrefab.gameObject.SetActive(false);
         }
     }
 }

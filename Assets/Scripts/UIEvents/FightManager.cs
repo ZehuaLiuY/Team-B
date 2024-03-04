@@ -8,6 +8,7 @@ using UnityEditor.Rendering;
 using Photon.Pun.UtilityScripts;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using UnityEngine.Serialization;
 using static UnityEngine.Rendering.DebugUI;
 
 
@@ -25,6 +26,8 @@ public class FightManager : MonoBehaviourPunCallbacks
     private int humanPlayerActorNumber;
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
     private bool _allCheeseDie = false;
+
+    public MiniMapController miniMapController;
 
     void Awake()
     {
@@ -92,16 +95,18 @@ public class FightManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)
         {
             GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
+            human.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Human";
+            miniMapController.AddPlayerIcon(human);
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             vc.Follow = human.transform.Find("PlayerRoot").transform;
-            
         }
         else
         {
             GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
+            cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese";
+            miniMapController.AddPlayerIcon(cheese);
             CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             cheeseVC.Follow = cheese.transform.Find("PlayerRoot").transform;
-
         }
     }
 
