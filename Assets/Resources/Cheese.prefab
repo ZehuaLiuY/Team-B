@@ -405,7 +405,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4291624b42bcf8b4d915f57d221dabca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smellParticlePrefab: {fileID: 933692525627313500, guid: 86d93ff91531b4842aa17d0847d6a1b6,
+  smellParticlePrefab: {fileID: 8400006639187567938, guid: 3b7c1babb64c29248bca0362bbfcbf0f,
     type: 3}
   smellParticles: []
 --- !u!4 &2072448746763765294 stripped
