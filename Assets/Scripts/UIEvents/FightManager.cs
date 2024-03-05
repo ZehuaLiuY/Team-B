@@ -84,6 +84,17 @@ public class FightManager : MonoBehaviourPunCallbacks
             availableSpawnPoints.Add(pointTf.GetChild(i));
         }
 
+        string playerName = "";
+        if(PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerName", out object name))
+        {
+            playerName = (string)name;
+        }
+        else
+        {
+            playerName = "Player" + PhotonNetwork.LocalPlayer.ActorNumber;
+        }
+        Debug.Log(playerName);
+
         Transform humanSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
         Vector3 humanPos = humanSpawnPoint.position;
 
@@ -96,6 +107,11 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
             human.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Human";
+            PlayerNameDisplay playerNameDisplay = human.GetComponent<PlayerNameDisplay>();
+            if (playerNameDisplay != null)
+            {
+                playerNameDisplay.SetName(playerName);
+            }
             miniMapController.AddPlayerIcon(human);
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             vc.Follow = human.transform.Find("PlayerRoot").transform;
