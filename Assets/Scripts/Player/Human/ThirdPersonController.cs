@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -73,6 +74,11 @@ namespace StarterAssets
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
+        
+        [Header("Stamina Bar")]
+        public float Stamina = 1.0f;
+        public float StaminaDecreaseRate = 0.2f; 
+        public float StaminaRecoveryRate = 0.1f; 
 
 
 
@@ -113,6 +119,8 @@ namespace StarterAssets
         private bool _rotateOnMove = true;
 
         private bool _hasAnimator;
+
+        private bool canSprint = true; 
 
         // current pos and rot
         public Vector3 currentPos;
@@ -203,7 +211,6 @@ namespace StarterAssets
 
                 if (targetPhotonView != null && Input.GetKeyDown(KeyCode.R))
                 {
-                    
                     // 调用目标上的RPC方法来显示DeiUI
                     targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
                 }
@@ -274,10 +281,18 @@ namespace StarterAssets
 
         private void Move()
         {
-            // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed = (_input.move != Vector2.zero && canSprint && Stamina > 0 && _input.sprint) ? SprintSpeed : MoveSpeed;
+            if (_input.sprint && canSprint && Stamina > 0 && _input.move != Vector2.zero)
+            {
+                Stamina -= StaminaDecreaseRate * Time.deltaTime;
+                if (Stamina <= 0)
+                {
+                    Stamina = 0;
+                    canSprint = false; // 体力耗尽，不能再奔跑
+                }
+            }
 
-            // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
+            UpdateStamina();
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is no input, set the target speed to 0
@@ -342,6 +357,25 @@ namespace StarterAssets
             }
         }
 
+
+            private void UpdateStamina()
+            {
+                if (!_input.sprint || !canSprint || _input.move != Vector2.zero)
+                {
+                    Stamina += StaminaRecoveryRate * Time.deltaTime;
+                    if (Stamina >= 1)
+                    {
+                        Stamina = 1;
+                        canSprint = true; // 体力完全恢复，现在可以再次奔跑
+                    }
+                }
+
+                if (FightUI.Instance != null)
+                {
+                    FightUI.Instance.UpdateStaminaBar(Stamina); 
+                } 
+            }
+        
         private void JumpAndGravity()
         {
             if (Grounded)

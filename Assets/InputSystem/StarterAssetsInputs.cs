@@ -59,10 +59,6 @@ namespace StarterAssets
 		{
 			ShootInput(value.isPressed);
 		}
-		public void OnOpen(InputValue value)
-		{
-			OpenInput(value.isPressed);
-		}
 #endif
 
 

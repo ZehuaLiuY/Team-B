@@ -22,8 +22,8 @@ public class Clone_Skill : MonoBehaviourPunCallbacks
     void Clone()
     {
         Debug.Log("Attempting to clone character.");
-        // GameObject clone = PhotonNetwork.Instantiate(this.gameObject.name.Replace("(Clone)",""), transform.position, transform.rotation);
-        GameObject clone = PhotonNetwork.Instantiate("Cheese1", transform.position, transform.rotation);
+        GameObject clone = PhotonNetwork.Instantiate(this.gameObject.name.Replace("(Clone)",""), transform.position, transform.rotation);
+        // GameObject clone = PhotonNetwork.Instantiate("Cheese1", transform.position, transform.rotation);
         var cloneMovement = clone.AddComponent<CloneMovement>();
         cloneMovement.moveSpeed = 3f; 
         cloneMovement.turnSpeed = 300f; 

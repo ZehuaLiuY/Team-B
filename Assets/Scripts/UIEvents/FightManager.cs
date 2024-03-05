@@ -102,11 +102,11 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            // GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
-            // cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese";
+            GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
+            cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese";
             
-            GameObject cheese = PhotonNetwork.Instantiate("Cheese1", pos, Quaternion.identity);
-            cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese1";
+            // GameObject cheese = PhotonNetwork.Instantiate("Cheese1", pos, Quaternion.identity);
+            // cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese1";
             
             miniMapController.AddPlayerIcon(cheese);
             CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
