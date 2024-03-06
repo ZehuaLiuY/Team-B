@@ -4,14 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
-using Photon.Realtime;
-using UnityEngine.SceneManagement;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerNameDisplay : MonoBehaviourPunCallbacks
 {
     private Text _nameTag;
-    private void UpdateNameDisplay()
+
+    private void Awake()
+    {
+        _nameTag = GetComponentInChildren<Text>();
+    }
+
+    private void UpdateNameDisplay(string name)
     {
         if (photonView.IsMine)
         {
@@ -20,32 +24,15 @@ public class PlayerNameDisplay : MonoBehaviourPunCallbacks
         }
         else
         {
-            // Set the text of the name tag to the player's custom property
-            if (photonView.Owner.CustomProperties.TryGetValue("PlayerName", out object playerName))
-            {
-                _nameTag.text = playerName.ToString();
-            }
-        }
-    }
-
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
-    {
-        // If the target player is this player and the PlayerName property has changed
-        if (targetPlayer == photonView.Owner && changedProps.ContainsKey("PlayerName"))
-        {
-            UpdateNameDisplay();
+            _nameTag.text = name;
+            Debug.Log("PlayerNameDisplay: " + _nameTag.text);
         }
     }
 
     // Call this method to initialize the name display
-    public void InitializeNameDisplay()
+    public void InitializeNameDisplay(string name)
     {
-        UpdateNameDisplay();
-    }
-
-    public void SetName(string name)
-    {
-        _nameTag.text = name;
+        UpdateNameDisplay(name);
     }
 
     void Update()

@@ -2164,14 +2164,14 @@ GameObject:
   - component: {fileID: 6701779566519956801}
   - component: {fileID: 1292491783064007742}
   - component: {fileID: 7049430289327139978}
-  - component: {fileID: 6472097399741901780}
+  - component: {fileID: 6941918018353506242}
   m_Layer: 5
   m_Name: PlayerNameDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7799275710153921052
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2300,7 +2300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9be72a76d6f64d42a7668b3ea435e07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6472097399741901780
+--- !u!114 &6941918018353506242
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

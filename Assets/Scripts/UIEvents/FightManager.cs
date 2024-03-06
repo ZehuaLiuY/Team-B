@@ -107,10 +107,11 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
             human.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Human";
-            PlayerNameDisplay playerNameDisplay = human.GetComponent<PlayerNameDisplay>();
+            PlayerNameDisplay playerNameDisplay = human.transform.Find("Canvas/Canvas/PlayerNameDisplay").GetComponent<PlayerNameDisplay>();
             if (playerNameDisplay != null)
             {
-                playerNameDisplay.SetName(playerName);
+                Debug.Log("playerNameDisplay: " + playerNameDisplay);
+                playerNameDisplay.InitializeNameDisplay(playerName);
             }
             miniMapController.AddPlayerIcon(human);
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
