@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: InvisibilityMaterial
+  m_Shader: {fileID: 4800000, guid: 2c99447bc5753b640961cb0d9b6e731b, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Main:
+        m_Texture: {fileID: 2800000, guid: 693c38f8fca0e494ca659e3c4ddc3c99, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: c6829a3c8e3ba844a8d69f1632fce855, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Alpha: 0.58
+    - _Animacao: 1
+    - _BlurOffsets: 0.5
+    - _Brilho: 2
+    - _BrilhoSpec: 0.86
+    - _Diferenca: 0
+    - _Dx: 0
+    - _Dy: 0.03
+    - _Forca: 0
+    - _Glossiness: 0.5
+    - _Largura: 77
+    - _Metallic: 0
+    - _TipoAlpha: 1
+    - _TipoI: 1
+    - _Velocidade: 0.05
+    - _blurSizeXY: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Cor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
