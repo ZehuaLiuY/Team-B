@@ -11,17 +11,27 @@ public class Flamethrower : MonoBehaviourPun
     [SerializeField] private ParticleSystem ShootingSystem;
     [SerializeField] private ParticleSystem OnFireSystemPrefab;
     [SerializeField] private FlamethrowerAttackRadius AttackRadius;
-
+    private AudioSource audioSource;
+    
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
     private void Update()
     {
         if (photonView.IsMine)
         {
             if (Mouse.current.leftButton.isPressed)
             {
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.Play();
+                }
                 photonView.RPC("Shoot", RpcTarget.All);
             }
             else
             {
+                audioSource.Stop();
                 photonView.RPC("StopShooting", RpcTarget.All);
             }
         }
