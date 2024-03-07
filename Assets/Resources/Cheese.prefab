@@ -540,8 +540,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e21035be6e1d34600aa02f266cba85e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 1.5
-  SprintSpeed: 2
+  MoveSpeed: 100
+  SprintSpeed: 120
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   JumpHeight: 0.2
