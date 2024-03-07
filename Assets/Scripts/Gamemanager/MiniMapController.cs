@@ -48,7 +48,7 @@ public class MiniMapController : MonoBehaviourPunCallbacks, IPunObservable
     {
 
         string playerType = player.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] as string;
-        // Debug.Log("AddPlayerIcon called, playerType: " + playerType);
+        Debug.Log("AddPlayerIcon called, playerType: " + playerType);
         // Debug.Log("AddPlayerIcon called, localPlayerType: " + _localPlayerType);
 
         GameObject iconPrefab = playerType == "Human" ? humanIconPrefab : cheeseIconPrefab;

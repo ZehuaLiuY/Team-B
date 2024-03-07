@@ -1,48 +1,37 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
+using TMPro;
 
-public class PlayerNameDisplay : MonoBehaviourPunCallbacks
-{
-    private Text _nameTag;
+[RequireComponent(typeof(Text))]
+public class PlayerNameDisplay : MonoBehaviourPun {
 
-    private void Awake()
-    {
-        _nameTag = GetComponentInChildren<Text>();
+    private TextMeshProUGUI playerNameText;
+
+    void Awake() {
+        playerNameText = GetComponentInChildren<TextMeshProUGUI>();
     }
 
-    private void UpdateNameDisplay(string name)
-    {
-        if (photonView.IsMine)
-        {
-            // Don't show the name tag for the local player to themselves
-            _nameTag.enabled = false;
-        }
-        else
-        {
-            _nameTag.text = name;
-            Debug.Log("PlayerNameDisplay: " + _nameTag.text);
+    void Start() {
+        if(photonView.IsMine) {
+            playerNameText.enabled = false;
         }
     }
 
-    // Call this method to initialize the name display
-    public void InitializeNameDisplay(string name)
-    {
-        UpdateNameDisplay(name);
-    }
+    // public void SetPlayerName(string name) {
+    //     if (playerNameText != null) {
+    //         playerNameText.text = name;
+    //     } else {
+    //         Debug.LogError("Text component not found on the GameObject.");
+    //     }
+    // }
 
-    void Update()
-    {
-        var cam = Camera.main;
-        if(cam != null)
-        {
-            transform.LookAt(transform.position + cam.transform.rotation * Vector3.forward, cam.transform.rotation * Vector3.up);
+    [PunRPC]
+    public void SetPlayerNameRPC(string name) {
+        if (playerNameText != null) {
+            playerNameText.text = name;
+        } else {
+            Debug.LogError("Text component not found on the GameObject.");
         }
     }
-
-
 }

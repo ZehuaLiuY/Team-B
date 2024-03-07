@@ -28,6 +28,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private bool _allCheeseDie = false;
 
     public MiniMapController miniMapController;
+    public string playerName;
 
     void Awake()
     {
@@ -84,7 +85,6 @@ public class FightManager : MonoBehaviourPunCallbacks
             availableSpawnPoints.Add(pointTf.GetChild(i));
         }
 
-        string playerName = "";
         if(PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerName", out object name))
         {
             playerName = (string)name;
@@ -107,15 +107,18 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
             human.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Human";
-            PlayerNameDisplay playerNameDisplay = human.transform.Find("Canvas/Canvas/PlayerNameDisplay").GetComponent<PlayerNameDisplay>();
-            if (playerNameDisplay != null)
-            {
-                Debug.Log("playerNameDisplay: " + playerNameDisplay);
-                playerNameDisplay.InitializeNameDisplay(playerName);
-            }
             miniMapController.AddPlayerIcon(human);
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             vc.Follow = human.transform.Find("PlayerRoot").transform;
+
+            // set player name
+            PlayerNameDisplay nameDisplay = human.GetComponentInChildren<PlayerNameDisplay>();
+            if (nameDisplay != null)
+            {
+                Debug.Log("set player name");
+                nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
+            }
+
         }
         else
         {
@@ -124,6 +127,13 @@ public class FightManager : MonoBehaviourPunCallbacks
             miniMapController.AddPlayerIcon(cheese);
             CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             cheeseVC.Follow = cheese.transform.Find("PlayerRoot").transform;
+
+            PlayerNameDisplay nameDisplay = cheese.GetComponentInChildren<PlayerNameDisplay>();
+            if (nameDisplay != null)
+            {
+                Debug.Log("set player name");
+                nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
+            }
         }
     }
 
