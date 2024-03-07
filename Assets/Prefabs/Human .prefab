@@ -1498,7 +1498,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &952418123233897819
 Transform:
   m_ObjectHideFlags: 0
@@ -1614,6 +1614,11 @@ MonoBehaviour:
   CameraAngleOverride: 0
   Sensitivity: 1
   LockCameraPosition: 0
+  Stamina: 1
+  StaminaDecreaseRate: 0.2
+  StaminaRecoveryRate: 0.1
+  currentPos: {x: 0, y: 0, z: 0}
+  currentRot: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &6932728743684094216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1649,6 +1654,8 @@ MonoBehaviour:
   sprint: 0
   aim: 0
   shoot: 0
+  open: 0
+  pickup: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -1769,7 +1776,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 2433432129889812198}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -1796,6 +1804,7 @@ MonoBehaviour:
     type: 3}
   spawnBulletPosition: {fileID: 5515083720145766009}
   aimPoint: {fileID: 6650102566701014211}
+  shootCooldown: 0.5
 --- !u!1 &3888689320431843960
 GameObject:
   m_ObjectHideFlags: 0
