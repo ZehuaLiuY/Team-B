@@ -1572,7 +1572,7 @@ Transform:
   m_GameObject: {fileID: 3711807412707204906}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalPosition: {x: 0.02, y: 1.5, z: -0.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3503,7 +3503,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.06102973, z: -0, w: 0.998136}
   m_LocalPosition: {x: 0.03871627, y: 0.09102601, z: 1.3991065}
-  m_LocalScale: {x: 0.3218256, y: 0.3218256, z: 0.3218256}
+  m_LocalScale: {x: 15, y: 15, z: 15}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2826442455633746438}
@@ -3577,8 +3577,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26e54e5a728a9234ab24fcf1460ed8a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 2
-  SprintSpeed: 3
+  MoveSpeed: 80
+  SprintSpeed: 100
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
