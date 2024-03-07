@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -34,7 +34,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Alpha: 0.58
-    - _Animacao: 1
+    - _Animacao: -0.95
     - _BlurOffsets: 0.5
     - _Brilho: 2
     - _BrilhoSpec: 0.86
