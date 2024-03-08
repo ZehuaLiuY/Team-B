@@ -6,7 +6,7 @@ using Photon.Realtime;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 
-public class MiniMapController : MonoBehaviourPunCallbacks, IPunObservable
+public class MiniMapController : MonoBehaviourPunCallbacks
 {
     public RectTransform minimapRect;
     public GameObject humanIconPrefab;
@@ -55,43 +55,57 @@ public class MiniMapController : MonoBehaviourPunCallbacks, IPunObservable
         _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
         _playerIcons[player] = _playerIcon;
         Debug.Log("playerIcons[player]: " + _playerIcons[player]);
-        UpdatePlayerIcon(player.transform.position, _playerIcon);
+        // UpdatePlayerIcon(player.transform.position, _playerIcon);
         Debug.Log("AddPlayerIcon");
 
     }
 
     void Update()
     {
-        foreach (var kvp in _playerIcons)
-        {
-            UpdatePlayerIcon(kvp.Key.transform.position, kvp.Value);
-        }
+        // foreach (var kvp in _playerIcons)
+        // {
+        //     UpdatePlayerIcon(kvp.Key.transform.position, kvp.Value);
+        // }
     }
 
-    private void UpdatePlayerIcon(Vector3 playerWorldPosition, RectTransform playerIcon)
-    {
-        _minimapPosition = new Vector2(playerWorldPosition.x, playerWorldPosition.z) * _mapScale;
-        playerIcon.anchoredPosition = _minimapPosition;
-        // Debug.Log(playerIcon.anchoredPosition == _minimapPosition);
-    }
+    // private void UpdatePlayerIcon(Vector3 playerWorldPosition, RectTransform playerIcon)
+    // {
+    //     _minimapPosition = new Vector2(playerWorldPosition.x, playerWorldPosition.z) * _mapScale;
+    //     playerIcon.anchoredPosition = _minimapPosition;
+    //     // Debug.Log(playerIcon.anchoredPosition == _minimapPosition);
+    // }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    public void UpdatePlayerIcon(GameObject player, Vector3 newPosition)
     {
-        if (stream.IsWriting)
+        if (_playerIcons.ContainsKey(player))
         {
-            if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
-            {
-                stream.SendNext(_playerIcon);
-                stream.SendNext(_minimapPosition);
-            }
+            RectTransform iconTransform = _playerIcons[player];
+            Vector2 minimapPosition = new Vector2(newPosition.x, newPosition.z) * _mapScale;
+            iconTransform.anchoredPosition = minimapPosition;
         }
         else
         {
-            if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
-            {
-                _playerIcon = (RectTransform)stream.ReceiveNext();
-                _minimapPosition = (Vector2)stream.ReceiveNext();
-            }
+            AddPlayerIcon(player);
         }
     }
+
+    // public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    // {
+    //     if (stream.IsWriting)
+    //     {
+    //         if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
+    //         {
+    //             stream.SendNext(_playerIcon);
+    //             stream.SendNext(_minimapPosition);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
+    //         {
+    //             _playerIcon = (RectTransform)stream.ReceiveNext();
+    //             _minimapPosition = (Vector2)stream.ReceiveNext();
+    //         }
+    //     }
+    // }
 }
