@@ -78,8 +78,7 @@ namespace StarterAssets
         [Header("Stamina Bar")]
         public float Stamina = 1.0f;
         public float StaminaDecreaseRate = 0.2f; 
-        public float StaminaRecoveryRate = 0.1f; 
-
+        public float StaminaRecoveryRate = 0.1f;
 
 
         // cinemachine
@@ -180,11 +179,14 @@ namespace StarterAssets
         {
             _hasAnimator = TryGetComponent(out _animator);
 
-            if(photonView.IsMine){
+            if (photonView.IsMine)
+            {
                 JumpAndGravity();
                 GroundedCheck();
                 Move();
                 pickup();
+                
+                
             }
             else
             {
@@ -192,30 +194,53 @@ namespace StarterAssets
             }
         }
 
+
         private void pickup()
         {
             if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame)
             {
                 _animator.SetTrigger("pickup");
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
-            }
-        }
 
-        private void OnControllerColliderHit(ControllerColliderHit hit)
-        {
-            if (hit.gameObject.CompareTag("Target"))
-            {
-
-                PhotonView targetPhotonView = hit.gameObject.GetComponent<PhotonView>();
-
-
-                if (targetPhotonView != null && Input.GetKeyDown(KeyCode.R))
+                // 在人类周围创建一个盒形区域，检测是否存在 Cheese
+                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size);
+                foreach (Collider collider in colliders)
                 {
-                    // 调用目标上的RPC方法来显示DeiUI
-                    targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+                    if (collider.gameObject.CompareTag("Target"))
+                    {
+                        Debug.Log("cheese is there");
+                        PhotonView targetPhotonView = collider.gameObject.GetComponent<PhotonView>();
+
+                        if (targetPhotonView != null)
+                        {
+                            // 调用目标上的RPC方法来显示DeiUI
+                            targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+                        }
+
+                        break;
+                    }
                 }
             }
         }
+
+        //private void OnControllerColliderHit(ControllerColliderHit hit)
+        //{
+        //    if (hit.gameObject.CompareTag("Target"))
+        //    {
+
+        //        PhotonView targetPhotonView = hit.gameObject.GetComponent<PhotonView>();
+
+
+        //        if (targetPhotonView != null && Input.GetKeyDown(KeyCode.R))
+        //        {
+        //            // 调用目标上的RPC方法来显示DeiUI
+        //            targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+        //        }
+        //    }
+        //}
+        //private void OnTriggerEnter(Collider other)
+        //{
+
 
         [PunRPC]
         void TriggerPickupAnimation()
