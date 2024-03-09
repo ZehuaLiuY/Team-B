@@ -38,7 +38,7 @@ public class PlayerNameDisplay : MonoBehaviourPun {
     void Update() {
         if(Camera.main != null) {
             var cameraPosition = Camera.main.transform.position;
-            // 使UI元素面向摄像机，需要反转面向方向
+
             transform.LookAt(transform.position * 2 - cameraPosition);
         }
     }

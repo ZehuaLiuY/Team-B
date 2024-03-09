@@ -55,7 +55,7 @@ public class MiniMapController : MonoBehaviourPunCallbacks
         _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
         _playerIcons[player] = _playerIcon;
         // Debug.Log("playerIcons[player]: " + _playerIcons[player]);
-        UpdatePlayerIcon(player.transform.position, _playerIcon);
+        // UpdatePlayerIcon(player.transform.position, _playerIcon);
         // Debug.Log("AddPlayerIcon");
 
 

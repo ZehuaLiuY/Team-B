@@ -127,7 +127,6 @@ public class FightManager : MonoBehaviourPunCallbacks
             PlayerNameDisplay nameDisplay = human.GetComponentInChildren<PlayerNameDisplay>();
             if (nameDisplay != null)
             {
-                Debug.Log("set player name");
                 nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
             }
 
@@ -150,7 +149,6 @@ public class FightManager : MonoBehaviourPunCallbacks
             PlayerNameDisplay nameDisplay = cheese.GetComponentInChildren<PlayerNameDisplay>();
             if (nameDisplay != null)
             {
-                Debug.Log("set player name");
                 nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
             }
         }
