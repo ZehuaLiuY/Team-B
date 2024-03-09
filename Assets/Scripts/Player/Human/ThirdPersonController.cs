@@ -125,6 +125,8 @@ namespace StarterAssets
         public Vector3 currentPos;
         public Quaternion currentRot;
 
+        private MiniMapController _miniMapController;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -153,6 +155,8 @@ namespace StarterAssets
             {
                 AssignAnimationIDs();
             }
+
+            _miniMapController = FindObjectOfType<MiniMapController>();
         }
 
         private void Start()
@@ -186,7 +190,11 @@ namespace StarterAssets
                 Move();
                 pickup();
                 
-                
+
+                if (Vector3.Distance(transform.position, currentPos) > 0.1f)
+                {
+                    _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
+                }
             }
             else
             {
@@ -257,6 +265,8 @@ namespace StarterAssets
         {
             transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
             transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
+
+            _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
         }
 
         private void AssignAnimationIDs()

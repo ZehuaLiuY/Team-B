@@ -28,11 +28,16 @@ public class FightManager : MonoBehaviourPunCallbacks
     private bool _allCheeseDie = false;
 
     public MiniMapController miniMapController;
+
     public string playerName;
+
+    private PhotonView _miniMapPhotonView;
+
 
     void Awake()
     {
         _photonView = GetComponent<PhotonView>();
+        _miniMapPhotonView = miniMapController.GetComponent<PhotonView>();
         if (PhotonNetwork.IsMasterClient)
         {
             AssignRoles();
@@ -85,6 +90,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             availableSpawnPoints.Add(pointTf.GetChild(i));
         }
 
+
         if(PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerName", out object name))
         {
             playerName = (string)name;
@@ -94,6 +100,9 @@ public class FightManager : MonoBehaviourPunCallbacks
             playerName = "Player" + PhotonNetwork.LocalPlayer.ActorNumber;
         }
         Debug.Log(playerName);
+
+
+    
 
         Transform humanSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
         Vector3 humanPos = humanSpawnPoint.position;
@@ -107,7 +116,10 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
             human.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Human";
-            miniMapController.AddPlayerIcon(human);
+            // miniMapController.AddPlayerIcon(human);
+            int humanViewID = human.GetComponent<PhotonView>().ViewID;
+            _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, humanViewID);
+
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             vc.Follow = human.transform.Find("PlayerRoot").transform;
 
@@ -128,7 +140,10 @@ public class FightManager : MonoBehaviourPunCallbacks
             // GameObject cheese = PhotonNetwork.Instantiate("Cheese1", pos, Quaternion.identity);
             // cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese1";
             
-            miniMapController.AddPlayerIcon(cheese);
+            // miniMapController.AddPlayerIcon(cheese);
+            int cheeseViewID = cheese.GetComponent<PhotonView>().ViewID;
+            _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, cheeseViewID);
+
             CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             cheeseVC.Follow = cheese.transform.Find("PlayerRoot").transform;
 
