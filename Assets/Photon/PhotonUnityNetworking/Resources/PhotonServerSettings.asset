@@ -63,6 +63,8 @@ MonoBehaviour:
   - DeactivateOnFireSystem
   - SetInvisibility
   - RestoreVisibility
+  - PlayVFX
+  - StopVFX
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1
