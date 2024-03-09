@@ -6,7 +6,7 @@ using Photon.Realtime;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 
-public class MiniMapController : MonoBehaviourPunCallbacks, IPunObservable
+public class MiniMapController : MonoBehaviourPunCallbacks
 {
     public RectTransform minimapRect;
     public GameObject humanIconPrefab;
@@ -20,7 +20,7 @@ public class MiniMapController : MonoBehaviourPunCallbacks, IPunObservable
 
     private void InitializeMiniMap()
     {
-        float worldSize = 400f; // The size of the game world
+        float worldSize = 4000f; // The size of the game world
         float mapSize = minimapRect.sizeDelta.y; // The height of the minimap UI
         // Debug.Log(mapSize);
         _mapScale = mapSize / worldSize;
@@ -58,40 +58,72 @@ public class MiniMapController : MonoBehaviourPunCallbacks, IPunObservable
         UpdatePlayerIcon(player.transform.position, _playerIcon);
         // Debug.Log("AddPlayerIcon");
 
+
     }
 
-    void Update()
+    [PunRPC]
+    public void AddPlayerIconRPC(int viewID)
     {
-        foreach (var kvp in _playerIcons)
+        PhotonView targetView = PhotonView.Find(viewID);
+        if (targetView != null)
         {
-            UpdatePlayerIcon(kvp.Key.transform.position, kvp.Value);
-        }
-    }
-
-    private void UpdatePlayerIcon(Vector3 playerWorldPosition, RectTransform playerIcon)
-    {
-        _minimapPosition = new Vector2(playerWorldPosition.x, playerWorldPosition.z) * _mapScale;
-        playerIcon.anchoredPosition = _minimapPosition;
-        // Debug.Log(playerIcon.anchoredPosition == _minimapPosition);
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
-            {
-                stream.SendNext(_playerIcon);
-                stream.SendNext(_minimapPosition);
-            }
+            GameObject player = targetView.gameObject;
+            AddPlayerIcon(player);
         }
         else
         {
-            if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
-            {
-                _playerIcon = (RectTransform)stream.ReceiveNext();
-                _minimapPosition = (Vector2)stream.ReceiveNext();
-            }
+            Debug.LogError("Unable to find player with PhotonView ID: " + viewID);
         }
     }
+
+
+
+    void Update()
+    {
+        // foreach (var kvp in _playerIcons)
+        // {
+        //     UpdatePlayerIcon(kvp.Key.transform.position, kvp.Value);
+        // }
+    }
+
+    // private void UpdatePlayerIcon(Vector3 playerWorldPosition, RectTransform playerIcon)
+    // {
+    //     _minimapPosition = new Vector2(playerWorldPosition.x, playerWorldPosition.z) * _mapScale;
+    //     playerIcon.anchoredPosition = _minimapPosition;
+    //     // Debug.Log(playerIcon.anchoredPosition == _minimapPosition);
+    // }
+
+    public void UpdatePlayerIcon(GameObject player, Vector3 newPosition)
+    {
+        if (_playerIcons.ContainsKey(player))
+        {
+            RectTransform iconTransform = _playerIcons[player];
+            Vector2 minimapPosition = new Vector2(newPosition.x, newPosition.z) * _mapScale;
+            iconTransform.anchoredPosition = minimapPosition;
+        }
+        else
+        {
+            AddPlayerIcon(player);
+        }
+    }
+
+    // public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    // {
+    //     if (stream.IsWriting)
+    //     {
+    //         if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
+    //         {
+    //             stream.SendNext(_playerIcon);
+    //             stream.SendNext(_minimapPosition);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
+    //         {
+    //             _playerIcon = (RectTransform)stream.ReceiveNext();
+    //             _minimapPosition = (Vector2)stream.ReceiveNext();
+    //         }
+    //     }
+    // }
 }

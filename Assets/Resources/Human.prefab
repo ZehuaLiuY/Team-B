@@ -1233,7 +1233,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5332582681040134429}
   - component: {fileID: 3295928753244428398}
-  m_Layer: 3
+  m_Layer: 14
   m_Name: Armature_Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2874,7 +2874,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2826442455633746438}
-  m_Layer: 3
+  m_Layer: 14
   m_Name: Geometry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3487,7 +3487,7 @@ GameObject:
   - component: {fileID: 2898497447665799658}
   - component: {fileID: 1674636136170161686}
   - component: {fileID: 9178090444200774097}
-  m_Layer: 3
+  m_Layer: 14
   m_Name: Human
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -4136,10 +4136,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 5930174938716038120}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e4b2c111c79c242b39a883179e2e0684,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2707219195460869831}
   m_SourcePrefab: {fileID: 100100000, guid: e4b2c111c79c242b39a883179e2e0684, type: 3}
 --- !u!4 &1058925020651591 stripped
 Transform:
@@ -4169,6 +4165,9 @@ MonoBehaviour:
   OnFireSystemPrefab: {fileID: 198714429152696258, guid: ea4fb55d0227e604386f44f905cfe7c0,
     type: 3}
   AttackRadius: {fileID: 997747643482378332}
+  audioSource: {fileID: 5930174938716038120}
+  introClip: {fileID: 8300000, guid: 1c0d7529950fd4b60b6a2ce1cf63aeed, type: 3}
+  loopClip: {fileID: 8300000, guid: 2fbd92acf23f14c1484c7d86b3959ea6, type: 3}
 --- !u!114 &6711015268543986615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4202,7 +4201,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
@@ -4287,21 +4286,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &2707219195460869831
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 812921425194351357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50c7bb283ff024334a2749348c67f83f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioSource: {fileID: 5930174938716038120}
-  introClip: {fileID: 8300000, guid: 1c0d7529950fd4b60b6a2ce1cf63aeed, type: 3}
-  loopClip: {fileID: 8300000, guid: 2fbd92acf23f14c1484c7d86b3959ea6, type: 3}
 --- !u!1001 &8175226951038995637
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4328,15 +4312,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4584431484625042, guid: 007c57e2df8e9b144b99f471b84f3d56, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 4584431484625042, guid: 007c57e2df8e9b144b99f471b84f3d56, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 4584431484625042, guid: 007c57e2df8e9b144b99f471b84f3d56, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 4584431484625042, guid: 007c57e2df8e9b144b99f471b84f3d56, type: 3}
       propertyPath: m_LocalPosition.x

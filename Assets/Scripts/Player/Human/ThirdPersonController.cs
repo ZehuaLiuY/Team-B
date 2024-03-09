@@ -125,6 +125,8 @@ namespace StarterAssets
         public Vector3 currentPos;
         public Quaternion currentRot;
 
+        private MiniMapController _miniMapController;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -153,6 +155,8 @@ namespace StarterAssets
             {
                 AssignAnimationIDs();
             }
+
+            _miniMapController = FindObjectOfType<MiniMapController>();
         }
 
         private void Start()
@@ -186,7 +190,11 @@ namespace StarterAssets
                 Move();
                 pickup();
                 
-                
+
+                if (Vector3.Distance(transform.position, currentPos) > 0.1f)
+                {
+                    _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
+                }
             }
             else
             {
@@ -203,7 +211,8 @@ namespace StarterAssets
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
 
                 // 在人类周围创建一个盒形区域，检测是否存在 Cheese
-                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size);
+                int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
+                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
                 foreach (Collider collider in colliders)
                 {
                     if (collider.gameObject.CompareTag("Target"))
@@ -257,6 +266,8 @@ namespace StarterAssets
         {
             transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
             transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
+
+            _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
         }
 
         private void AssignAnimationIDs()

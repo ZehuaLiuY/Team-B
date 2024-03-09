@@ -101,7 +101,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         public Vector3 currentPos;
         public Quaternion currentRot;
 
-        
+        private MiniMapController _miniMapController;
 
 
 #if ENABLE_INPUT_SYSTEM
@@ -147,6 +147,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 AssignAnimationIDs();
             }
 
+            _miniMapController = FindObjectOfType<MiniMapController>();
+
         }
 
         private void Start()
@@ -183,6 +185,11 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 JumpAndGravity();
                 GroundedCheck();
                 Move();
+
+                if (Vector3.Distance(transform.position, currentPos) > 0.1f)
+                {
+                    _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
+                }
                 
             }
             else
@@ -202,6 +209,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         {
             transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
             transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
+
+            _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
         }
 
         
@@ -456,8 +465,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             {
                 photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
             }
-            MoveSpeed -= 0.2f; // 减少MoveSpeed
-            MoveSpeed = Mathf.Max(MoveSpeed, 0.1f); // 确保MoveSpeed不会小于0
+            MoveSpeed -= 10f; // 减少MoveSpeed
+            MoveSpeed = Mathf.Max(MoveSpeed, 1f); // 确保MoveSpeed不会小于0
             SprintSpeed = MoveSpeed; // 将SprintSpeed设置为MoveSpeed的当前值
 
             StartCoroutine(RestoreSpeedAfterDelay(5)); // 5秒后恢复速度
@@ -476,8 +485,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
      
             OnFireSystemPrefab.gameObject.SetActive(false);
-            MoveSpeed = 2.0f;
-            SprintSpeed = 3.0f;
+            MoveSpeed = 100.0f;
+            SprintSpeed = 120.0f;
         }
         [PunRPC]
         public void DeactivateOnFireSystem()

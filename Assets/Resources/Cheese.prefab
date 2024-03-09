@@ -761,8 +761,8 @@ MonoBehaviour:
   SprintSpeed: 120
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
-  JumpHeight: 0.2
-  Gravity: -15
+  JumpHeight: 8
+  Gravity: -150
   JumpTimeout: 0
   FallTimeout: 0.15
   Grounded: 1
@@ -870,7 +870,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1695888432212909204}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2114d62f7daed4806ae71ed78c30b39c, type: 3}
   m_Name: 
@@ -946,15 +946,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235566955999968, guid: ea4fb55d0227e604386f44f905cfe7c0, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.18040013
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4235566955999968, guid: ea4fb55d0227e604386f44f905cfe7c0, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.18040015
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4235566955999968, guid: ea4fb55d0227e604386f44f905cfe7c0, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.18040015
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4235566955999968, guid: ea4fb55d0227e604386f44f905cfe7c0, type: 3}
       propertyPath: m_LocalPosition.x
