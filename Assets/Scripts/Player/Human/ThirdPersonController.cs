@@ -265,6 +265,8 @@ namespace StarterAssets
         {
             transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
             transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
+
+            _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
         }
 
         private void AssignAnimationIDs()

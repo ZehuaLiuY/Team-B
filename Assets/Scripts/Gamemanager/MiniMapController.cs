@@ -20,7 +20,7 @@ public class MiniMapController : MonoBehaviourPunCallbacks
 
     private void InitializeMiniMap()
     {
-        float worldSize = 400f; // The size of the game world
+        float worldSize = 4000f; // The size of the game world
         float mapSize = minimapRect.sizeDelta.y; // The height of the minimap UI
         Debug.Log(mapSize);
         _mapScale = mapSize / worldSize;
@@ -59,6 +59,23 @@ public class MiniMapController : MonoBehaviourPunCallbacks
         Debug.Log("AddPlayerIcon");
 
     }
+
+    [PunRPC]
+    public void AddPlayerIconRPC(int viewID)
+    {
+        PhotonView targetView = PhotonView.Find(viewID);
+        if (targetView != null)
+        {
+            GameObject player = targetView.gameObject;
+            AddPlayerIcon(player);
+        }
+        else
+        {
+            Debug.LogError("Unable to find player with PhotonView ID: " + viewID);
+        }
+    }
+
+
 
     void Update()
     {
