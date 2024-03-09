@@ -11,6 +11,12 @@ public class RoomItem : MonoBehaviour
     public int ownerId;
     public bool IsReady = false;
     public InputField nameInputField;
+    private PhotonView photonView;
+
+    void Awake()
+    {
+        photonView = GetComponent<PhotonView>();
+    }
 
     void Start()
     {
@@ -59,6 +65,8 @@ public class RoomItem : MonoBehaviour
             Hashtable props = new Hashtable();
             props.Add("PlayerName", newName);
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+
+            // photonView.RPC("RpcSyncNames", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber, newName);
         }
     }
 

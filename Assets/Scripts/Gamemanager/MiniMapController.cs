@@ -22,7 +22,7 @@ public class MiniMapController : MonoBehaviourPunCallbacks
     {
         float worldSize = 4000f; // The size of the game world
         float mapSize = minimapRect.sizeDelta.y; // The height of the minimap UI
-        Debug.Log(mapSize);
+        // Debug.Log(mapSize);
         _mapScale = mapSize / worldSize;
     }
 
@@ -34,7 +34,7 @@ public class MiniMapController : MonoBehaviourPunCallbacks
         }
 
         _localPlayerType = PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string;
-        Debug.Log("localPlayerType: " + _localPlayerType);
+        // Debug.Log("localPlayerType: " + _localPlayerType);
         InitializeMiniMap();
     }
 
@@ -49,14 +49,15 @@ public class MiniMapController : MonoBehaviourPunCallbacks
 
         string playerType = player.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] as string;
         Debug.Log("AddPlayerIcon called, playerType: " + playerType);
-        Debug.Log("AddPlayerIcon called, localPlayerType: " + _localPlayerType);
+        // Debug.Log("AddPlayerIcon called, localPlayerType: " + _localPlayerType);
 
         GameObject iconPrefab = playerType == "Human" ? humanIconPrefab : cheeseIconPrefab;
         _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
         _playerIcons[player] = _playerIcon;
-        Debug.Log("playerIcons[player]: " + _playerIcons[player]);
+        // Debug.Log("playerIcons[player]: " + _playerIcons[player]);
         // UpdatePlayerIcon(player.transform.position, _playerIcon);
-        Debug.Log("AddPlayerIcon");
+        // Debug.Log("AddPlayerIcon");
+
 
     }
 

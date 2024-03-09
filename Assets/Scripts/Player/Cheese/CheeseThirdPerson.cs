@@ -465,8 +465,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             {
                 photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
             }
-            MoveSpeed -= 10f; // 减少MoveSpeed
-            MoveSpeed = Mathf.Max(MoveSpeed, 1f); // 确保MoveSpeed不会小于0
+            MoveSpeed -= 0.2f; // 减少MoveSpeed
+            MoveSpeed = Mathf.Max(MoveSpeed, 0.1f); // 确保MoveSpeed不会小于0
             SprintSpeed = MoveSpeed; // 将SprintSpeed设置为MoveSpeed的当前值
 
             StartCoroutine(RestoreSpeedAfterDelay(5)); // 5秒后恢复速度
@@ -485,8 +485,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
      
             OnFireSystemPrefab.gameObject.SetActive(false);
-            MoveSpeed = 100.0f;
-            SprintSpeed = 120.0f;
+            MoveSpeed = 2.0f;
+            SprintSpeed = 3.0f;
         }
         [PunRPC]
         public void DeactivateOnFireSystem()

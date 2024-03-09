@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CloneMovement : MonoBehaviourPunCallbacks
 {
-    public float moveSpeed = 100f; // 克隆体的移动速度
+    public float moveSpeed = 3f; // 克隆体的移动速度
     public float turnSpeed = 300f; // 遇到障碍时的转向速度
     
     private Animator animator; // Animator组件的引用

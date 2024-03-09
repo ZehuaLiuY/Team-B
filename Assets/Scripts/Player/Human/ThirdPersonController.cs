@@ -211,8 +211,7 @@ namespace StarterAssets
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
 
                 // 在人类周围创建一个盒形区域，检测是否存在 Cheese
-                int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
-                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
+                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size);
                 foreach (Collider collider in colliders)
                 {
                     if (collider.gameObject.CompareTag("Target"))

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun; 
 
-
 public class InvisibilityEffect : MonoBehaviourPunCallbacks
 {
     public Material invisibleMaterial; 
@@ -13,7 +12,6 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
     private SkinnedMeshRenderer[] childRenderers;
     private bool isInvisible = false;
     private bool isCooldown = false;
-    private float skillIconFill;
 
     void Start()
     {
@@ -36,46 +34,17 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
 
     IEnumerator BecomeInvisible()
     {
-        photonView.RPC("SetInvisibility", RpcTarget.All, true); // 开始隐身效果
         isInvisible = true;
-        isCooldown = true;
-
-        StartCoroutine(EndInvisibilityAfterDuration());
-
-        float cooldownEndTime = Time.time + Skill_Cooldown;
-
-        skillIconFill = 1f;
-        UpdateIcon();
-
-        while (Time.time < cooldownEndTime)
-        {
-            skillIconFill = (cooldownEndTime - Time.time) / Skill_Cooldown;
-            UpdateIcon();
-            yield return null;
-        }
-
-        skillIconFill = 0f;
-        UpdateIcon();
-        isCooldown = false; 
-    }
-
-    IEnumerator EndInvisibilityAfterDuration()
-    {
+        photonView.RPC("SetInvisibility", RpcTarget.All, true);
+        
         yield return new WaitForSeconds(Skill_Duration);
 
-        if (isInvisible)
-        {
-            photonView.RPC("RestoreVisibility", RpcTarget.All);
-            isInvisible = false;
-        }
-    }
-    
-    private void UpdateIcon()
-    {
-        if (FightUI1.Instance != null)
-        {
-            FightUI1.Instance.UpdateSkill_Icon(skillIconFill);
-        } 
+        photonView.RPC("RestoreVisibility", RpcTarget.All);
+
+        isInvisible = false;
+        isCooldown = true;
+        yield return new WaitForSeconds(Skill_Cooldown);
+        isCooldown = false;
     }
     
     [PunRPC]
@@ -83,6 +52,7 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
+            // 如果是本地玩家，设置为隐身材质，以便玩家可以看到自己
             Material mat = state ? invisibleMaterial : originalMaterials[0];
             foreach (var renderer in childRenderers)
             {
@@ -91,6 +61,7 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
         }
         else
         {
+            // 对于其他玩家，如果状态是要变为隐身，则禁用渲染器，否则启用
             foreach (var renderer in childRenderers)
             {
                 renderer.gameObject.SetActive(false);
@@ -103,6 +74,7 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
+            // 为本地玩家恢复原始材质
             for (int i = 0; i < childRenderers.Length; i++)
             {
                 childRenderers[i].material = originalMaterials[i];
@@ -110,6 +82,7 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
         }
         else
         {
+            // 重新启用其他玩家的渲染器
             foreach (var renderer in childRenderers)
             {
                 renderer.gameObject.SetActive(true);

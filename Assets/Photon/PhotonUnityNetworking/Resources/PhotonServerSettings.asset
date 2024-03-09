@@ -61,8 +61,10 @@ MonoBehaviour:
   - RestoreSpeedAfterDelay
   - ActivateOnFireSystem
   - DeactivateOnFireSystem
-  - SetInvisibility
+  - RpcSyncNameToAll
+  - SetPlayerNameRPC
   - RestoreVisibility
+  - SetInvisibility
   - AddPlayerIconRPC
   - PlayVFX
   - StopVFX
