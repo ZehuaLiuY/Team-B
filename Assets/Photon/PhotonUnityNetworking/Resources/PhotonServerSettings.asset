@@ -63,6 +63,7 @@ MonoBehaviour:
   - DeactivateOnFireSystem
   - SetInvisibility
   - RestoreVisibility
+  - AddPlayerIconRPC
   - PlayVFX
   - StopVFX
   - ActivateShootingSystems
