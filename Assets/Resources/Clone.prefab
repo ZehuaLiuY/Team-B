@@ -504,7 +504,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Name
-      value: Cheese1
+      value: Clone
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
@@ -519,7 +519,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_TagString
-      value: Target
+      value: FakeCheese
       objectReference: {fileID: 0}
     - target: {fileID: 1281599704296213993, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
