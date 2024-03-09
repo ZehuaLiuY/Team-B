@@ -64,6 +64,10 @@ MonoBehaviour:
   - SetInvisibility
   - RestoreVisibility
   - AddPlayerIconRPC
+  - PlayVFX
+  - StopVFX
+  - ActivateShootingSystems
+  - DeactivateShootingSystems
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1
