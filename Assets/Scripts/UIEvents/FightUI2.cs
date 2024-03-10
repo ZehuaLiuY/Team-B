@@ -13,6 +13,7 @@ public class FightUI2 : MonoBehaviour
     //private GameManager gameManager;
     private Text countdownText;
     private Image Skill_Icon;
+    private Transform tutorialPanel;
 
     private float previousTime;
     private bool iscount;
@@ -21,7 +22,7 @@ public class FightUI2 : MonoBehaviour
     {
         iscount = true;
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        
+        tutorialPanel = transform.Find("TutorialPanel_Cheese2");
         Transform Clone = transform.Find("Clone Skills");
         Clone.gameObject.SetActive(true);
         if (Clone != null && Clone.childCount > 0) {
@@ -33,7 +34,7 @@ public class FightUI2 : MonoBehaviour
                 Skill_Icon = image;
             }
         }
-        
+        StartCoroutine(BeginStartSequence());
         
         //--------------------------
         // top left placeholder components
@@ -60,6 +61,30 @@ public class FightUI2 : MonoBehaviour
         if (Skill_Icon != null)
         {
             Skill_Icon.fillAmount = fillAmount;
+        }
+    }
+    
+    IEnumerator BeginStartSequence()
+    {
+        yield return new WaitForSeconds(2); // 首先等待2秒
+        StartCoroutine(ShowTutorialPanel()); // 然后显示教程面板
+    }
+    
+    IEnumerator ShowTutorialPanel()
+    {
+        for (int i = 0; i < tutorialPanel.childCount; i++)
+        {
+            Transform currentChild = tutorialPanel.GetChild(i);
+            currentChild.gameObject.SetActive(true);
+            if (i == tutorialPanel.childCount - 1)
+            {
+                yield return new WaitForSeconds(10);
+            }
+            else
+            {
+                yield return new WaitForSeconds(5);
+            }
+            currentChild.gameObject.SetActive(false);
         }
     }
 

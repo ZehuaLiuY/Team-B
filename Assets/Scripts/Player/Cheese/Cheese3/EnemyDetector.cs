@@ -15,7 +15,7 @@ public class EnemyDetector : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G) && !isDetecting && !isCooldown)
+        if (Input.GetKeyDown(KeyCode.F) && !isDetecting && !isCooldown)
         {
             Debug.Log("R is pressed, starting detection.");
             StartCoroutine(DetectEnemies());

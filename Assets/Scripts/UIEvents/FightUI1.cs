@@ -21,7 +21,7 @@ public class FightUI1 : MonoBehaviour
     {
         iscount = true;
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        tutorialPanel = transform.Find("TutorialPanel");
+        tutorialPanel = transform.Find("TutorialPanel_Cheese");
         Transform Invisible = transform.Find("Invisible Effect");
         Invisible.gameObject.SetActive(true);
         if (Invisible != null && Invisible.childCount > 0) {
@@ -33,7 +33,7 @@ public class FightUI1 : MonoBehaviour
                 Skill_Icon = image;
             }
         }
-        StartCoroutine(ShowTutorialPanel());
+        StartCoroutine(BeginStartSequence());
         
         //--------------------------
         // top left placeholder components
@@ -61,6 +61,30 @@ public class FightUI1 : MonoBehaviour
             Skill_Icon.fillAmount = fillAmount;
         }
     }
+    
+    IEnumerator BeginStartSequence()
+    {
+        yield return new WaitForSeconds(2); // 首先等待2秒
+        StartCoroutine(ShowTutorialPanel()); // 然后显示教程面板
+    }
+    
+    IEnumerator ShowTutorialPanel()
+    {
+        for (int i = 0; i < tutorialPanel.childCount; i++)
+        {
+            Transform currentChild = tutorialPanel.GetChild(i);
+            currentChild.gameObject.SetActive(true);
+            if (i == tutorialPanel.childCount - 1)
+            {
+                yield return new WaitForSeconds(10);
+            }
+            else
+            {
+                yield return new WaitForSeconds(5);
+            }
+            currentChild.gameObject.SetActive(false);
+        }
+    }
 
     //public AudioClip countSound;
     //public AudioClip timesupSound;
@@ -68,13 +92,6 @@ public class FightUI1 : MonoBehaviour
     void Update()
     {
 
-    }
-    
-    IEnumerator ShowTutorialPanel()
-    {
-        tutorialPanel.gameObject.SetActive(true); // 显示教程面板
-        yield return new WaitForSeconds(10); // 等待5秒
-        tutorialPanel.gameObject.SetActive(false); // 隐藏教程面板
     }
 
     public void SetCountdownTimer(float countdownTimer) 

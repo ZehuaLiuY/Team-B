@@ -16,7 +16,7 @@ public class Clone_Skill : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
-            if (Input.GetKeyDown(KeyCode.C) && !isCooldown)
+            if (Input.GetKeyDown(KeyCode.F) && !isCooldown)
             {
                 Clone();
                 StartCooldown();
