@@ -9,6 +9,7 @@ TagManager:
   - CinemachineTarget
   - Bullet
   - FakeCheese
+  - Detector
   layers:
   - Default
   - TransparentFX
