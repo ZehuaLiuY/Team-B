@@ -98,34 +98,6 @@ public class FightManager : MonoBehaviourPunCallbacks
                 break;
         }
     }
-
-    // void AssignRoles()
-    // {
-    //     var players = PhotonNetwork.PlayerList;
-    //     List<int> playerIndices = new List<int>();
-    //     for (int i = 0; i < players.Length; i++)
-    //     {
-    //         playerIndices.Add(i);
-    //     }
-    //
-    //     // random select a human player
-    //     int humanIndex = playerIndices[Random.Range(0, playerIndices.Count)];
-    //     playerIndices.RemoveAt(humanIndex);
-    //
-    //     List<int> cheesePlayers = new List<int>();
-    //     // set human player
-    //     var customProperties = new ExitGames.Client.Photon.Hashtable();
-    //     customProperties["HumanPlayer"] = players[humanIndex].ActorNumber;
-    //     foreach(int i in playerIndices)
-    //     {
-    //         cheesePlayers.Add(players[i].ActorNumber);
-    //         
-    //     }
-    //    
-    //     int[] cheesePlayersArray = cheesePlayers.ToArray();
-    //     customProperties["CheesePlayers"] = cheesePlayersArray;
-    //     PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
-    // }
     
     void AssignRoles()
     {
@@ -160,44 +132,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
     }
 
-    // void SpawnPlayer(int humanPlayerActorNumber)
-    // {
-    //     List<Transform> availableSpawnPoints = new List<Transform>();
-    //     for (int i = 0; i < pointTf.childCount; i++)
-    //     {
-    //         availableSpawnPoints.Add(pointTf.GetChild(i));
-    //     }
-    //
-    //     Transform humanSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
-    //     Vector3 humanPos = humanSpawnPoint.position;
-    //
-    //     availableSpawnPoints.Remove(humanSpawnPoint);
-    //
-    //     Transform cheeseSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
-    //     Vector3 pos = cheeseSpawnPoint.position;
-    //
-    //     if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)
-    //     {
-    //         GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
-    //         human.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Human";
-    //         miniMapController.AddPlayerIcon(human);
-    //         CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
-    //         vc.Follow = human.transform.Find("PlayerRoot").transform;
-    //     }
-    //     else
-    //     {
-    //         GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
-    //         cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese";
-    //         
-    //         // GameObject cheese = PhotonNetwork.Instantiate("Cheese1", pos, Quaternion.identity);
-    //         // cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese1";
-    //         
-    //         miniMapController.AddPlayerIcon(cheese);
-    //         CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
-    //         cheeseVC.Follow = cheese.transform.Find("PlayerRoot").transform;
-    //     }
-    // }
-    
     void SpawnPlayer(int humanPlayerActorNumber)
     {
         List<Transform> availableSpawnPoints = new List<Transform>();
@@ -322,13 +256,6 @@ public class FightManager : MonoBehaviourPunCallbacks
             
         }
     }
-
-    // [PunRPC]
-    // private void UpdateCountdownTimerRPC(float newTimer)
-    // {
-    //     // 在所有客户端上同步倒计时
-    //     fightUI.SetCountdownTimer(newTimer);
-    // }
 
     [PunRPC]
     private void UpdateCountdownTimerRPC(float newTimer)
