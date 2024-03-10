@@ -356,6 +356,74 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!1 &5829091366080228589
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1774179954988210448}
+  - component: {fileID: 2012289941725932115}
+  - component: {fileID: 7708688568219732137}
+  m_Layer: 3
+  m_Name: Enemy_Detect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1774179954988210448
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5829091366080228589}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.005539902, y: 0.02382362, z: -0.007262366}
+  m_LocalScale: {x: 0.004, y: 0.004, z: 0.004}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2072448746763765294}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &2012289941725932115
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5829091366080228589}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 500
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7708688568219732137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5829091366080228589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eac75ed17a8c54ebc8bf5d0129cab34f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highlightMaterial: {fileID: 2100000, guid: a27c8b6972fb6430a94b843ca39724a3, type: 2}
+  cooldownTime: 30
 --- !u!1001 &1965935976739217861
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -444,12 +512,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 2b4ba72315c104f3faca6b6fe4bccf0c, type: 2}
+      objectReference: {fileID: 2100000, guid: d93df112a602e41d687c77582b95e010, type: 2}
     - target: {fileID: -6465034381526970682, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 2b4ba72315c104f3faca6b6fe4bccf0c, type: 2}
+      objectReference: {fileID: 2100000, guid: d93df112a602e41d687c77582b95e010, type: 2}
     - target: {fileID: -5414214464699539081, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Layer
@@ -504,7 +572,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Name
-      value: Cheese1
+      value: Cheese2
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
@@ -573,7 +641,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 2b4ba72315c104f3faca6b6fe4bccf0c, type: 2}
+      objectReference: {fileID: 2100000, guid: d93df112a602e41d687c77582b95e010, type: 2}
     - target: {fileID: 4318384898436920120, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -594,7 +662,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 2b4ba72315c104f3faca6b6fe4bccf0c, type: 2}
+      objectReference: {fileID: 2100000, guid: d93df112a602e41d687c77582b95e010, type: 2}
     - target: {fileID: 6618739068099589813, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Layer
@@ -619,7 +687,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 2b4ba72315c104f3faca6b6fe4bccf0c, type: 2}
+      objectReference: {fileID: 2100000, guid: d93df112a602e41d687c77582b95e010, type: 2}
     - target: {fileID: 8483189842866030862, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -645,6 +713,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 4982545150054503282}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 76b1db43dfbc346c5b159481488ae965,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1774179954988210448}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
@@ -674,10 +746,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 6645148184008043546}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1892401269154540542}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       insertIndex: -1
@@ -854,19 +922,6 @@ MonoBehaviour:
   smellParticlePrefab: {fileID: 8400006639187567938, guid: 3b7c1babb64c29248bca0362bbfcbf0f,
     type: 3}
   smellParticles: []
---- !u!114 &1892401269154540542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1695888432212909204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e563436cd38e0411897996eb141ae989, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cooldown: 30
 --- !u!114 &4448816205474466852
 MonoBehaviour:
   m_ObjectHideFlags: 0

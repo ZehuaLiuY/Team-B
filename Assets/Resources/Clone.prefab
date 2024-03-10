@@ -504,12 +504,12 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Name
-      value: Cheese1
+      value: Clone
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_Layer
-      value: 15
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
@@ -519,7 +519,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_TagString
-      value: Target
+      value: FakeCheese
       objectReference: {fileID: 0}
     - target: {fileID: 1281599704296213993, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
@@ -670,14 +670,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2549046913564611917}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6645148184008043546}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1892401269154540542}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       insertIndex: -1
@@ -839,34 +831,6 @@ MonoBehaviour:
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0
---- !u!114 &6645148184008043546
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1695888432212909204}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4291624b42bcf8b4d915f57d221dabca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  smellParticlePrefab: {fileID: 8400006639187567938, guid: 3b7c1babb64c29248bca0362bbfcbf0f,
-    type: 3}
-  smellParticles: []
---- !u!114 &1892401269154540542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1695888432212909204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e563436cd38e0411897996eb141ae989, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cooldown: 30
 --- !u!114 &4448816205474466852
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,6 +8,7 @@ TagManager:
   - Target
   - CinemachineTarget
   - Bullet
+  - FakeCheese
   layers:
   - Default
   - TransparentFX
@@ -23,8 +24,8 @@ TagManager:
   - Floor
   - Outside
   - Walls
-  - 
-  - 
+  - Human
+  - BoxColliderLayer
   - 
   - 
   - 

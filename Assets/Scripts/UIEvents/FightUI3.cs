@@ -6,14 +6,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FightUI : MonoBehaviour
+public class FightUI3 : MonoBehaviour
 {
     // public Image StaminaBar; // 确保在Unity编辑器中已经设置了这个引用
-    public static FightUI Instance { get; private set; }
+    public static FightUI3 Instance { get; private set; }
     //private GameManager gameManager;
     private Text countdownText;
-    private Transform tutorialPanel;
-    private Image StaminaBar;
+    private Image Skill_Icon;
 
     private float previousTime;
     private bool iscount;
@@ -22,18 +21,19 @@ public class FightUI : MonoBehaviour
     {
         iscount = true;
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        tutorialPanel = transform.Find("TutorialPanel");
-        Transform hpTransform = transform.Find("hp");
-        if (hpTransform != null && hpTransform.childCount > 0) {
+        
+        Transform Clone = transform.Find("Human Detector");
+        Clone.gameObject.SetActive(true);
+        if (Clone != null && Clone.childCount > 0) {
             // 假设hp下只有一个子对象，直接获取第一个子对象
-            Transform firstChild = hpTransform.GetChild(0);
+            Transform firstChild = Clone.GetChild(0);
             Image image = firstChild.GetComponent<Image>();
             if (image != null) {
                 // 成功找到了Image组件
-                StaminaBar = image;
+                Skill_Icon = image;
             }
         }
-        StartCoroutine(ShowTutorialPanel());
+        
         //--------------------------
         // top left placeholder components
         // transform.Find("hp/fill").GetComponent<Image>().fillAmount =
@@ -41,7 +41,7 @@ public class FightUI : MonoBehaviour
         //--------------------------
 
     }
-
+    
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -54,19 +54,12 @@ public class FightUI : MonoBehaviour
         }
     }
     
-    public void UpdateStaminaBar(float fillAmount)
+    public void UpdateSkill_Icon(float fillAmount)
     {
-        if (StaminaBar != null)
+        if (Skill_Icon != null)
         {
-            StaminaBar.fillAmount = fillAmount;
+            Skill_Icon.fillAmount = fillAmount;
         }
-    }
-    
-    IEnumerator ShowTutorialPanel()
-    {
-        tutorialPanel.gameObject.SetActive(true); // 显示教程面板
-        yield return new WaitForSeconds(10); // 等待5秒
-        tutorialPanel.gameObject.SetActive(false); // 隐藏教程面板
     }
 
     //public AudioClip countSound;
