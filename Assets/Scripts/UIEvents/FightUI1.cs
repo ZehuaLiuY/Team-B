@@ -12,6 +12,7 @@ public class FightUI1 : MonoBehaviour
     //private GameManager gameManager;
     private Text countdownText;
     private Image Skill_Icon;
+    private Transform tutorialPanel;
 
     private float previousTime;
     private bool iscount;
@@ -20,7 +21,7 @@ public class FightUI1 : MonoBehaviour
     {
         iscount = true;
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        
+        tutorialPanel = transform.Find("TutorialPanel");
         Transform Invisible = transform.Find("Invisible Effect");
         Invisible.gameObject.SetActive(true);
         if (Invisible != null && Invisible.childCount > 0) {
@@ -32,6 +33,7 @@ public class FightUI1 : MonoBehaviour
                 Skill_Icon = image;
             }
         }
+        StartCoroutine(ShowTutorialPanel());
         
         //--------------------------
         // top left placeholder components
@@ -66,6 +68,13 @@ public class FightUI1 : MonoBehaviour
     void Update()
     {
 
+    }
+    
+    IEnumerator ShowTutorialPanel()
+    {
+        tutorialPanel.gameObject.SetActive(true); // 显示教程面板
+        yield return new WaitForSeconds(10); // 等待5秒
+        tutorialPanel.gameObject.SetActive(false); // 隐藏教程面板
     }
 
     public void SetCountdownTimer(float countdownTimer) 

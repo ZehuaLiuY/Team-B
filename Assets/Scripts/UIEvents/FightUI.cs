@@ -33,7 +33,8 @@ public class FightUI : MonoBehaviour
                 StaminaBar = image;
             }
         }
-        StartCoroutine(ShowTutorialPanel());
+
+        StartCoroutine(BeginStartSequence());
         //--------------------------
         // top left placeholder components
         // transform.Find("hp/fill").GetComponent<Image>().fillAmount =
@@ -61,12 +62,30 @@ public class FightUI : MonoBehaviour
             StaminaBar.fillAmount = fillAmount;
         }
     }
+    IEnumerator BeginStartSequence()
+    {
+        yield return new WaitForSeconds(2); // 首先等待2秒
+        StartCoroutine(ShowTutorialPanel()); // 然后显示教程面板
+    }
     
     IEnumerator ShowTutorialPanel()
     {
-        tutorialPanel.gameObject.SetActive(true); // 显示教程面板
-        yield return new WaitForSeconds(10); // 等待5秒
-        tutorialPanel.gameObject.SetActive(false); // 隐藏教程面板
+        // tutorialPanel.gameObject.SetActive(true); // 显示教程面板
+        // yield return new WaitForSeconds(10); // 等待5秒
+        // tutorialPanel.gameObject.SetActive(false); // 隐藏教程面板
+        // 遍历tutorialPanel下的所有子对象
+        for (int i = 0; i < tutorialPanel.childCount; i++)
+        {
+            // 激活当前子对象
+            Transform currentChild = tutorialPanel.GetChild(i);
+            currentChild.gameObject.SetActive(true);
+
+            // 等待5秒
+            yield return new WaitForSeconds(5);
+
+            // 禁用当前子对象
+            currentChild.gameObject.SetActive(false);
+        }
     }
 
     //public AudioClip countSound;
