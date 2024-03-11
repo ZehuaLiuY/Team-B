@@ -61,6 +61,10 @@ public class DoorInteraction : MonoBehaviour
             {
                 photonView.RPC("StopVFX", RpcTarget.All);
             }
+            //else if(_cheeseInSide && currentVFXInstance == null)
+            //{
+            //    photonView.RPC("PlayVFX", RpcTarget.All);
+            //}
         }
         
         
