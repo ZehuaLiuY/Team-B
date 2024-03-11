@@ -226,7 +226,7 @@ public class FightManager : MonoBehaviourPunCallbacks
                 // 如果是房主，更新倒计时并发送 RPC
                 float newTimer = UpdateCountdownTimer();
                 // fightUI.SetCountdownTimer(newTimer);
-                photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.All, newTimer);
+                photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.AllBuffered, newTimer);
             }
         }
         else
