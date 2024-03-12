@@ -267,7 +267,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.Log("fightUI is null when trying to set timer.");
+            // Debug.Log("fightUI is null when trying to set timer.");
         }
 
         if (fightUI1 != null)
@@ -276,7 +276,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.Log("fightUI1 is null when trying to set timer.");
+            // Debug.Log("fightUI1 is null when trying to set timer.");
         }
         if (fightUI2 != null)
         {
@@ -284,7 +284,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.Log("fightUI2 is null when trying to set timer.");
+            // Debug.Log("fightUI2 is null when trying to set timer.");
         }
         if (fightUI3 != null)
         {
@@ -292,7 +292,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.Log("fightUI3 is null when trying to set timer.");
+            // Debug.Log("fightUI3 is null when trying to set timer.");
         }
     }
 

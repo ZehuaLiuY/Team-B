@@ -19,7 +19,7 @@ public class FlamethrowerAttackRadius : MonoBehaviourPun
 
     private void ProcessTriggerEvent(Collider other)
     {
-        Debug.Log($"Triggered by {other.gameObject.name}");
+        // Debug.Log($"Triggered by {other.gameObject.name}");
         if (other.gameObject.CompareTag("Target"))
         {
             PhotonView targetPhotonView = other.gameObject.GetComponent<PhotonView>();

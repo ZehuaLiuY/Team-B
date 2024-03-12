@@ -18,6 +18,21 @@ public class FightUI : MonoBehaviour
     private float previousTime;
     private bool iscount;
     //public static float countdownTimer = 180f;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
     private void Start()
     {
         iscount = true;
@@ -41,18 +56,6 @@ public class FightUI : MonoBehaviour
         // transform.Find("hp/Text").GetComponent<Text>().text =
         //--------------------------
 
-    }
-
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            Instance = this;
-        }
     }
     
     public void UpdateStaminaBar(float fillAmount)
