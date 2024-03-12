@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM 
@@ -77,8 +79,9 @@ namespace StarterAssets
         
         [Header("Stamina Bar")]
         public float Stamina = 1.0f;
-        public float StaminaDecreaseRate = 0.2f; 
+        public float StaminaDecreaseRate = 0.2f;
         public float StaminaRecoveryRate = 0.1f;
+        public GameObject FlameThrower;
 
 
         // cinemachine
@@ -119,14 +122,20 @@ namespace StarterAssets
 
         private bool _hasAnimator;
 
-        private bool canSprint = true; 
+        private bool canSprint = true;
+        private bool canShift = true;
+        private bool canPickup = true;
 
         // current pos and rot
         public Vector3 currentPos;
         public Quaternion currentRot;
 
         private MiniMapController _miniMapController;
-
+        
+        public void EnableSprinting(bool enable)
+        {
+            canShift = enable;
+        }
         private bool IsCurrentDeviceMouse
         {
             get
@@ -189,7 +198,6 @@ namespace StarterAssets
                 GroundedCheck();
                 Move();
                 pickup();
-                
 
                 if (Vector3.Distance(transform.position, currentPos) > 0.1f)
                 {
@@ -205,11 +213,12 @@ namespace StarterAssets
 
         private void pickup()
         {
-            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame)
-            {
+            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup) {
+                canPickup = false;
+                FlameThrower.SetActive(false);
                 _animator.SetTrigger("pickup");
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
-
+                
                 // 在人类周围创建一个盒形区域，检测是否存在 Cheese
                 int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
                 Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
@@ -229,8 +238,24 @@ namespace StarterAssets
                         break;
                     }
                 }
+                StartCoroutine(ActivateFlameThrowerAfterDelay());
+                StartCoroutine(ResetPickupAfterDelay());
             }
         }
+        
+       IEnumerator ActivateFlameThrowerAfterDelay()
+        {
+            yield return new WaitForSeconds(1.2f);
+            
+            FlameThrower.SetActive(true);
+        }
+       
+        private IEnumerator ResetPickupAfterDelay()
+        {
+            yield return new WaitForSeconds(2f); // 等待时间，防止r键连续触发
+            canPickup = true;
+        }
+       
 
         //private void OnControllerColliderHit(ControllerColliderHit hit)
         //{
@@ -317,8 +342,8 @@ namespace StarterAssets
 
         private void Move()
         {
-            float targetSpeed = (_input.move != Vector2.zero && canSprint && Stamina > 0 && _input.sprint) ? SprintSpeed : MoveSpeed;
-            if (_input.sprint && canSprint && Stamina > 0 && _input.move != Vector2.zero)
+            float targetSpeed = (_input.move != Vector2.zero && canSprint && Stamina > 0 && _input.sprint && canShift) ? SprintSpeed : MoveSpeed;
+            if (_input.sprint && canSprint && Stamina > 0 && _input.move != Vector2.zero && canShift)
             {
                 Stamina -= StaminaDecreaseRate * Time.deltaTime;
                 if (Stamina <= 0)
@@ -393,11 +418,11 @@ namespace StarterAssets
             }
         }
 
+        private void UpdateStamina()
+        {
+            if (!_input.sprint || !canSprint || _input.move != Vector2.zero || !canSprint)
 
-            private void UpdateStamina()
-            {
-                if (!_input.sprint || !canSprint || _input.move != Vector2.zero)
-                {
+        {
                     Stamina += StaminaRecoveryRate * Time.deltaTime;
                     if (Stamina >= 1)
                     {
@@ -529,8 +554,6 @@ namespace StarterAssets
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
         }
-
-        
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {

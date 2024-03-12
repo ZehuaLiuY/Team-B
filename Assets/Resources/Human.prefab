@@ -3134,7 +3134,7 @@ Camera:
     height: 1
   near clip plane: 0.2
   far clip plane: 500
-  field of view: 33.398487
+  field of view: 33.398483
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -3635,6 +3635,7 @@ MonoBehaviour:
   Stamina: 1
   StaminaDecreaseRate: 0.3
   StaminaRecoveryRate: 0.15
+  FlameThrower: {fileID: 812921425194351357}
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7040989241601351007
