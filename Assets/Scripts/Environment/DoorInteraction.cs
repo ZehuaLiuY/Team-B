@@ -54,17 +54,20 @@ public class DoorInteraction : MonoBehaviour
                 photonView.RPC("StopVFX", RpcTarget.All);
             }
         }
-        else
-        { 
-            if (!_cheeseInSide && currentVFXInstance != null)
-            {
-                photonView.RPC("StopVFX", RpcTarget.All);
-            }
-            //else if(_cheeseInSide && currentVFXInstance == null)
-            //{
-            //    photonView.RPC("PlayVFX", RpcTarget.All);
-            //}
+        
+        if (!_cheeseInSide && currentVFXInstance != null)
+        {
+            photonView.RPC("StopVFX", RpcTarget.All);
         }
+        else if(_cheeseInSide && currentVFXInstance == null && doorAnimator.GetBool("IsOpen"))
+        {
+            photonView.RPC("PlayVFX", RpcTarget.All);
+        }
+        //else if(_cheeseInSide && currentVFXInstance == null)
+        //{
+        //    photonView.RPC("PlayVFX", RpcTarget.All);
+        //}
+        
         
         
     }
@@ -99,6 +102,7 @@ public class DoorInteraction : MonoBehaviour
                 text.SetActive(false); // 隐藏提示
             }
         }
+       
     }
 
     [PunRPC]
