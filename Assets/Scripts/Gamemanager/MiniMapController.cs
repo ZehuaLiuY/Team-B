@@ -107,6 +107,15 @@ public class MiniMapController : MonoBehaviourPunCallbacks
         }
     }
 
+    public void HidePlayerIcon(GameObject player)
+    {
+        if (_playerIcons.ContainsKey(player))
+        {
+            Destroy(_playerIcons[player].gameObject);
+            _playerIcons.Remove(player);
+        }
+    }
+
     // public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     // {
     //     if (stream.IsWriting)

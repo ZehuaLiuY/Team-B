@@ -97611,7 +97611,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2028329810}
   - component: {fileID: 2028329809}
-  - component: {fileID: 2028329808}
   m_Layer: 3
   m_Name: PlayerFollowCamera
   m_TagString: Player
@@ -97619,18 +97618,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2028329808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2028329807}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f52027919f2994727a7b3c8f7a38f42a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2028329809
 MonoBehaviour:
   m_ObjectHideFlags: 0

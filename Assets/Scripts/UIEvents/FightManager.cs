@@ -8,6 +8,7 @@ using UnityEditor.Rendering;
 using Photon.Pun.UtilityScripts;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -229,9 +230,10 @@ public class FightManager : MonoBehaviourPunCallbacks
                 photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.AllBuffered, newTimer);
             }
         }
-        else
+        else if (PhotonNetwork.IsConnected)
         {
             photonView.RPC("EndGame", RpcTarget.All, _isHumanWin);
+            _gameOver = false;
         }
     }
     private float UpdateCountdownTimer()
@@ -345,7 +347,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             _gameOver = true; // 设置游戏结束标志为 true
             _isHumanWin = false;
-            Debug.Log("gameover: " + _gameOver);
+            // Debug.Log("gameover: " + _gameOver);
         }
         
         
@@ -364,5 +366,19 @@ public class FightManager : MonoBehaviourPunCallbacks
             DisplayUIBasedOnRole();
         }
         
+    }
+
+    public void QuitToLoginScene()
+    {
+        PhotonNetwork.Disconnect();
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        base.OnDisconnected(cause);
+
+        SceneManager.LoadScene("login");
+        Game.uiManager.CloseAllUI();
+        Game.uiManager.ShowUI<LoginUI>("LoginUI");
     }
 }

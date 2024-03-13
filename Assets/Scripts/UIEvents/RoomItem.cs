@@ -61,7 +61,7 @@ public class RoomItem : MonoBehaviour
 
     public void ChangeReady(bool isReady)
     {
-        transform.Find("Button/Text").GetComponent<Text>().text = isReady == true ? "Ready" : "Not Ready";
+        transform.Find("Button/Text").GetComponent<Text>().text = isReady == true ? "Ready!" : "Ready?";
 
     }
 

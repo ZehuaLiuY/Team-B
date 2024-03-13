@@ -1,27 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-public class LossUI : MonoBehaviour
+public class LossUI : MonoBehaviourPunCallbacks
 {
-    // Start is called before the first frame update
     void Start()
     {
-        transform.Find("resetBtn").GetComponent<Button>().onClick.AddListener(OnQuitBtn);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
-        // Cursor.lockState = CursorLockMode.None;
-        // Cursor.visible = true;
+        // Assuming the button is called "resetBtn" in your scene
+        transform.Find("resetBtn").GetComponent<Button>().onClick.AddListener(OnQuitBtn);
     }
+
     public void OnQuitBtn()
     {
-        
-        Application.Quit();
-    }
+        // Show a loading mask or any other indication to the player
+        Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        GameObject fightManagerObject = GameObject.Find("fight");
+        if (fightManagerObject != null)
+        {
+            FightManager fightManager = fightManagerObject.GetComponent<FightManager>();
+            fightManager.QuitToLoginScene();
+        }
     }
 }
+
