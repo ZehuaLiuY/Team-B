@@ -9,7 +9,6 @@ using UnityEngine.VFX;
 
 public class DoorInteraction : MonoBehaviour
 {
-    public GameObject door; // 门的引用
     public GameObject text; // 开门提示的UI元素引用
     public GameObject vfxSmell;
 
@@ -24,9 +23,9 @@ public class DoorInteraction : MonoBehaviour
 
     void Awake()
     {
-        doorAnimator = door.GetComponent<Animator>();
         text.SetActive(false); // 开始时禁用提示
-        photonView = transform.parent.GetComponent<PhotonView>();
+        photonView = transform.GetComponent<PhotonView>();
+        doorAnimator = GetComponent<Animator>();
     }
 
     private void Start()
@@ -112,7 +111,7 @@ public class DoorInteraction : MonoBehaviour
     void PlayVFX()
     {
         // 实例化 Visual Effect 预制体并放置在门的位置
-        currentVFXInstance = PhotonNetwork.Instantiate("VFXSmell", door.transform.position, Quaternion.identity);
+        currentVFXInstance = PhotonNetwork.Instantiate("VFXSmell", transform.position, Quaternion.identity);
         Debug.Log("generate smell");
 
         // 让 Visual Effect 开始播放
