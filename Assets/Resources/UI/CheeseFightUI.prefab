@@ -975,7 +975,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4207698441315586165}
   m_Layer: 5
-  m_Name: Cheese_FightUI
+  m_Name: CheeseFightUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

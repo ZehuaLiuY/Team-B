@@ -168,7 +168,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5902549377713101044}
   m_Layer: 5
-  m_Name: LossUI
+  m_Name: LoseUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

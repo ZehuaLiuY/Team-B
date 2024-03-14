@@ -21,6 +21,9 @@ public class DieUI : MonoBehaviour
     private void OnObBtn()
     {
         Debug.Log("Observe button clicked.");
+        
+        Game.uiManager.CloseAllUI();
+        Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
 
         Player[] allPlayers = PhotonNetwork.PlayerList;
         List<Player> otherPlayers = allPlayers.ToList();
