@@ -107,14 +107,26 @@ public class MiniMapController : MonoBehaviourPunCallbacks
         }
     }
 
-    public void HidePlayerIcon(GameObject player)
+    [PunRPC]
+    public void HidePlayerIconRPC(int viewID)
     {
-        if (_playerIcons.ContainsKey(player))
+        PhotonView targetView = PhotonView.Find(viewID);
+        if (targetView != null)
         {
-            Destroy(_playerIcons[player].gameObject);
-            _playerIcons.Remove(player);
+            GameObject player = targetView.gameObject;
+            if (_playerIcons.ContainsKey(player))
+            {
+                Destroy(_playerIcons[player].gameObject);
+                _playerIcons.Remove(player);
+            }
+        }
+        else
+        {
+            Debug.LogError("Unable to find PhotonView with ID: " + viewID);
         }
     }
+
+
 
     // public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     // {

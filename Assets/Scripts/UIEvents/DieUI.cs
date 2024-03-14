@@ -21,8 +21,6 @@ public class DieUI : MonoBehaviour
 
     private void OnObBtn()
     {
-        Debug.Log("Observe button clicked.");
-
         Game.uiManager.CloseAllUI();
         Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
 
@@ -46,7 +44,6 @@ public class DieUI : MonoBehaviour
                     if (vc != null)
                     {
                         vc.Follow = playerRoot;
-                        Debug.Log("Camera should now be following: " + playerRoot.name);
                     }
                     else
                     {
@@ -64,7 +61,6 @@ public class DieUI : MonoBehaviour
         {
             if (pv.CompareTag("Target"))
             {
-                Debug.Log("Found player GameObject: " + pv.gameObject.name);
                 return pv.gameObject;
             }
         }
