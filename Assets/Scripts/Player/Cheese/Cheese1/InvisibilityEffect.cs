@@ -72,9 +72,9 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
     
     private void UpdateIcon()
     {
-        if (FightUI1.Instance != null)
+        if (CheeseFightUI.Instance != null)
         {
-            FightUI1.Instance.UpdateSkill_Icon(skillIconFill);
+            CheeseFightUI.Instance.UpdateSkill_Icon(skillIconFill);
         } 
     }
     

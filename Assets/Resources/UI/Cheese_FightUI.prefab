@@ -1530,7 +1530,7 @@ GameObject:
   - component: {fileID: 5223333456472972107}
   - component: {fileID: 7729811263886009245}
   m_Layer: 5
-  m_Name: Clone Skills
+  m_Name: Cheese1 Skills
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1753,7 +1753,7 @@ GameObject:
   - component: {fileID: 6944591368751218185}
   - component: {fileID: 7313954423521428729}
   m_Layer: 5
-  m_Name: Invisible Effect
+  m_Name: Cheese Skills
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1977,7 +1977,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7904451563204441743}
   m_Layer: 5
-  m_Name: TutorialPanel_Cheese2
+  m_Name: TutorialPanel_Cheese1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2016,7 +2016,7 @@ GameObject:
   - component: {fileID: 7597891580381816351}
   - component: {fileID: 6072013453550250836}
   m_Layer: 5
-  m_Name: Human Detector
+  m_Name: Cheese2 Skills
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2303,7 +2303,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7027287426289232696}
   m_Layer: 5
-  m_Name: TutorialPanel_Cheese3
+  m_Name: TutorialPanel_Cheese2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

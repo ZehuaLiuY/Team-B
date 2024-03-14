@@ -64,9 +64,9 @@ public class Clone_Skill : MonoBehaviourPunCallbacks
     }
     private void UpdateIcon()
     {
-        if (FightUI2.Instance != null)
+        if (CheeseFightUI.Instance != null)
         {
-            FightUI2.Instance.UpdateSkill_Icon(skillIconFill);
+            CheeseFightUI.Instance.UpdateSkill_Icon(skillIconFill);
         } 
     }
 }

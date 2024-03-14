@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class EnemyDetector : MonoBehaviour
+public class EnemyDetector : MonoBehaviourPunCallbacks
 {
     public Material highlightMaterial; // 用于高亮显示敌人的材质
     private Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
@@ -15,9 +16,8 @@ public class EnemyDetector : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F) && !isDetecting && !isCooldown)
+        if (photonView.IsMine && Input.GetKeyDown(KeyCode.F) && !isDetecting && !isCooldown)
         {
-            Debug.Log("R is pressed, starting detection.");
             StartCoroutine(DetectEnemies());
             StartCooldown();
         }
@@ -100,9 +100,9 @@ public class EnemyDetector : MonoBehaviour
     
     private void UpdateIcon()
     {
-        if (FightUI3.Instance != null)
+        if (CheeseFightUI.Instance != null)
         {
-            FightUI3.Instance.UpdateSkill_Icon(skillIconFill);
+            CheeseFightUI.Instance.UpdateSkill_Icon(skillIconFill);
         } 
     }
 }

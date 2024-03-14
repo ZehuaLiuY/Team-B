@@ -1,18 +1,19 @@
-using System;
+﻿using System;
 using Photon.Pun.UtilityScripts;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-public class FightUI1 : MonoBehaviour
+
+public class HumanFightUI : MonoBehaviour
 {
-    public static FightUI1 Instance { get; private set; }
     // public Image StaminaBar; // 确保在Unity编辑器中已经设置了这个引用
+    public static HumanFightUI Instance { get; private set; }
     //private GameManager gameManager;
     private Text countdownText;
-    private Image Skill_Icon;
     private Transform tutorialPanel;
+    private Image StaminaBar;
 
     private float previousTime;
     private bool iscount;
@@ -21,20 +22,19 @@ public class FightUI1 : MonoBehaviour
     {
         iscount = true;
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        tutorialPanel = transform.Find("TutorialPanel_Cheese");
-        Transform Invisible = transform.Find("Invisible Effect");
-        Invisible.gameObject.SetActive(true);
-        if (Invisible != null && Invisible.childCount > 0) {
+        tutorialPanel = transform.Find("TutorialPanel");
+        Transform hpTransform = transform.Find("hp");
+        if (hpTransform != null && hpTransform.childCount > 0) {
             // 假设hp下只有一个子对象，直接获取第一个子对象
-            Transform firstChild = Invisible.GetChild(0);
+            Transform firstChild = hpTransform.GetChild(0);
             Image image = firstChild.GetComponent<Image>();
             if (image != null) {
                 // 成功找到了Image组件
-                Skill_Icon = image;
+                StaminaBar = image;
             }
         }
+
         StartCoroutine(BeginStartSequence());
-        
         //--------------------------
         // top left placeholder components
         // transform.Find("hp/fill").GetComponent<Image>().fillAmount =
@@ -42,6 +42,7 @@ public class FightUI1 : MonoBehaviour
         //--------------------------
 
     }
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -54,18 +55,17 @@ public class FightUI1 : MonoBehaviour
         }
     }
     
-    public void UpdateSkill_Icon(float fillAmount)
+    public void UpdateStaminaBar(float fillAmount)
     {
-        if (Skill_Icon != null)
+        if (StaminaBar != null)
         {
-            Skill_Icon.fillAmount = fillAmount;
+            StaminaBar.fillAmount = fillAmount;
         }
     }
-    
     IEnumerator BeginStartSequence()
     {
-        yield return new WaitForSeconds(2); // 首先等待2秒
-        StartCoroutine(ShowTutorialPanel()); // 然后显示教程面板
+        yield return new WaitForSeconds(2);
+        StartCoroutine(ShowTutorialPanel());
     }
     
     IEnumerator ShowTutorialPanel()

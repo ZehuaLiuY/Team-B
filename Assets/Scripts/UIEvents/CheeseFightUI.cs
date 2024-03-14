@@ -1,48 +1,48 @@
-﻿using System;
+using System;
 using Photon.Pun.UtilityScripts;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
-public class FightUI : MonoBehaviour
+public class CheeseFightUI : MonoBehaviour
 {
+    public static CheeseFightUI Instance { get; private set; }
     // public Image StaminaBar; // 确保在Unity编辑器中已经设置了这个引用
-    public static FightUI Instance { get; private set; }
     //private GameManager gameManager;
     private Text countdownText;
+    private Image Skill_Icon;
     private Transform tutorialPanel;
-    private Image StaminaBar;
 
     private float previousTime;
     private bool iscount;
     //public static float countdownTimer = 180f;
-    private void Start()
-    {
-        iscount = true;
-        countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        tutorialPanel = transform.Find("TutorialPanel");
-        Transform hpTransform = transform.Find("hp");
-        if (hpTransform != null && hpTransform.childCount > 0) {
-            // 假设hp下只有一个子对象，直接获取第一个子对象
-            Transform firstChild = hpTransform.GetChild(0);
-            Image image = firstChild.GetComponent<Image>();
-            if (image != null) {
-                // 成功找到了Image组件
-                StaminaBar = image;
-            }
-        }
-
-        StartCoroutine(BeginStartSequence());
-        //--------------------------
-        // top left placeholder components
-        // transform.Find("hp/fill").GetComponent<Image>().fillAmount =
-        // transform.Find("hp/Text").GetComponent<Text>().text =
-        //--------------------------
-
-    }
-
+    // private void Start(string playerType)
+    // {
+    //     Debug.Log(playerType);
+    //     iscount = true;
+    //     countdownText = transform.Find("CountdownText").GetComponent<Text>();
+    //     tutorialPanel = transform.Find($"TutorialPanel_{playerType}");
+    //     Transform Invisible = transform.Find($"{playerType} Skills");
+    //     Invisible.gameObject.SetActive(true);
+    //     if (Invisible != null && Invisible.childCount > 0) {
+    //         // 假设hp下只有一个子对象，直接获取第一个子对象
+    //         Transform firstChild = Invisible.GetChild(0);
+    //         Image image = firstChild.GetComponent<Image>();
+    //         if (image != null) {
+    //             // 成功找到了Image组件
+    //             Skill_Icon = image;
+    //         }
+    //     }
+    //     StartCoroutine(BeginStartSequence());
+    //     
+    //     //--------------------------
+    //     // top left placeholder components
+    //     // transform.Find("hp/fill").GetComponent<Image>().fillAmount =
+    //     // transform.Find("hp/Text").GetComponent<Text>().text =
+    //     //--------------------------
+    //
+    // }
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -55,17 +55,36 @@ public class FightUI : MonoBehaviour
         }
     }
     
-    public void UpdateStaminaBar(float fillAmount)
+    public void InitializeUI(string playerType)
     {
-        if (StaminaBar != null)
+        Debug.Log($"Initializing UI for playerType: {playerType}");
+        iscount = true;
+        countdownText = transform.Find("CountdownText").GetComponent<Text>();
+        tutorialPanel = transform.Find($"TutorialPanel_{playerType}");
+        Transform skillTransform = transform.Find($"{playerType} Skills");
+
+        if (skillTransform != null && skillTransform.childCount > 0)
         {
-            StaminaBar.fillAmount = fillAmount;
+            Transform firstChild = skillTransform.GetChild(0);
+            Skill_Icon = firstChild.GetComponent<Image>();
+            skillTransform.gameObject.SetActive(true);
+        }
+        
+        StartCoroutine(BeginStartSequence());
+    }
+    
+    public void UpdateSkill_Icon(float fillAmount)
+    {
+        if (Skill_Icon != null)
+        {
+            Skill_Icon.fillAmount = fillAmount;
         }
     }
+    
     IEnumerator BeginStartSequence()
     {
-        yield return new WaitForSeconds(2);
-        StartCoroutine(ShowTutorialPanel());
+        yield return new WaitForSeconds(2); // 首先等待2秒
+        StartCoroutine(ShowTutorialPanel()); // 然后显示教程面板
     }
     
     IEnumerator ShowTutorialPanel()
