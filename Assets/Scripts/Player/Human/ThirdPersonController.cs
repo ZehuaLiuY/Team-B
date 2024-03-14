@@ -215,7 +215,7 @@ namespace StarterAssets
         {
             if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup) {
                 canPickup = false;
-                FlameThrower.SetActive(false);
+                photonView.RPC("HideFlameThrower", RpcTarget.All);
                 _animator.SetTrigger("pickup");
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
                 
@@ -243,17 +243,29 @@ namespace StarterAssets
             }
         }
         
+        [PunRPC]
+        void HideFlameThrower()
+        {
+            FlameThrower.SetActive(false);
+        }
+        
        IEnumerator ActivateFlameThrowerAfterDelay()
         {
             yield return new WaitForSeconds(1.2f);
             
-            FlameThrower.SetActive(true);
+            photonView.RPC("ActivateFlameThrower", RpcTarget.All);
         }
        
         private IEnumerator ResetPickupAfterDelay()
         {
             yield return new WaitForSeconds(2f); // 等待时间，防止r键连续触发
             canPickup = true;
+        }
+        
+        [PunRPC]
+        void ActivateFlameThrower()
+        {
+            FlameThrower.SetActive(true);
         }
        
 
@@ -431,9 +443,9 @@ namespace StarterAssets
                     }
                 }
 
-                if (FightUI.Instance != null)
+                if (HumanFightUI.Instance != null)
                 {
-                    FightUI.Instance.UpdateStaminaBar(Stamina); 
+                    HumanFightUI.Instance.UpdateStaminaBar(Stamina); 
                 } 
             }
         

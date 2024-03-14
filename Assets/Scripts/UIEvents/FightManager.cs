@@ -21,10 +21,8 @@ public class FightManager : MonoBehaviourPunCallbacks
     public Transform pointTf; // respawn points
     private PhotonView _photonView;
 
-    private FightUI fightUI;
-    private FightUI1 fightUI1;
-    private FightUI2 fightUI2;
-    private FightUI3 fightUI3;
+    private HumanFightUI fightUI;
+    private CheeseFightUI fightUI1;
     public static float countdownTimer = 180f;
     private bool _isHumanWin;
     private int humanPlayerActorNumber;
@@ -83,16 +81,19 @@ public class FightManager : MonoBehaviourPunCallbacks
         switch (playerType)
         {
             case "Human":
-                fightUI = Game.uiManager.ShowUI<FightUI>("Human_FightUI");
+                fightUI = Game.uiManager.ShowUI<HumanFightUI>("Human_FightUI");
                 break;
             case "Cheese":
-                fightUI1 = Game.uiManager.ShowUI<FightUI1>("Cheese_FightUI");
+                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
+                fightUI1.InitializeUI(playerType);
                 break;
             case "Cheese1":
-                fightUI2 = Game.uiManager.ShowUI<FightUI2>("Cheese_FightUI");
+                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
+                fightUI1.InitializeUI(playerType);
                 break;
             case "Cheese2":
-                fightUI3 = Game.uiManager.ShowUI<FightUI3>("Cheese_FightUI");
+                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
+                fightUI1.InitializeUI(playerType);
                 break;
             default:
                 Debug.LogError("Unknown player type: " + playerType);
@@ -267,34 +268,10 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             fightUI.SetCountdownTimer(newTimer);
         }
-        else
-        {
-            // Debug.Log("fightUI is null when trying to set timer.");
-        }
 
         if (fightUI1 != null)
         {
             fightUI1.SetCountdownTimer(newTimer);
-        }
-        else
-        {
-            // Debug.Log("fightUI1 is null when trying to set timer.");
-        }
-        if (fightUI2 != null)
-        {
-            fightUI2.SetCountdownTimer(newTimer);
-        }
-        else
-        {
-            // Debug.Log("fightUI2 is null when trying to set timer.");
-        }
-        if (fightUI3 != null)
-        {
-            fightUI3.SetCountdownTimer(newTimer);
-        }
-        else
-        {
-            // Debug.Log("fightUI3 is null when trying to set timer.");
         }
     }
 
