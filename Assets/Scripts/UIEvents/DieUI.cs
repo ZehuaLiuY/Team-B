@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Cinemachine;
 using Photon.Pun;
 using Photon.Realtime;
@@ -21,11 +22,12 @@ public class DieUI : MonoBehaviour
     private void OnObBtn()
     {
         Debug.Log("Observe button clicked.");
-        
+
         Game.uiManager.CloseAllUI();
         Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
 
         Player[] allPlayers = PhotonNetwork.PlayerList;
+        Debug.Log(allPlayers);
         List<Player> otherPlayers = allPlayers.ToList();
         otherPlayers.Remove(PhotonNetwork.LocalPlayer);
 
@@ -60,7 +62,7 @@ public class DieUI : MonoBehaviour
     {
         foreach (var pv in FindObjectsOfType<PhotonView>())
         {
-            if (pv.Owner == player)
+            if (pv.CompareTag("Target"))
             {
                 Debug.Log("Found player GameObject: " + pv.gameObject.name);
                 return pv.gameObject;

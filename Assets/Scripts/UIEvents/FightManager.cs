@@ -81,18 +81,18 @@ public class FightManager : MonoBehaviourPunCallbacks
         switch (playerType)
         {
             case "Human":
-                fightUI = Game.uiManager.ShowUI<HumanFightUI>("Human_FightUI");
+                fightUI = Game.uiManager.ShowUI<HumanFightUI>("HumanFightUI");
                 break;
             case "Cheese":
-                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
+                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
                 fightUI1.InitializeUI(playerType);
                 break;
             case "Cheese1":
-                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
+                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
                 fightUI1.InitializeUI(playerType);
                 break;
             case "Cheese2":
-                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
+                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
                 fightUI1.InitializeUI(playerType);
                 break;
             default:
@@ -256,8 +256,27 @@ public class FightManager : MonoBehaviourPunCallbacks
             _allCheeseDie = true;
            
             Debug.Log("human win!");
-            
+
+            // when all cheese die, the obeserved also show the lose UI
+            Game.uiManager.CloseAllUI();
+            ShowEndGameUI(false);
+
         }
+    }
+
+    private void ShowEndGameUI(bool isHumanWin)
+    {
+        if (isHumanWin)
+        {
+            Game.uiManager.ShowUI<LossUI>("LossUI");
+        }
+        else
+        {
+            Game.uiManager.ShowUI<WinUI>("WinUI");
+        }
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     [PunRPC]
@@ -298,7 +317,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             if (PhotonNetwork.LocalPlayer.ActorNumber != humanPlayerActorNumber)
             {
-                
                 Game.uiManager.ShowUI<WinUI>("WinUI");
                 //Debug.Log("showCheeseWinUI");
             }
@@ -314,7 +332,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     }
 
- 
 
     void CheckGameResult()
     {
