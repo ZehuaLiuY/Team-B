@@ -434,7 +434,10 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         {
             isDie = true;
 
+            // Game.uiManager.CloseAllUI();
             Game.uiManager.ShowUI<DieUI>("DieUI");
+            // hide minimap
+            _miniMapController.photonView.RPC("HidePlayerIconRPC", RpcTarget.All, photonView.ViewID);
 
             gameObject.SetActive(false);
 

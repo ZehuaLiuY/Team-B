@@ -8,6 +8,7 @@ using UnityEditor.Rendering;
 using Photon.Pun.UtilityScripts;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -24,7 +25,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
     public static float countdownTimer = 180f;
-    private bool _isHumanWin;
+    private bool _isHumanWin = false;
     private int humanPlayerActorNumber;
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
     private bool _allCheeseDie = false;
@@ -60,6 +61,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // 减去1是因为其中一个玩家是人类玩家
 
+        Debug.Log(_isHumanWin);
         generateSkillBall();
     }
     
@@ -83,18 +85,18 @@ public class FightManager : MonoBehaviourPunCallbacks
         switch (playerType)
         {
             case "Human":
-                fightUI = Game.uiManager.ShowUI<HumanFightUI>("Human_FightUI");
+                fightUI = Game.uiManager.ShowUI<HumanFightUI>("HumanFightUI");
                 break;
             case "Cheese":
-                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
+                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
                 fightUI1.InitializeUI(playerType);
                 break;
             case "Cheese1":
-                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
+                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
                 fightUI1.InitializeUI(playerType);
                 break;
             case "Cheese2":
-                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
+                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
                 fightUI1.InitializeUI(playerType);
                 break;
             default:
@@ -152,7 +154,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             playerName = "Player" + PhotonNetwork.LocalPlayer.ActorNumber;
         }
-        Debug.Log(playerName);
+
     
         Transform humanSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
         Vector3 humanPos = humanSpawnPoint.position;
@@ -248,9 +250,10 @@ public class FightManager : MonoBehaviourPunCallbacks
                 photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.AllBuffered, newTimer);
             }
         }
-        else
+        else if (PhotonNetwork.IsConnected)
         {
             photonView.RPC("EndGame", RpcTarget.All, _isHumanWin);
+            _gameOver = false;
         }
     }
     private float UpdateCountdownTimer()
@@ -275,8 +278,27 @@ public class FightManager : MonoBehaviourPunCallbacks
             _allCheeseDie = true;
            
             Debug.Log("human win!");
-            
+
+            // when all cheese die, the obeserved also show the lose UI
+            Game.uiManager.CloseAllUI();
+            ShowEndGameUI(false);
+
         }
+    }
+
+    private void ShowEndGameUI(bool isHumanWin)
+    {
+        if (isHumanWin)
+        {
+            Game.uiManager.ShowUI<LossUI>("LossUI");
+        }
+        else
+        {
+            Game.uiManager.ShowUI<WinUI>("WinUI");
+        }
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     [PunRPC]
@@ -317,7 +339,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             if (PhotonNetwork.LocalPlayer.ActorNumber != humanPlayerActorNumber)
             {
-                
                 Game.uiManager.ShowUI<WinUI>("WinUI");
                 //Debug.Log("showCheeseWinUI");
             }
@@ -333,7 +354,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     }
 
- 
 
     void CheckGameResult()
     {
@@ -343,7 +363,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             _gameOver = true; // 设置游戏结束标志为 true
             _isHumanWin = false;
-            Debug.Log("gameover: " + _gameOver);
+            // Debug.Log("gameover: " + _gameOver);
         }
         
         
@@ -362,5 +382,19 @@ public class FightManager : MonoBehaviourPunCallbacks
             DisplayUIBasedOnRole();
         }
         
+    }
+
+    public void QuitToLoginScene()
+    {
+        PhotonNetwork.Disconnect();
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        base.OnDisconnected(cause);
+
+        SceneManager.LoadScene("login");
+        Game.uiManager.CloseAllUI();
+        Game.uiManager.ShowUI<LoginUI>("LoginUI");
     }
 }

@@ -19,6 +19,21 @@ public class HumanFightUI : MonoBehaviour
     private float previousTime;
     private bool iscount;
     //public static float countdownTimer = 180f;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+
+        // Cursor.lockState = CursorLockMode.Locked;
+        // Cursor.visible = false;
+    }
     private void Start()
     {
         iscount = true;

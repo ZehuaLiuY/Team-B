@@ -25,7 +25,6 @@ public class RoomItem : MonoBehaviour
         if (ownerId == PhotonNetwork.LocalPlayer.ActorNumber)
         {
             transform.Find("Button").GetComponent<Button>().onClick.AddListener(OnReadyBtn);
-            nameInputField.onValueChanged.AddListener(OnNameChanged);
             nameInputField.interactable = true;
         }
         else
@@ -49,11 +48,20 @@ public class RoomItem : MonoBehaviour
 
         nameInputField.interactable = !IsReady;
 
+
+        if (IsReady)
+        {
+            string newName = nameInputField.text;
+            Hashtable props = new Hashtable();
+            props.Add("PlayerName", newName);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
     }
+
 
     public void ChangeReady(bool isReady)
     {
-        transform.Find("Button/Text").GetComponent<Text>().text = isReady == true ? "Ready" : "Not Ready";
+        transform.Find("Button/Text").GetComponent<Text>().text = isReady == true ? "Ready!" : "Ready?";
 
     }
 
