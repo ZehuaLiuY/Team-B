@@ -60,18 +60,6 @@ public class HumanFightUI : MonoBehaviour
 
     }
 
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            Instance = this;
-        }
-    }
-
     public void showCheeseCaught()
     {
         cheeseCaughtText.gameObject.SetActive(true);

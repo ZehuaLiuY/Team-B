@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using Photon.Pun;
 using TMPro;
 
-[RequireComponent(typeof(Text))]
 public class PlayerNameDisplay : MonoBehaviourPun {
 
     private TextMeshProUGUI playerNameText;
