@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
-#if ENABLE_INPUT_SYSTEM 
+using TMPro;
+
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
 
@@ -82,6 +84,7 @@ namespace StarterAssets
         public float StaminaDecreaseRate = 0.2f;
         public float StaminaRecoveryRate = 0.1f;
         public GameObject FlameThrower;
+
 
 
         // cinemachine
@@ -166,6 +169,7 @@ namespace StarterAssets
             }
 
             _miniMapController = FindObjectOfType<MiniMapController>();
+
         }
 
         private void Start()
@@ -186,6 +190,10 @@ namespace StarterAssets
 
             currentPos = transform.position;
             currentRot = transform.rotation;
+
+            GameObject canvasObject = GameObject.Find("Canvas");
+            
+
         }
 
         private void Update()
@@ -233,6 +241,10 @@ namespace StarterAssets
                         {
                             // 调用目标上的RPC方法来显示DeiUI
                             targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+                            if (HumanFightUI.Instance != null)
+                            {
+                                HumanFightUI.Instance.showCheeseCaught();
+                            }
                         }
 
                         break;
@@ -242,7 +254,9 @@ namespace StarterAssets
                 StartCoroutine(ResetPickupAfterDelay());
             }
         }
-        
+
+
+
         [PunRPC]
         void HideFlameThrower()
         {

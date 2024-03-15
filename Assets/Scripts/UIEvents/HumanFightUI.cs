@@ -14,6 +14,7 @@ public class HumanFightUI : MonoBehaviour
     private Text countdownText;
     private Transform tutorialPanel;
     private Image StaminaBar;
+    private TMP_Text cheeseCaughtText;
 
     private float previousTime;
     private bool iscount;
@@ -38,6 +39,7 @@ public class HumanFightUI : MonoBehaviour
         iscount = true;
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
         tutorialPanel = transform.Find("TutorialPanel");
+        cheeseCaughtText = transform.Find("CheeseCaughtText").GetComponent<TMP_Text>();
         Transform hpTransform = transform.Find("hp");
         if (hpTransform != null && hpTransform.childCount > 0) {
             // 假设hp下只有一个子对象，直接获取第一个子对象
@@ -57,7 +59,35 @@ public class HumanFightUI : MonoBehaviour
         //--------------------------
 
     }
-    
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+    public void showCheeseCaught()
+    {
+        cheeseCaughtText.gameObject.SetActive(true);
+        StartCoroutine(ResetCheeseCaught());
+    }
+
+    IEnumerator ResetCheeseCaught()
+    { 
+        
+        // 等待两秒钟
+        yield return new WaitForSeconds(2f);
+        // 两秒后恢复 cheeseCaught 为 false
+        cheeseCaughtText.gameObject.SetActive(false);
+
+    }
+
     public void UpdateStaminaBar(float fillAmount)
     {
         if (StaminaBar != null)

@@ -19,6 +19,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     // private float captureDistance = 2f; // 抓住奶酪的距离阈值
 
     public Transform pointTf; // respawn points
+    public Transform skillPointTf;
     private PhotonView _photonView;
 
     private HumanFightUI fightUI;
@@ -61,6 +62,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // 减去1是因为其中一个玩家是人类玩家
 
         Debug.Log(_isHumanWin);
+        generateSkillBall();
     }
     
     // void DisplayUIBasedOnRole()
@@ -202,6 +204,21 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
     }
     
+    void generateSkillBall()
+    {
+        List<Transform> availableSpawnSkillPoints = new List<Transform>();
+        for (int i = 0; i < skillPointTf.childCount; i++)
+        {
+            availableSpawnSkillPoints.Add(skillPointTf.GetChild(i));
+        }
+        for(int i = 0; i < skillPointTf.childCount; i++)
+        {
+            Transform skillSpawnPoint = availableSpawnSkillPoints[UnityEngine.Random.Range(0, availableSpawnSkillPoints.Count)];
+            PhotonNetwork.Instantiate("Sphere", skillSpawnPoint.position, Quaternion.identity);
+            availableSpawnSkillPoints.Remove(skillSpawnPoint);
+        }
+
+    }
 
     // void getInstantiate(Vector3 humanPosition, Transform pointTf
     // {
@@ -241,8 +258,11 @@ public class FightManager : MonoBehaviourPunCallbacks
     }
     private float UpdateCountdownTimer()
     {
-
-        countdownTimer -= Time.deltaTime;
+        if(countdownTimer > 0)
+        {
+            countdownTimer -= Time.deltaTime;
+        }
+        
         return countdownTimer;
     }
 
