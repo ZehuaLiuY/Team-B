@@ -94,26 +94,25 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         // 随机选择一个人类玩家
         int humanIndex = UnityEngine.Random.Range(0, playerIndices.Count);
+        var humanPlayer = players[humanIndex];
+
+        Hashtable roomProps = new Hashtable();
+        roomProps.Add("HumanPlayer", humanPlayer.ActorNumber);
+
         playerIndices.RemoveAt(humanIndex);
 
-        // 分配Cheese类型
-        string[] cheeseTypes = { "Cheese", "Cheese1", "Cheese2" };
-        List<string> availableCheeseTypes = new List<string>(cheeseTypes);
-    
-        var customProperties = new ExitGames.Client.Photon.Hashtable();
-        customProperties["HumanPlayer"] = players[humanIndex].ActorNumber;
-    
-        // 随机分配Cheese类型给其他玩家
-        foreach (int i in playerIndices)
+        // set the custom properties for human player
+        Hashtable humanProps = new Hashtable { { "PlayerType", "Human" } };
+        humanPlayer.SetCustomProperties(humanProps);
+
+        // cheese players
+        foreach (int index in playerIndices)
         {
-            int cheeseIndex = UnityEngine.Random.Range(0, availableCheeseTypes.Count);
-            string cheeseType = availableCheeseTypes[cheeseIndex];
-            availableCheeseTypes.RemoveAt(cheeseIndex); // 移除已分配的类型
-        
-            customProperties["PlayerType_" + players[i].ActorNumber] = cheeseType;
+            var player = players[index];
+            Hashtable cheeseProps = new Hashtable { { "PlayerType", "Cheese" } };
+            player.SetCustomProperties(cheeseProps);
         }
-    
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
     }
 
     void SpawnPlayer(int humanPlayerActorNumber)
@@ -133,7 +132,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             playerName = "Player" + PhotonNetwork.LocalPlayer.ActorNumber;
         }
 
-    
+
         Transform humanSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
         Vector3 humanPos = humanSpawnPoint.position;
     
@@ -145,11 +144,10 @@ public class FightManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)
         {
             GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
-            human.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Human";
 
             // set the minimap icon for human
             int humanViewID = human.GetComponent<PhotonView>().ViewID;
-            _miniMapPhotonView.RPC("AddHumanIconRPC", RpcTarget.All, humanViewID);
+            _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, humanViewID);
 
             //camera follow the human
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
@@ -166,11 +164,10 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
 
             GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
-            cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese";
 
             // set the minimap icon for cheese
             int cheeseViewID = cheese.GetComponent<PhotonView>().ViewID;
-            _miniMapPhotonView.RPC("AddCheeseIconRPC", RpcTarget.All, cheeseViewID);
+            _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, cheeseViewID);
 
             //camera follow the cheese
             CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
@@ -352,17 +349,14 @@ public class FightManager : MonoBehaviourPunCallbacks
     
    
 
-    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
-
-       
         if (propertiesThatChanged.ContainsKey("HumanPlayer"))
         {
             humanPlayerActorNumber = (int)propertiesThatChanged["HumanPlayer"];
             SpawnPlayer(humanPlayerActorNumber);
             DisplayUIBasedOnRole();
         }
-        
     }
 
     public void QuitToLoginScene()

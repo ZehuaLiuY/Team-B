@@ -45,20 +45,15 @@ public class MiniMapController : MonoBehaviourPunCallbacks
 
     public void AddPlayerIcon(GameObject player)
     {
-
         string playerType = player.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] as string;
-        Debug.Log("AddPlayerIcon called, playerType: " + playerType);
-        // Debug.Log("AddPlayerIcon called, localPlayerType: " + _localPlayerType);
-
-        GameObject iconPrefab = playerType == "Human" ? humanIconPrefab : cheeseIconPrefab;
-        _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
-        _playerIcons[player] = _playerIcon;
-        // Debug.Log("playerIcons[player]: " + _playerIcons[player]);
-        // UpdatePlayerIcon(player.transform.position, _playerIcon);
-        // Debug.Log("AddPlayerIcon");
-
-
+        if (playerType == _localPlayerType)
+        {
+            GameObject iconPrefab = playerType == "Human" ? humanIconPrefab : cheeseIconPrefab;
+            _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
+            _playerIcons[player] = _playerIcon;
+        }
     }
+
 
     [PunRPC]
     public void AddPlayerIconRPC(int viewID)
@@ -75,43 +70,6 @@ public class MiniMapController : MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
-    public void AddCheeseIconRPC(int viewID)
-    {
-        if (_localPlayerType == "Cheese")
-        {
-            PhotonView targetView = PhotonView.Find(viewID);
-            if (targetView != null)
-            {
-                GameObject iconPrefab = cheeseIconPrefab;
-                _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
-                _playerIcons[targetView.gameObject] = _playerIcon;
-            }
-            else
-            {
-                Debug.LogError("Unable to find player with PhotonView ID: " + viewID);
-            }
-        }
-    }
-
-    [PunRPC]
-    public void AddHumanIconRPC(int viewID)
-    {
-        if (_localPlayerType == "Human")
-        {
-            PhotonView targetView = PhotonView.Find(viewID);
-            if (targetView != null)
-            {
-                GameObject iconPrefab = humanIconPrefab;
-                _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
-                _playerIcons[targetView.gameObject] = _playerIcon;
-            }
-            else
-            {
-                Debug.LogError("Unable to find player with PhotonView ID: " + viewID);
-            }
-        }
-    }
 
     public void UpdatePlayerIcon(GameObject player, Vector3 newPosition)
     {
