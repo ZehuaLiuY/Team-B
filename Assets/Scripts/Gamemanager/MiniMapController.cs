@@ -9,8 +9,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class MiniMapController : MonoBehaviourPunCallbacks
 {
     public RectTransform minimapRect;
-    public GameObject humanIconPrefab;
-    public GameObject cheeseIconPrefab;
+    public GameObject localPlayerIconPrefab;
+    public GameObject networkPlayerIconPrefab;
     private RectTransform _playerIcon;
     private Dictionary<GameObject, RectTransform> _playerIcons = new Dictionary<GameObject, RectTransform>();
 
@@ -46,9 +46,10 @@ public class MiniMapController : MonoBehaviourPunCallbacks
     public void AddPlayerIcon(GameObject player)
     {
         string playerType = player.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] as string;
+        PhotonView playerPV = player.GetComponent<PhotonView>();
         if (playerType == _localPlayerType)
         {
-            GameObject iconPrefab = playerType == "Human" ? humanIconPrefab : cheeseIconPrefab;
+            GameObject iconPrefab = playerPV.IsMine ? localPlayerIconPrefab : networkPlayerIconPrefab;
             _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
             _playerIcons[player] = _playerIcon;
         }
