@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using static UnityEngine.Rendering.DebugUI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 
 public class FightManager : MonoBehaviourPunCallbacks
@@ -46,38 +47,15 @@ public class FightManager : MonoBehaviourPunCallbacks
             AssignRoles();
         }
     }
-
-    // void Start()
-    // {
-    //     Game.uiManager.CloseAllUI();
-    //     fightUI = Game.uiManager.ShowUI<FightUI>("FightUI");
-    //
-    //     Game.uiManager.ShowUI<FightUI>("FightUI");
-    //     _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // 减去1是因为其中一个玩家是人类玩家
-    // }
     
     void Start()
     {
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // 减去1是因为其中一个玩家是人类玩家
 
-        Debug.Log(_isHumanWin);
         generateSkillBall();
     }
-    
-    // void DisplayUIBasedOnRole()
-    // {
-    //     string playerType = (string)PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"];
-    //
-    //     if (playerType == "Human")
-    //     {
-    //         fightUI = Game.uiManager.ShowUI<FightUI>("Human_FightUI");
-    //     }
-    //     else if (playerType == "Cheese")
-    //     {
-    //         fightUI1 = Game.uiManager.ShowUI<FightUI1>("Cheese_FightUI");
-    //     }
-    // }
+
     void DisplayUIBasedOnRole()
     {
         string playerType = (string)PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"];
@@ -168,9 +146,12 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
             human.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Human";
-            // miniMapController.AddPlayerIcon(human);
+
+            // set the minimap icon for human
             int humanViewID = human.GetComponent<PhotonView>().ViewID;
-            _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, humanViewID);
+            _miniMapPhotonView.RPC("AddHumanIconRPC", RpcTarget.All, humanViewID);
+
+            //camera follow the human
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             vc.Follow = human.transform.Find("PlayerRoot").transform;
             
@@ -183,19 +164,19 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            // 根据房间属性中的类型实例化Cheese角色
-            string playerType = (string)PhotonNetwork.CurrentRoom.CustomProperties["PlayerType_" + PhotonNetwork.LocalPlayer.ActorNumber];
-            GameObject cheese = PhotonNetwork.Instantiate(playerType, pos, Quaternion.identity);
-            cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = playerType;
-            
-            // GameObject cheese = PhotonNetwork.Instantiate("Cheese1", pos, Quaternion.identity);
-            // cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese1";
-            
-            // miniMapController.AddPlayerIcon(cheese);
+
+            GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
+            cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese";
+
+            // set the minimap icon for cheese
             int cheeseViewID = cheese.GetComponent<PhotonView>().ViewID;
-            _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, cheeseViewID);
+            _miniMapPhotonView.RPC("AddCheeseIconRPC", RpcTarget.All, cheeseViewID);
+
+            //camera follow the cheese
             CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             cheeseVC.Follow = cheese.transform.Find("PlayerRoot").transform;
+
+            // set player name
             PlayerNameDisplay nameDisplay = cheese.GetComponentInChildren<PlayerNameDisplay>();
             if (nameDisplay != null)
             {

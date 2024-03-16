@@ -20,9 +20,8 @@ public class MiniMapController : MonoBehaviourPunCallbacks
 
     private void InitializeMiniMap()
     {
-        float worldSize = 4000f; // The size of the game world
+        float worldSize = 4000f; // TODO: change it to the real game world size
         float mapSize = minimapRect.sizeDelta.y; // The height of the minimap UI
-        // Debug.Log(mapSize);
         _mapScale = mapSize / worldSize;
     }
 
@@ -76,22 +75,43 @@ public class MiniMapController : MonoBehaviourPunCallbacks
         }
     }
 
-
-
-    void Update()
+    [PunRPC]
+    public void AddCheeseIconRPC(int viewID)
     {
-        // foreach (var kvp in _playerIcons)
-        // {
-        //     UpdatePlayerIcon(kvp.Key.transform.position, kvp.Value);
-        // }
+        if (_localPlayerType == "Cheese")
+        {
+            PhotonView targetView = PhotonView.Find(viewID);
+            if (targetView != null)
+            {
+                GameObject iconPrefab = cheeseIconPrefab;
+                _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
+                _playerIcons[targetView.gameObject] = _playerIcon;
+            }
+            else
+            {
+                Debug.LogError("Unable to find player with PhotonView ID: " + viewID);
+            }
+        }
     }
 
-    // private void UpdatePlayerIcon(Vector3 playerWorldPosition, RectTransform playerIcon)
-    // {
-    //     _minimapPosition = new Vector2(playerWorldPosition.x, playerWorldPosition.z) * _mapScale;
-    //     playerIcon.anchoredPosition = _minimapPosition;
-    //     // Debug.Log(playerIcon.anchoredPosition == _minimapPosition);
-    // }
+    [PunRPC]
+    public void AddHumanIconRPC(int viewID)
+    {
+        if (_localPlayerType == "Human")
+        {
+            PhotonView targetView = PhotonView.Find(viewID);
+            if (targetView != null)
+            {
+                GameObject iconPrefab = humanIconPrefab;
+                _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
+                _playerIcons[targetView.gameObject] = _playerIcon;
+            }
+            else
+            {
+                Debug.LogError("Unable to find player with PhotonView ID: " + viewID);
+            }
+        }
+    }
 
     public void UpdatePlayerIcon(GameObject player, Vector3 newPosition)
     {
@@ -125,26 +145,4 @@ public class MiniMapController : MonoBehaviourPunCallbacks
             Debug.LogError("Unable to find PhotonView with ID: " + viewID);
         }
     }
-
-
-
-    // public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    // {
-    //     if (stream.IsWriting)
-    //     {
-    //         if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
-    //         {
-    //             stream.SendNext(_playerIcon);
-    //             stream.SendNext(_minimapPosition);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
-    //         {
-    //             _playerIcon = (RectTransform)stream.ReceiveNext();
-    //             _minimapPosition = (Vector2)stream.ReceiveNext();
-    //         }
-    //     }
-    // }
 }
