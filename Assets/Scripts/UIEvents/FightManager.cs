@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using static UnityEngine.Rendering.DebugUI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 
 public class FightManager : MonoBehaviourPunCallbacks
@@ -46,38 +47,15 @@ public class FightManager : MonoBehaviourPunCallbacks
             AssignRoles();
         }
     }
-
-    // void Start()
-    // {
-    //     Game.uiManager.CloseAllUI();
-    //     fightUI = Game.uiManager.ShowUI<FightUI>("FightUI");
-    //
-    //     Game.uiManager.ShowUI<FightUI>("FightUI");
-    //     _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // 减去1是因为其中一个玩家是人类玩家
-    // }
     
     void Start()
     {
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // 减去1是因为其中一个玩家是人类玩家
 
-        Debug.Log(_isHumanWin);
         generateSkillBall();
     }
-    
-    // void DisplayUIBasedOnRole()
-    // {
-    //     string playerType = (string)PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"];
-    //
-    //     if (playerType == "Human")
-    //     {
-    //         fightUI = Game.uiManager.ShowUI<FightUI>("Human_FightUI");
-    //     }
-    //     else if (playerType == "Cheese")
-    //     {
-    //         fightUI1 = Game.uiManager.ShowUI<FightUI1>("Cheese_FightUI");
-    //     }
-    // }
+
     void DisplayUIBasedOnRole()
     {
         string playerType = (string)PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"];
@@ -116,26 +94,25 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         // 随机选择一个人类玩家
         int humanIndex = UnityEngine.Random.Range(0, playerIndices.Count);
+        var humanPlayer = players[humanIndex];
+
+        Hashtable roomProps = new Hashtable();
+        roomProps.Add("HumanPlayer", humanPlayer.ActorNumber);
+
         playerIndices.RemoveAt(humanIndex);
 
-        // 分配Cheese类型
-        string[] cheeseTypes = { "Cheese", "Cheese1", "Cheese2" };
-        List<string> availableCheeseTypes = new List<string>(cheeseTypes);
-    
-        var customProperties = new ExitGames.Client.Photon.Hashtable();
-        customProperties["HumanPlayer"] = players[humanIndex].ActorNumber;
-    
-        // 随机分配Cheese类型给其他玩家
-        foreach (int i in playerIndices)
+        // set the custom properties for human player
+        Hashtable humanProps = new Hashtable { { "PlayerType", "Human" } };
+        humanPlayer.SetCustomProperties(humanProps);
+
+        // cheese players
+        foreach (int index in playerIndices)
         {
-            int cheeseIndex = UnityEngine.Random.Range(0, availableCheeseTypes.Count);
-            string cheeseType = availableCheeseTypes[cheeseIndex];
-            availableCheeseTypes.RemoveAt(cheeseIndex); // 移除已分配的类型
-        
-            customProperties["PlayerType_" + players[i].ActorNumber] = cheeseType;
+            var player = players[index];
+            Hashtable cheeseProps = new Hashtable { { "PlayerType", "Cheese" } };
+            player.SetCustomProperties(cheeseProps);
         }
-    
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
     }
 
     void SpawnPlayer(int humanPlayerActorNumber)
@@ -155,7 +132,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             playerName = "Player" + PhotonNetwork.LocalPlayer.ActorNumber;
         }
 
-    
+
         Transform humanSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
         Vector3 humanPos = humanSpawnPoint.position;
     
@@ -167,10 +144,12 @@ public class FightManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)
         {
             GameObject human = PhotonNetwork.Instantiate("Human", humanPos, Quaternion.identity);
-            human.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Human";
-            // miniMapController.AddPlayerIcon(human);
+
+            // set the minimap icon for human
             int humanViewID = human.GetComponent<PhotonView>().ViewID;
             _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, humanViewID);
+
+            //camera follow the human
             CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             vc.Follow = human.transform.Find("PlayerRoot").transform;
             
@@ -183,19 +162,18 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            // 根据房间属性中的类型实例化Cheese角色
-            string playerType = (string)PhotonNetwork.CurrentRoom.CustomProperties["PlayerType_" + PhotonNetwork.LocalPlayer.ActorNumber];
-            GameObject cheese = PhotonNetwork.Instantiate(playerType, pos, Quaternion.identity);
-            cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = playerType;
-            
-            // GameObject cheese = PhotonNetwork.Instantiate("Cheese1", pos, Quaternion.identity);
-            // cheese.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] = "Cheese1";
-            
-            // miniMapController.AddPlayerIcon(cheese);
+
+            GameObject cheese = PhotonNetwork.Instantiate("Cheese", pos, Quaternion.identity);
+
+            // set the minimap icon for cheese
             int cheeseViewID = cheese.GetComponent<PhotonView>().ViewID;
             _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, cheeseViewID);
+
+            //camera follow the cheese
             CinemachineVirtualCamera cheeseVC = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
             cheeseVC.Follow = cheese.transform.Find("PlayerRoot").transform;
+
+            // set player name
             PlayerNameDisplay nameDisplay = cheese.GetComponentInChildren<PlayerNameDisplay>();
             if (nameDisplay != null)
             {
@@ -371,17 +349,14 @@ public class FightManager : MonoBehaviourPunCallbacks
     
    
 
-    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
-
-       
         if (propertiesThatChanged.ContainsKey("HumanPlayer"))
         {
             humanPlayerActorNumber = (int)propertiesThatChanged["HumanPlayer"];
             SpawnPlayer(humanPlayerActorNumber);
             DisplayUIBasedOnRole();
         }
-        
     }
 
     public void QuitToLoginScene()

@@ -28,7 +28,7 @@ public class LobbyUI : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
-        Debug.Log("Joined lobby");
+
     }
 
     public void OnCloseBtn()
@@ -61,7 +61,6 @@ public class LobbyUI : MonoBehaviourPunCallbacks
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         Game.uiManager.CloseUI("MaskUI");
-        Debug.Log("Room list updated");
 
         ClearRoomList();
 
@@ -73,7 +72,6 @@ public class LobbyUI : MonoBehaviourPunCallbacks
             obj.transform.Find("roomName").GetComponent<Text>().text = roomName;
             obj.transform.Find("joinBtn").GetComponent<Button>().onClick.AddListener(delegate()
             {
-                Debug.Log(roomName);
                 // join room
                 Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Joining room...");
                 PhotonNetwork.JoinRoom(roomName);

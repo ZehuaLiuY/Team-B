@@ -9,8 +9,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class MiniMapController : MonoBehaviourPunCallbacks
 {
     public RectTransform minimapRect;
-    public GameObject humanIconPrefab;
-    public GameObject cheeseIconPrefab;
+    public GameObject localPlayerIconPrefab;
+    public GameObject networkPlayerIconPrefab;
     private RectTransform _playerIcon;
     private Dictionary<GameObject, RectTransform> _playerIcons = new Dictionary<GameObject, RectTransform>();
 
@@ -20,9 +20,8 @@ public class MiniMapController : MonoBehaviourPunCallbacks
 
     private void InitializeMiniMap()
     {
-        float worldSize = 4000f; // The size of the game world
+        float worldSize = 4000f; // TODO: change it to the real game world size
         float mapSize = minimapRect.sizeDelta.y; // The height of the minimap UI
-        // Debug.Log(mapSize);
         _mapScale = mapSize / worldSize;
     }
 
@@ -46,20 +45,16 @@ public class MiniMapController : MonoBehaviourPunCallbacks
 
     public void AddPlayerIcon(GameObject player)
     {
-
         string playerType = player.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] as string;
-        Debug.Log("AddPlayerIcon called, playerType: " + playerType);
-        // Debug.Log("AddPlayerIcon called, localPlayerType: " + _localPlayerType);
-
-        GameObject iconPrefab = playerType == "Human" ? humanIconPrefab : cheeseIconPrefab;
-        _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
-        _playerIcons[player] = _playerIcon;
-        // Debug.Log("playerIcons[player]: " + _playerIcons[player]);
-        // UpdatePlayerIcon(player.transform.position, _playerIcon);
-        // Debug.Log("AddPlayerIcon");
-
-
+        PhotonView playerPV = player.GetComponent<PhotonView>();
+        if (playerType == _localPlayerType)
+        {
+            GameObject iconPrefab = playerPV.IsMine ? localPlayerIconPrefab : networkPlayerIconPrefab;
+            _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
+            _playerIcons[player] = _playerIcon;
+        }
     }
+
 
     [PunRPC]
     public void AddPlayerIconRPC(int viewID)
@@ -76,22 +71,6 @@ public class MiniMapController : MonoBehaviourPunCallbacks
         }
     }
 
-
-
-    void Update()
-    {
-        // foreach (var kvp in _playerIcons)
-        // {
-        //     UpdatePlayerIcon(kvp.Key.transform.position, kvp.Value);
-        // }
-    }
-
-    // private void UpdatePlayerIcon(Vector3 playerWorldPosition, RectTransform playerIcon)
-    // {
-    //     _minimapPosition = new Vector2(playerWorldPosition.x, playerWorldPosition.z) * _mapScale;
-    //     playerIcon.anchoredPosition = _minimapPosition;
-    //     // Debug.Log(playerIcon.anchoredPosition == _minimapPosition);
-    // }
 
     public void UpdatePlayerIcon(GameObject player, Vector3 newPosition)
     {
@@ -125,26 +104,4 @@ public class MiniMapController : MonoBehaviourPunCallbacks
             Debug.LogError("Unable to find PhotonView with ID: " + viewID);
         }
     }
-
-
-
-    // public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    // {
-    //     if (stream.IsWriting)
-    //     {
-    //         if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
-    //         {
-    //             stream.SendNext(_playerIcon);
-    //             stream.SendNext(_minimapPosition);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         if (PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"] as string == _localPlayerType)
-    //         {
-    //             _playerIcon = (RectTransform)stream.ReceiveNext();
-    //             _minimapPosition = (Vector2)stream.ReceiveNext();
-    //         }
-    //     }
-    // }
 }

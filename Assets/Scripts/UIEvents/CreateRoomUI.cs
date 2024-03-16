@@ -36,7 +36,6 @@ public class CreateRoomUI : MonoBehaviourPunCallbacks
 
     public override void OnCreatedRoom()
     {
-        Debug.Log("Room created successfully!");
         Game.uiManager.CloseAllUI();
         // Game.uiManager.CloseUI(gameObject.name);
         Game.uiManager.ShowUI<RoomUI>("RoomUI");
