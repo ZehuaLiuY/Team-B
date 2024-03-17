@@ -72,13 +72,14 @@ public class MiniMapController : MonoBehaviourPunCallbacks
     }
 
 
-    public void UpdatePlayerIcon(GameObject player, Vector3 newPosition)
+    public void UpdatePlayerIcon(GameObject player, Vector3 newPosition, Quaternion newRotation)
     {
         if (_playerIcons.ContainsKey(player))
         {
             RectTransform iconTransform = _playerIcons[player];
             Vector2 minimapPosition = new Vector2(newPosition.x, newPosition.z) * _mapScale;
             iconTransform.anchoredPosition = minimapPosition;
+            iconTransform.localEulerAngles = new Vector3(0, 0, -newRotation.eulerAngles.y);
         }
         else
         {

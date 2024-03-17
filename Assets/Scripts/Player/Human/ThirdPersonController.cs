@@ -134,6 +134,7 @@ namespace StarterAssets
         public Quaternion currentRot;
 
         private MiniMapController _miniMapController;
+        private Transform _cachedTransform;
         
         public void EnableSprinting(bool enable)
         {
@@ -168,6 +169,7 @@ namespace StarterAssets
                 AssignAnimationIDs();
             }
 
+            _cachedTransform = transform;
             _miniMapController = FindObjectOfType<MiniMapController>();
 
         }
@@ -209,7 +211,7 @@ namespace StarterAssets
 
                 if (Vector3.Distance(transform.position, currentPos) > 0.1f)
                 {
-                    _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
+                    _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
                 }
             }
             else
@@ -318,7 +320,7 @@ namespace StarterAssets
             transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
             transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
 
-            _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
+            _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
         }
 
         private void AssignAnimationIDs()
