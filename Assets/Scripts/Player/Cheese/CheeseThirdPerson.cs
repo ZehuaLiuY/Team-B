@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Voice.Unity;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -120,6 +121,9 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         private bool _hasAnimator;
 
+        private Recorder _recorder;
+
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -150,7 +154,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             }
 
             _miniMapController = FindObjectOfType<MiniMapController>();
-
+            _recorder = GetComponent<Recorder>();
         }
 
         private void Start()
@@ -191,6 +195,16 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 if (Vector3.Distance(transform.position, currentPos) > 0.1f)
                 {
                     _miniMapController.UpdatePlayerIcon(gameObject, transform.position, transform.rotation);
+                }
+
+                // voice control
+                if (Input.GetKeyDown(KeyCode.V))
+                {
+                    _recorder.TransmitEnabled = true;
+                }
+                if (Input.GetKeyUp(KeyCode.V))
+                {
+                    _recorder.TransmitEnabled = false;
                 }
                 
             }
