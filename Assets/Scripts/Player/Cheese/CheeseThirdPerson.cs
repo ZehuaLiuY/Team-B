@@ -188,7 +188,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
                 if (Vector3.Distance(transform.position, currentPos) > 0.1f)
                 {
-                    _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
+                    _miniMapController.UpdatePlayerIcon(gameObject, transform.position, transform.rotation);
                 }
                 
             }
@@ -210,7 +210,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
             transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
 
-            _miniMapController.UpdatePlayerIcon(gameObject, transform.position);
+            _miniMapController.UpdatePlayerIcon(gameObject, transform.position, transform.rotation);
         }
 
         
