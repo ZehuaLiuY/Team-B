@@ -8,7 +8,7 @@ public class CheeseSmellController : MonoBehaviourPun
 {
     public ParticleSystem smellParticlePrefab;
 
-    private int _smellGenerateInterval = 10;
+    private int _smellGenerateInterval = 30;
 
     public List<ParticleSystem> smellParticles = new List<ParticleSystem>();
 
@@ -49,37 +49,37 @@ public class CheeseSmellController : MonoBehaviourPun
         // 持续释放气味
         smellParticle.Play();
 
-        // 将生成的粒子系统加入列表
-        smellParticles.Add(smellParticle);
+        //// 将生成的粒子系统加入列表
+        //smellParticles.Add(smellParticle);
 
-        // 添加气味消散效果, 延迟1秒后关闭粒子系统
-        Invoke("StopParticle", 1f);
+        //// 添加气味消散效果, 延迟1秒后关闭粒子系统
+        //Invoke("StopParticle", 1f);
 
     }
 
 
-    void StopParticle()
-    {
-        if (smellParticles.Count > 0)
-        {
-            ParticleSystem particleSystem = smellParticles[0];
-            smellParticles.RemoveAt(0);
-            particleSystem.Stop();
-        }
-    }
+    //void StopParticle()
+    //{
+    //    if (smellParticles.Count > 0)
+    //    {
+    //        ParticleSystem particleSystem = smellParticles[0];
+    //        smellParticles.RemoveAt(0);
+    //        particleSystem.Stop();
+    //    }
+    //}
 
-    //用于停止粒子系统
-    public void StopParticles()
-    {
-        if(smellParticles.Count > 0)
-        {
-            foreach (ParticleSystem particleSystem in smellParticles)
-            {
-                particleSystem.Stop();
-            }
-        }
+    ////用于停止粒子系统
+    //public void StopParticles()
+    //{
+    //    if(smellParticles.Count > 0)
+    //    {
+    //        foreach (ParticleSystem particleSystem in smellParticles)
+    //        {
+    //            particleSystem.Stop();
+    //        }
+    //    }
         
-    }
+    //}
 
 
 }

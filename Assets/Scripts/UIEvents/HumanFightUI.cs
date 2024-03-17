@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 public class HumanFightUI : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class HumanFightUI : MonoBehaviour
     private Transform tutorialPanel;
     private Image StaminaBar;
     private TMP_Text cheeseCaughtText;
+
 
     private float previousTime;
     private bool iscount;
@@ -40,6 +42,7 @@ public class HumanFightUI : MonoBehaviour
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
         tutorialPanel = transform.Find("TutorialPanel");
         cheeseCaughtText = transform.Find("CheeseCaughtText").GetComponent<TMP_Text>();
+     
         Transform hpTransform = transform.Find("hp");
         if (hpTransform != null && hpTransform.childCount > 0) {
             // 假设hp下只有一个子对象，直接获取第一个子对象

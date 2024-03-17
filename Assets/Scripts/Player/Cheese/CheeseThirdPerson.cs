@@ -68,7 +68,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         
         public ParticleSystem OnFireSystemPrefab;
 
-        private CheeseSmellController _cheeseSmellController;
+        
 
         //cheese state
         public bool isDie = false;
@@ -102,6 +102,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         public Quaternion currentRot;
 
         private MiniMapController _miniMapController;
+
+        private CheeseSmellController _cheeseSmellController;
 
 
 #if ENABLE_INPUT_SYSTEM
@@ -456,7 +458,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             gameObject.SetActive(false);
 
             // 停止粒子系统
-            _cheeseSmellController.StopParticles();
+            //_cheeseSmellController.StopParticles();
 
             _fightManager.CheeseDied();
 
