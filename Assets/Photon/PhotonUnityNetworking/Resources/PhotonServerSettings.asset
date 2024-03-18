@@ -16,7 +16,7 @@ MonoBehaviour:
     AppIdRealtime: cf8089f8-af06-43bf-8d56-222884530f9c
     AppIdFusion: 
     AppIdChat: 
-    AppIdVoice: 
+    AppIdVoice: cf8089f8-af06-43bf-8d56-222884530f9c
     AppVersion: 
     UseNameServer: 1
     FixedRegion: 
@@ -75,6 +75,8 @@ MonoBehaviour:
   - HidePlayerIconRPC
   - AddCheeseIconRPC
   - AddHumanIconRPC
+  - CantHearYou
+  - HeresWhy
   DisableAutoOpenWizard: 1
-  ShowSettings: 0
+  ShowSettings: 1
   DevRegionSetOnce: 1

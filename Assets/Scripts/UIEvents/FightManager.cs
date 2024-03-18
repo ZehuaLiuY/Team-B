@@ -8,6 +8,7 @@ using UnityEditor.Rendering;
 using Photon.Pun.UtilityScripts;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using Photon.Voice.Unity;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using static UnityEngine.Rendering.DebugUI;
@@ -19,8 +20,11 @@ public class FightManager : MonoBehaviourPunCallbacks
     private bool _gameOver = false; // 游戏是否已经结束
     // private float captureDistance = 2f; // 抓住奶酪的距离阈值
 
-    public Transform pointTf; // respawn points
+    // [FormerlySerializedAs("pointTf")]
+    public Transform cheeseSpawnPoins; // respawn points
     public Transform skillPointTf;
+    public Transform humanSpawnPoints;
+
     private PhotonView _photonView;
 
     private HumanFightUI fightUI;
@@ -118,9 +122,9 @@ public class FightManager : MonoBehaviourPunCallbacks
     void SpawnPlayer(int humanPlayerActorNumber)
     {
         List<Transform> availableSpawnPoints = new List<Transform>();
-        for (int i = 0; i < pointTf.childCount; i++)
+        for (int i = 0; i < cheeseSpawnPoins.childCount; i++)
         {
-            availableSpawnPoints.Add(pointTf.GetChild(i));
+            availableSpawnPoints.Add(cheeseSpawnPoins.GetChild(i));
         }
         
         if(PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerName", out object name))
@@ -159,6 +163,13 @@ public class FightManager : MonoBehaviourPunCallbacks
             {
                 nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
             }
+
+            //set voice channel interest group
+            Recorder recorder = human.GetComponent<Recorder>();
+            if (recorder != null)
+            {
+                recorder.InterestGroup = 1;
+            }
         }
         else
         {
@@ -178,6 +189,13 @@ public class FightManager : MonoBehaviourPunCallbacks
             if (nameDisplay != null)
             {
                 nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
+            }
+
+            // set voice channel interest group
+            Recorder recorder = cheese.GetComponent<Recorder>();
+            if (recorder != null)
+            {
+                recorder.InterestGroup = 2;
             }
         }
     }

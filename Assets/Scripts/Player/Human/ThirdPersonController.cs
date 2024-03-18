@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Voice.Unity;
 using UnityEngine.UI;
 using TMPro;
 
@@ -140,6 +141,9 @@ namespace StarterAssets
         {
             canShift = enable;
         }
+
+        private Recorder _recorder;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -171,7 +175,7 @@ namespace StarterAssets
 
             _cachedTransform = transform;
             _miniMapController = FindObjectOfType<MiniMapController>();
-
+            _recorder = GetComponent<Recorder>();
         }
 
         private void Start()
@@ -213,6 +217,17 @@ namespace StarterAssets
                 {
                     _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
                 }
+
+                // voice control
+                if (Input.GetKeyDown(KeyCode.V))
+                {
+                    _recorder.TransmitEnabled = true;
+                }
+                if (Input.GetKeyUp(KeyCode.V))
+                {
+                    _recorder.TransmitEnabled = false;
+                }
+
             }
             else
             {

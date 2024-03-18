@@ -451,10 +451,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minimapRect: {fileID: 925391645371564292}
-  humanIconPrefab: {fileID: 1836496339338752341, guid: 874937370d960094a9cb992f08953490,
-    type: 3}
-  cheeseIconPrefab: {fileID: 1836496339338752341, guid: deed5520116875c468dd5c7b9e3fa04c,
-    type: 3}
+  localPlayerIconPrefab: {fileID: 0}
+  networkPlayerIconPrefab: {fileID: 0}
 --- !u!1 &3523182466033220374
 GameObject:
   m_ObjectHideFlags: 0
