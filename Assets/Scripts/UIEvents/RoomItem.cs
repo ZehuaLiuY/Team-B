@@ -16,6 +16,7 @@ public class RoomItem : MonoBehaviour
     void Awake()
     {
         photonView = GetComponent<PhotonView>();
+        IsReady = false;
     }
 
     void Start()

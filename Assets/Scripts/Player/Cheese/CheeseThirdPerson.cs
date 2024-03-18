@@ -455,7 +455,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             // hide minimap
             _miniMapController.photonView.RPC("HidePlayerIconRPC", RpcTarget.All, photonView.ViewID);
 
-            gameObject.SetActive(false);
+            Destroy(gameObject);
 
             // 通过 RPC 通知其他客户端隐藏奶酪对象和它的smell
             photonView.RPC("HideCheeseAndSmell", RpcTarget.Others);

@@ -12797,8 +12797,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 251d3b31c3293254a884c379c3ce7537, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointTf: {fileID: 1857823527}
+  cheeseSpawnPoins: {fileID: 1857823527}
   skillPointTf: {fileID: 1653419560}
+  humanSpawnPoints: {fileID: 919194738}
   miniMapController: {fileID: 2071515260}
   playerName: 
 --- !u!4 &474629508
@@ -25472,7 +25473,7 @@ GameObject:
   m_Component:
   - component: {fileID: 919194738}
   m_Layer: 0
-  m_Name: humanPoints
+  m_Name: humanSpawnPoints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51477,7 +51478,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1857823527}
   m_Layer: 0
-  m_Name: Point
+  m_Name: cheeseSpawnPoints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
