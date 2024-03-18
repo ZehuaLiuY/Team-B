@@ -121,29 +121,34 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void SpawnPlayer(int humanPlayerActorNumber)
     {
-        List<Transform> availableSpawnPoints = new List<Transform>();
-        for (int i = 0; i < cheeseSpawnPoins.childCount; i++)
-        {
-            availableSpawnPoints.Add(cheeseSpawnPoins.GetChild(i));
-        }
-        
+        // display the players' name
         if(PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerName", out object name))
         {
             playerName = (string)name;
         }
-        else
+
+        // cheese spawn points
+        List<Transform> cheeseAvailablePoints = new List<Transform>();
+        for (int i = 0; i < cheeseSpawnPoins.childCount; i++)
         {
-            playerName = "Player" + PhotonNetwork.LocalPlayer.ActorNumber;
+            cheeseAvailablePoints.Add(cheeseSpawnPoins.GetChild(i));
         }
 
+        // human spawn points
+        List<Transform> humanAvailablePoints = new List<Transform>();
+        for (int i = 0; i < humanSpawnPoints.childCount; i++)
+        {
+            humanAvailablePoints.Add(humanSpawnPoints.GetChild(i));
+        }
 
-        Transform humanSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
+        // select a random spawn point for human and cheese
+        Transform humanSpawnPoint = humanAvailablePoints[Random.Range(0, humanAvailablePoints.Count)];
         Vector3 humanPos = humanSpawnPoint.position;
-    
-        availableSpawnPoints.Remove(humanSpawnPoint);
-    
-        Transform cheeseSpawnPoint = availableSpawnPoints[UnityEngine.Random.Range(0, availableSpawnPoints.Count)];
+        humanAvailablePoints.Remove(humanSpawnPoint);
+
+        Transform cheeseSpawnPoint = cheeseAvailablePoints[Random.Range(0, cheeseAvailablePoints.Count)];
         Vector3 pos = cheeseSpawnPoint.position;
+        cheeseAvailablePoints.Remove(cheeseSpawnPoint);
     
         if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)
         {
@@ -215,20 +220,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
 
     }
-
-    // void getInstantiate(Vector3 humanPosition, Transform pointTf
-    // {
-    //     List<KeyValuePair<Transform, float>> spawnPointsAndDistances = new List<KeyValuePair<Transform, float>>();
-    //     foreach (Transform spawnPoint in pointTf) {
-    //         float distance = Vector3.Distance(spawnPoint.position, humanPosition);
-    //         spawnPointsAndDistances.Add(new KeyValuePair<Transform, float>(spawnPoint, distance));
-    //     }
-    //
-    //     spawnPointsAndDistances.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
-    //
-    //     Vector3 cheesePosition = spawnPointsAndDistances[0].Key.position;
-    //
-    // }
 
     // Update is called once per frame
     void Update()
