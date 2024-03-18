@@ -25,46 +25,51 @@ public class DieUI : MonoBehaviour
         Game.uiManager.ShowUI<CheeseFightUI>("Cheese_FightUI");
 
         Player[] allPlayers = PhotonNetwork.PlayerList;
-        Debug.Log(allPlayers);
-        List<Player> otherPlayers = allPlayers.ToList();
-        otherPlayers.Remove(PhotonNetwork.LocalPlayer);
+        List<Player> cheesePlayers = allPlayers
+            .Where(p => p != PhotonNetwork.LocalPlayer && p.TagObject is GameObject &&
+                        ((GameObject)p.TagObject).CompareTag("Target")).ToList();
 
-        if (otherPlayers.Count > 0)
+        if (cheesePlayers.Count > 0)
         {
-            Player playerToObserve = otherPlayers[Random.Range(0, otherPlayers.Count)];
-            GameObject playerGameObject = FindPlayerGameObject(playerToObserve);
+            SwitchToRandomPlayer(cheesePlayers);
+        }
 
-            if (playerGameObject != null)
+        StartCoroutine(ObserveOtherPlayerOnClick(cheesePlayers));
+    }
+
+    private void SwitchToRandomPlayer(List<Player> players)
+    {
+        Player playerToObserve = players[Random.Range(0, players.Count)];
+        GameObject playerGameObject = (GameObject)playerToObserve.TagObject;
+        Transform followCameraTransform = playerGameObject.transform.Find("PlayerFollowCamera");
+
+        if (followCameraTransform != null)
+        {
+            CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+            if (vc != null)
             {
-                Transform playerRoot = playerGameObject.transform.Find("PlayerRoot");
-
-                if (playerRoot != null)
-                {
-                    CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
-                    if (vc != null)
-                    {
-                        vc.Follow = playerRoot;
-                    }
-                    else
-                    {
-                        Debug.Log("CinemachineVirtualCamera component not found on 'PlayerFollowCamera'.");
-                    }
-                }
-
+                vc.Follow = followCameraTransform;
             }
+            else
+            {
+                Debug.Log("CinemachineVirtualCamera component not found on 'PlayerFollowCamera'.");
+            }
+        }
+        else
+        {
+            Debug.Log("PlayerFollowCamera not found on 'Cheese(Clone)'.");
         }
     }
 
-    private GameObject FindPlayerGameObject(Player player)
+    private IEnumerator ObserveOtherPlayerOnClick(List<Player> players)
     {
-        foreach (var pv in FindObjectsOfType<PhotonView>())
+        while (true)
         {
-            if (pv.CompareTag("Target"))
+            if (Input.GetMouseButtonDown(0))
             {
-                return pv.gameObject;
+                SwitchToRandomPlayer(players);
             }
+            yield return null;
         }
-        Debug.Log("Player GameObject not found.");
-        return null;
     }
 }
