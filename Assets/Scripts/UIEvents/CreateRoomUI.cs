@@ -24,7 +24,7 @@ public class CreateRoomUI : MonoBehaviourPunCallbacks
     {
         Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Creating room...");
         RoomOptions room = new RoomOptions();
-        room.MaxPlayers = 4;
+        room.MaxPlayers = 20;
         PhotonNetwork.CreateRoom(roomNameInput.text, room);
     }
 
