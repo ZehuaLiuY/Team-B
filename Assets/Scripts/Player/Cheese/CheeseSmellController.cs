@@ -8,11 +8,15 @@ public class CheeseSmellController : MonoBehaviourPun
 {
     public ParticleSystem smellParticlePrefab;
 
+    public ParticleSystem smellEverywhere;
+
     private int _smellGenerateInterval = 30;
 
     public List<ParticleSystem> smellParticles = new List<ParticleSystem>();
 
     private bool _enable = true;
+
+    private bool _disable = false;
 
     // Start is called before the first frame update
     void Start()
@@ -28,7 +32,7 @@ public class CheeseSmellController : MonoBehaviourPun
         {
             if (Time.frameCount % _smellGenerateInterval == 0)
             {
-                photonView.RPC("GenerateSmell", RpcTarget.All);
+                photonView.RPC("GenerateSmell", RpcTarget.All, _disable);
             }
         }
         
@@ -40,46 +44,32 @@ public class CheeseSmellController : MonoBehaviourPun
         _enable = enable;
     }
 
-    [PunRPC]
-    void GenerateSmell()
+    public void setDisable(bool disable)
     {
-        // 在奶酪当前位置生成气味足迹
-        ParticleSystem smellParticle = Instantiate(smellParticlePrefab, transform.position, Quaternion.identity);
+        _disable = disable;
+    }
 
-        // 持续释放气味
-        smellParticle.Play();
+    [PunRPC]
+    void GenerateSmell(bool disable)
+    {
+        if (!disable)
+        {
+            // 在奶酪当前位置生成气味足迹
+            ParticleSystem smellParticle = Instantiate(smellParticlePrefab, transform.position, Quaternion.identity);
 
-        //// 将生成的粒子系统加入列表
-        //smellParticles.Add(smellParticle);
+            // 持续释放气味
+            smellParticle.Play();
+        }
+        else
+        {
+            ParticleSystem smellParticle = Instantiate(smellEverywhere, transform.position, Quaternion.identity);
 
-        //// 添加气味消散效果, 延迟1秒后关闭粒子系统
-        //Invoke("StopParticle", 1f);
+            smellParticle.Play();
+        }
 
     }
 
 
-    //void StopParticle()
-    //{
-    //    if (smellParticles.Count > 0)
-    //    {
-    //        ParticleSystem particleSystem = smellParticles[0];
-    //        smellParticles.RemoveAt(0);
-    //        particleSystem.Stop();
-    //    }
-    //}
-
-    ////用于停止粒子系统
-    //public void StopParticles()
-    //{
-    //    if(smellParticles.Count > 0)
-    //    {
-    //        foreach (ParticleSystem particleSystem in smellParticles)
-    //        {
-    //            particleSystem.Stop();
-    //        }
-    //    }
-        
-    //}
 
 
 }

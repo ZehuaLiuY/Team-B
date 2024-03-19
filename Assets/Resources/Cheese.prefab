@@ -973,7 +973,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4291624b42bcf8b4d915f57d221dabca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smellParticlePrefab: {fileID: 8400006639187567938, guid: 3b7c1babb64c29248bca0362bbfcbf0f,
+  smellParticlePrefab: {fileID: 6600648075936949437, guid: 7f3b5d9b7d224d74781a3880f8b60364,
+    type: 3}
+  smellEverywhere: {fileID: 4864311871123399879, guid: 89747d079847262428e4798f2ff01fdc,
     type: 3}
   smellParticles: []
 --- !u!114 &4448816205474466852
