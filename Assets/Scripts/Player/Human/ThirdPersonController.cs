@@ -86,7 +86,9 @@ namespace StarterAssets
         public float StaminaRecoveryRate = 0.1f;
         public GameObject FlameThrower;
 
-
+        // leader board ui
+        public GameObject leaderboardUIPrefab;
+        private GameObject leaderboardInstance;
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -118,8 +120,6 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
-
-        
 
         private const float _threshold = 0.01f;
         private bool _rotateOnMove = true;
@@ -228,6 +228,25 @@ namespace StarterAssets
                     _recorder.TransmitEnabled = false;
                 }
 
+                // leaderboard display when player hold tab
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+
+                    if (leaderboardInstance == null)
+                    {
+                        leaderboardInstance = Instantiate(leaderboardUIPrefab);
+                        leaderboardInstance.SetActive(true);
+                    }
+                }
+
+                if (Input.GetKeyUp(KeyCode.Tab))
+                {
+                    if (leaderboardInstance != null)
+                    {
+                        Destroy(leaderboardInstance);
+                        leaderboardInstance = null;
+                    }
+                }
             }
             else
             {
