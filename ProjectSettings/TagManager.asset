@@ -11,6 +11,8 @@ TagManager:
   - FakeCheese
   - Detector
   - Skill
+  - Collision
+  - Smell
   layers:
   - Default
   - TransparentFX
@@ -29,7 +31,7 @@ TagManager:
   - Human
   - BoxColliderLayer
   - Cabinet
-  - 
+  - Smell
   - 
   - 
   - 

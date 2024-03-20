@@ -54,6 +54,7 @@ public class CheeseFightUI : MonoBehaviour
             Instance = this;
         }
     }
+
     
     public void InitializeUI(string playerType)
     {
@@ -61,18 +62,32 @@ public class CheeseFightUI : MonoBehaviour
         iscount = true;
         countdownText = transform.Find("CountdownText").GetComponent<Text>();
         tutorialPanel = transform.Find($"TutorialPanel_{playerType}");
-        Transform skillTransform = transform.Find($"{playerType} Skills");
-
-        if (skillTransform != null && skillTransform.childCount > 0)
-        {
-            Transform firstChild = skillTransform.GetChild(0);
-            Skill_Icon = firstChild.GetComponent<Image>();
-            skillTransform.gameObject.SetActive(true);
-        }
-        
         StartCoroutine(BeginStartSequence());
     }
+
+  
+    public void ShowSkillUI(bool show, string skills)
+    {
+        Transform skillTransform = transform.Find(skills);
+        if (skillTransform != null)
+        {
+            skillTransform.gameObject.SetActive(show); // 根据传入的参数显示或隐藏UI
+            if (show)
+            {
+                Skill_Icon = skillTransform.GetComponent<Image>();
+                Transform currentChild = skillTransform.GetChild(0);
+                StartCoroutine(ShowSkillsTutorial(currentChild));
+            }
+        }
+    }
     
+    IEnumerator ShowSkillsTutorial(Transform skillTutorial)
+    {
+        skillTutorial.gameObject.SetActive(true); // 激活教程面板
+        yield return new WaitForSeconds(5f); // 等待指定的秒数
+        skillTutorial.gameObject.SetActive(false); // 隐藏教程面板
+    }
+
     public void UpdateSkill_Icon(float fillAmount)
     {
         if (Skill_Icon != null)

@@ -78,6 +78,9 @@ MonoBehaviour:
   - CantHearYou
   - HeresWhy
   - RpcSyncNames
+  - GenerateSmellChild
+  - JumpSkill
+  - SprintSkill
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

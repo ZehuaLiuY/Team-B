@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 4985097036797231182}
   - component: {fileID: 4741033190669801547}
   - component: {fileID: 8056976006915013113}
-  - component: {fileID: 3644180948743071770}
+  - component: {fileID: 5125389964591747635}
   m_Layer: 0
-  m_Name: Sphere
-  m_TagString: Skill
+  m_Name: Clone Skill
+  m_TagString: Clone Skill
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -106,7 +106,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3644180948743071770
+--- !u!114 &5125389964591747635
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

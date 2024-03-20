@@ -24,7 +24,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     // points
     public Transform cheeseSpawnPoins; // respawn points
-    public Transform skillPointTf;
+    public GameObject skillBallSpawner;
     public Transform humanSpawnPoints;
 
     private PhotonView _photonView;
@@ -59,8 +59,6 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // 减去1是因为其中一个玩家是人类玩家
-
-        generateSkillBall();
     }
 
     void DisplayUIBasedOnRole()
@@ -206,21 +204,20 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
     }
     
-    void generateSkillBall()
+    private void UpdateSkillBallSpawnerActivity()
     {
-        List<Transform> availableSpawnSkillPoints = new List<Transform>();
-        for (int i = 0; i < skillPointTf.childCount; i++)
+        if (!PhotonNetwork.IsConnected || PhotonNetwork.LocalPlayer.CustomProperties == null)
         {
-            availableSpawnSkillPoints.Add(skillPointTf.GetChild(i));
-        }
-        for(int i = 0; i < skillPointTf.childCount; i++)
-        {
-            Transform skillSpawnPoint = availableSpawnSkillPoints[UnityEngine.Random.Range(0, availableSpawnSkillPoints.Count)];
-            PhotonNetwork.Instantiate("Sphere", skillSpawnPoint.position, Quaternion.identity);
-            availableSpawnSkillPoints.Remove(skillSpawnPoint);
+            return;
         }
 
+        object playerType;
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerType", out playerType))
+        {
+            skillBallSpawner.SetActive(playerType.ToString() == "Cheese");
+        }
     }
+    
 
     // Update is called once per frame
     void Update()
@@ -366,11 +363,8 @@ public class FightManager : MonoBehaviourPunCallbacks
             var actorNumbers = propertiesThatChanged["HumanPlayerActorNumbers"] as int[];
             if (actorNumbers != null)
             {
-                // 直接更新 _humanPlayerActorNumbers 列表
-                _humanPlayerActorNumbers.Clear(); // 清空当前列表
-                _humanPlayerActorNumbers.AddRange(actorNumbers); // 添加最新的数据
-
-                // 现在不需要传递 humanPlayerActorNumbers 作为参数
+                _humanPlayerActorNumbers.Clear(); 
+                _humanPlayerActorNumbers.AddRange(actorNumbers);
                 SpawnPlayers();
                 DisplayUIBasedOnRole();
             }
