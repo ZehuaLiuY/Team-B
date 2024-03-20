@@ -132,81 +132,79 @@ public class FightManager : MonoBehaviourPunCallbacks
     }
 
 
-    void SpawnPlayers(List<int> humanPlayerActorNumbers)
-{
-    // get the player name
-    if(!PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerName", out object name))
+    void SpawnPlayers()
     {
-        playerName = "Player" + PhotonNetwork.LocalPlayer.ActorNumber;
-    }
-    else
-    {
-        playerName = (string)name;
-    }
-
-    // ---- init the player ---- //
-    GameObject playerObject;
-    Transform spawnPoint;
-    Vector3 spawnPos;
-    string prefabName;
-    byte interestGroup;
-
-    // check the player type
-    if (humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
-    {
-        // human available points
-        List<Transform> humanAvailablePoints = new List<Transform>();
-        for (int i = 0; i < humanSpawnPoints.childCount; i++)
+        // get the player name
+        if(!PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerName", out object name))
         {
-            humanAvailablePoints.Add(humanSpawnPoints.GetChild(i));
+            playerName = "Player" + PhotonNetwork.LocalPlayer.ActorNumber;
+        }
+        else
+        {
+            playerName = (string)name;
         }
 
-        spawnPoint = humanAvailablePoints[Random.Range(0, humanAvailablePoints.Count)];
-        spawnPos = spawnPoint.position;
-        prefabName = "Human";
-        interestGroup = 1;
-    }
-    else
-    {
-        // cheese available points
-        List<Transform> cheeseAvailablePoints = new List<Transform>();
-        for (int i = 0; i < cheeseSpawnPoins.childCount; i++)
+        // ---- init the player ---- //
+        GameObject playerObject;
+        Transform spawnPoint;
+        Vector3 spawnPos;
+        string prefabName;
+        byte interestGroup;
+
+        // check the player type
+        if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
-            cheeseAvailablePoints.Add(cheeseSpawnPoins.GetChild(i));
+            // human available points
+            List<Transform> humanAvailablePoints = new List<Transform>();
+            for (int i = 0; i < humanSpawnPoints.childCount; i++)
+            {
+                humanAvailablePoints.Add(humanSpawnPoints.GetChild(i));
+            }
+
+            spawnPoint = humanAvailablePoints[Random.Range(0, humanAvailablePoints.Count)];
+            spawnPos = spawnPoint.position;
+            prefabName = "Human";
+            interestGroup = 1;
+        }
+        else
+        {
+            // cheese available points
+            List<Transform> cheeseAvailablePoints = new List<Transform>();
+            for (int i = 0; i < cheeseSpawnPoins.childCount; i++)
+            {
+                cheeseAvailablePoints.Add(cheeseSpawnPoins.GetChild(i));
+            }
+
+            spawnPoint = cheeseAvailablePoints[Random.Range(0, cheeseAvailablePoints.Count)];
+            spawnPos = spawnPoint.position;
+            prefabName = "Cheese";
+            interestGroup = 2;
         }
 
-        spawnPoint = cheeseAvailablePoints[Random.Range(0, cheeseAvailablePoints.Count)];
-        spawnPos = spawnPoint.position;
-        prefabName = "Cheese";
-        interestGroup = 2;
+        // spawn the player
+        playerObject = PhotonNetwork.Instantiate(prefabName, spawnPos, Quaternion.identity);
+
+        // minimap icon display
+        _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
+
+        // camera follow
+        CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+        vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
+
+        // display the player name
+        PlayerNameDisplay nameDisplay = playerObject.GetComponentInChildren<PlayerNameDisplay>();
+        if (nameDisplay != null)
+        {
+            nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
+        }
+
+        // voice channel interest group
+        Recorder recorder = playerObject.GetComponent<Recorder>();
+        if (recorder != null)
+        {
+            recorder.InterestGroup = interestGroup;
+        }
     }
-
-    // spawn the player
-    playerObject = PhotonNetwork.Instantiate(prefabName, spawnPos, Quaternion.identity);
-
-    // minimap icon display
-    _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
-
-    // camera follow
-    CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
-    vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
-
-    // display the player name
-    PlayerNameDisplay nameDisplay = playerObject.GetComponentInChildren<PlayerNameDisplay>();
-    if (nameDisplay != null)
-    {
-        nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
-    }
-
-    // voice channel interest group
-    Recorder recorder = playerObject.GetComponent<Recorder>();
-    if (recorder != null)
-    {
-        recorder.InterestGroup = interestGroup;
-    }
-}
-
-
     
     void generateSkillBall()
     {
@@ -314,7 +312,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         
         if (isHumanWin)
         {
-            if (PhotonNetwork.LocalPlayer.ActorNumber == humanPlayerActorNumber)
+            if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
             {
                 Game.uiManager.ShowUI<WinUI>("WinUI");
                 //Debug.Log("showHumanWinUI");
@@ -327,14 +325,14 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            if (PhotonNetwork.LocalPlayer.ActorNumber != humanPlayerActorNumber)
+            if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
             {
-                Game.uiManager.ShowUI<WinUI>("WinUI");
+                Game.uiManager.ShowUI<LossUI>("LossUI");
                 //Debug.Log("showCheeseWinUI");
             }
             else
             {
-                Game.uiManager.ShowUI<LossUI>("LossUI");
+                Game.uiManager.ShowUI<WinUI>("WinUI");
                 //Debug.Log("showCheeseLossUI");
             }
         }
@@ -368,12 +366,17 @@ public class FightManager : MonoBehaviourPunCallbacks
             var actorNumbers = propertiesThatChanged["HumanPlayerActorNumbers"] as int[];
             if (actorNumbers != null)
             {
-                List<int> humanPlayerActorNumbers = new List<int>(actorNumbers);
-                SpawnPlayers(humanPlayerActorNumbers);
+                // 直接更新 _humanPlayerActorNumbers 列表
+                _humanPlayerActorNumbers.Clear(); // 清空当前列表
+                _humanPlayerActorNumbers.AddRange(actorNumbers); // 添加最新的数据
+
+                // 现在不需要传递 humanPlayerActorNumbers 作为参数
+                SpawnPlayers();
                 DisplayUIBasedOnRole();
             }
         }
     }
+
 
     public void QuitToLoginScene()
     {

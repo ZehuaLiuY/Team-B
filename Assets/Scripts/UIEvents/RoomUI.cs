@@ -58,15 +58,12 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
         roomList.Add(item);
 
         // Set initial values for readiness and player name.
-        object isReadyVal;
-        if (p.CustomProperties.TryGetValue("IsReady", out isReadyVal))
+        if (p.CustomProperties.TryGetValue("IsReady", out object isReadyVal))
         {
             item.IsReady = (bool)isReadyVal;
             item.ChangeReady(item.IsReady);
         }
-
-        object playerNameVal;
-        if (p.CustomProperties.TryGetValue("PlayerName", out playerNameVal))
+        if (p.CustomProperties.TryGetValue("PlayerName", out object playerNameVal))
         {
             item.SetPlayerName((string)playerNameVal);
         }
