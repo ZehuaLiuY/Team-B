@@ -57,14 +57,16 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
         item.ownerId = p.ActorNumber;
         roomList.Add(item);
 
-        object val;
-
-        if (p.CustomProperties.TryGetValue("IsReady", out val))
+        // Set initial values for readiness and player name.
+        if (p.CustomProperties.TryGetValue("IsReady", out object isReadyVal))
         {
-            item.IsReady = (bool)val;
+            item.IsReady = (bool)isReadyVal;
+            item.ChangeReady(item.IsReady);
         }
-
-
+        if (p.CustomProperties.TryGetValue("PlayerName", out object playerNameVal))
+        {
+            item.SetPlayerName((string)playerNameVal);
+        }
     }
 
     public void DeleteRoomItem(Player p)
@@ -116,20 +118,18 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
 
         if (item != null)
         {
+            // Update readiness if it has changed.
             if (changedProps.ContainsKey("IsReady"))
             {
                 item.IsReady = (bool)changedProps["IsReady"];
                 item.ChangeReady(item.IsReady);
             }
 
+            // Update player name if it has changed.
             if (changedProps.ContainsKey("PlayerName"))
             {
                 string newName = (string)changedProps["PlayerName"];
-                // Update the text only if it's different to avoid unnecessary changes
-                if (item.nameInputField.text != newName)
-                {
-                    item.SetPlayerName(newName);
-                }
+                item.SetPlayerName(newName);
             }
         }
 
