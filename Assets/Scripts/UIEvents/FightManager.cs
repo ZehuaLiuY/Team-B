@@ -367,6 +367,7 @@ public class FightManager : MonoBehaviourPunCallbacks
                 _humanPlayerActorNumbers.AddRange(actorNumbers);
                 SpawnPlayers();
                 DisplayUIBasedOnRole();
+                UpdateSkillBallSpawnerActivity();
             }
         }
     }
