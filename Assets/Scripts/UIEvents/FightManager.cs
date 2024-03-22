@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using Cinemachine;
-using UnityEditor.Rendering;
-using Photon.Pun.UtilityScripts;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using Photon.Voice.Unity;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
-using static UnityEngine.Rendering.DebugUI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;
 
@@ -23,17 +16,14 @@ public class FightManager : MonoBehaviourPunCallbacks
     // private float captureDistance = 2f; // 抓住奶酪的距离阈值
 
     // points
-    public Transform cheeseSpawnPoins; // respawn points
+    public Transform cheeseSpawnPoints; // respawn points
     public GameObject skillBallSpawner;
     public Transform humanSpawnPoints;
-
-    private PhotonView _photonView;
 
     private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
     public static float countdownTimer = 180f;
     private bool _isHumanWin = false;
-    private int humanPlayerActorNumber;
     private List<int> _humanPlayerActorNumbers = new List<int>();
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
     private bool _allCheeseDie = false;
@@ -47,7 +37,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        _photonView = GetComponent<PhotonView>();
         _miniMapPhotonView = miniMapController.GetComponent<PhotonView>();
         if (PhotonNetwork.IsMasterClient)
         {
@@ -168,9 +157,9 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             // cheese available points
             List<Transform> cheeseAvailablePoints = new List<Transform>();
-            for (int i = 0; i < cheeseSpawnPoins.childCount; i++)
+            for (int i = 0; i < cheeseSpawnPoints.childCount; i++)
             {
-                cheeseAvailablePoints.Add(cheeseSpawnPoins.GetChild(i));
+                cheeseAvailablePoints.Add(cheeseSpawnPoints.GetChild(i));
             }
 
             spawnPoint = cheeseAvailablePoints[Random.Range(0, cheeseAvailablePoints.Count)];

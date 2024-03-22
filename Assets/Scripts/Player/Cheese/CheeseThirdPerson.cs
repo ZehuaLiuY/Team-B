@@ -415,33 +415,17 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         {
             if (stream.IsWriting)
             {
-                stream.SendNext(_input.move.x);
-                stream.SendNext(_input.move.y);
+                stream.SendNext(_input.move);
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
-                stream.SendNext(_input.look.x);
-                stream.SendNext(_input.look.y);
-                // animation
-                stream.SendNext(_animator.GetFloat(_animIDSpeed));
-                stream.SendNext(_animator.GetBool(_animIDGrounded));
-                stream.SendNext(_animator.GetBool(_animIDJump));
-                stream.SendNext(_animator.GetBool(_animIDFreeFall));
-                stream.SendNext(_animator.GetFloat(_animIDMotionSpeed));
+                stream.SendNext(_input.look);
             }
             else
             {
-                _input.move.x = (float)stream.ReceiveNext();
-                _input.move.y = (float)stream.ReceiveNext();
+                _input.move = (Vector2)stream.ReceiveNext();
                 currentPos = (Vector3)stream.ReceiveNext();
                 currentRot = (Quaternion)stream.ReceiveNext();
-                _input.look.x = (float)stream.ReceiveNext();
-                _input.look.y = (float)stream.ReceiveNext();
-
-                _animator.SetFloat(_animIDSpeed, (float)stream.ReceiveNext());
-                _animator.SetBool(_animIDGrounded, (bool)stream.ReceiveNext());
-                _animator.SetBool(_animIDJump, (bool)stream.ReceiveNext());
-                _animator.SetBool(_animIDFreeFall, (bool)stream.ReceiveNext());
-                _animator.SetFloat(_animIDMotionSpeed, (float)stream.ReceiveNext());
+                _input.look = (Vector2)stream.ReceiveNext();
             }
         }
 

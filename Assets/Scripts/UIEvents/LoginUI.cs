@@ -72,6 +72,7 @@ public class LoginUI : MonoBehaviour, IConnectionCallbacks
         Game.uiManager.CloseAllUI();
         // Debug.Log("Connected to master");
         Game.uiManager.ShowUI<LobbyUI>("LobbyUI");
+        PhotonNetwork.NetworkStatisticsEnabled = true;
     }
 
     public void OnDisconnected(DisconnectCause cause)
