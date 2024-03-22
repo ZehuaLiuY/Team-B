@@ -624,8 +624,7 @@ namespace StarterAssets
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
                 stream.SendNext(_input.shoot);
-                stream.SendNext(_input.look.x);
-                stream.SendNext(_input.look.y);
+                stream.SendNext(_input.look);
 
                 stream.SendNext(_animator.GetFloat(_animIDSpeed));
                 stream.SendNext(_animator.GetBool(_animIDGrounded));

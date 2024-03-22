@@ -16,11 +16,9 @@ public class FightManager : MonoBehaviourPunCallbacks
     // private float captureDistance = 2f; // 抓住奶酪的距离阈值
 
     // points
-    public Transform cheeseSpawnPoins; // respawn points
+    public Transform cheeseSpawnPoints; // respawn points
     public GameObject skillBallSpawner;
     public Transform humanSpawnPoints;
-
-    private PhotonView _photonView;
 
     private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
@@ -39,7 +37,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        _photonView = GetComponent<PhotonView>();
         _miniMapPhotonView = miniMapController.GetComponent<PhotonView>();
         if (PhotonNetwork.IsMasterClient)
         {
@@ -160,9 +157,9 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             // cheese available points
             List<Transform> cheeseAvailablePoints = new List<Transform>();
-            for (int i = 0; i < cheeseSpawnPoins.childCount; i++)
+            for (int i = 0; i < cheeseSpawnPoints.childCount; i++)
             {
-                cheeseAvailablePoints.Add(cheeseSpawnPoins.GetChild(i));
+                cheeseAvailablePoints.Add(cheeseSpawnPoints.GetChild(i));
             }
 
             spawnPoint = cheeseAvailablePoints[Random.Range(0, cheeseAvailablePoints.Count)];
