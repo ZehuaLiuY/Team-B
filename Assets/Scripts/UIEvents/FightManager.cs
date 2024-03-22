@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using Cinemachine;
-using UnityEditor.Rendering;
-using Photon.Pun.UtilityScripts;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using Photon.Voice.Unity;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
-using static UnityEngine.Rendering.DebugUI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;
 
@@ -33,7 +26,6 @@ public class FightManager : MonoBehaviourPunCallbacks
     private CheeseFightUI fightUI1;
     public static float countdownTimer = 180f;
     private bool _isHumanWin = false;
-    private int humanPlayerActorNumber;
     private List<int> _humanPlayerActorNumbers = new List<int>();
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
     private bool _allCheeseDie = false;

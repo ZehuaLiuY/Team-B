@@ -483,21 +483,20 @@ namespace StarterAssets
         private void UpdateStamina()
         {
             if (!_input.sprint || !canSprint || _input.move != Vector2.zero || !canSprint)
-
-        {
-                    Stamina += StaminaRecoveryRate * Time.deltaTime;
-                    if (Stamina >= 1)
-                    {
-                        Stamina = 1;
-                        canSprint = true; // 体力完全恢复，现在可以再次奔跑
-                    }
-                }
-
-                if (HumanFightUI.Instance != null)
+            {
+                Stamina += StaminaRecoveryRate * Time.deltaTime;
+                if (Stamina >= 1)
                 {
-                    HumanFightUI.Instance.UpdateStaminaBar(Stamina); 
-                } 
+                    Stamina = 1;
+                    canSprint = true; // 体力完全恢复，现在可以再次奔跑
+                }
             }
+
+            if (HumanFightUI.Instance != null)
+            {
+                HumanFightUI.Instance.UpdateStaminaBar(Stamina);
+            }
+        }
         
         private void JumpAndGravity()
         {
@@ -621,8 +620,7 @@ namespace StarterAssets
         {
             if (stream.IsWriting)
             {
-                stream.SendNext(_input.move.x);
-                stream.SendNext(_input.move.y);
+                stream.SendNext(_input.move);
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
                 stream.SendNext(_input.shoot);
@@ -638,13 +636,11 @@ namespace StarterAssets
             }
             else
             {
-                _input.move.x = (float)stream.ReceiveNext();
-                _input.move.y = (float)stream.ReceiveNext();
+                _input.move = (Vector2)stream.ReceiveNext();
                 currentPos = (Vector3)stream.ReceiveNext();
                 currentRot = (Quaternion)stream.ReceiveNext();
                 _input.shoot = (bool)stream.ReceiveNext();
-                _input.look.x = (float)stream.ReceiveNext();
-                _input.look.y = (float)stream.ReceiveNext();
+                _input.look = (Vector2)stream.ReceiveNext();
 
                 _animator.SetFloat(_animIDSpeed, (float)stream.ReceiveNext());
                 _animator.SetBool(_animIDGrounded, (bool)stream.ReceiveNext());

@@ -17,14 +17,6 @@ public class PlayerNameDisplay : MonoBehaviourPun {
         }
     }
 
-    // public void SetPlayerName(string name) {
-    //     if (playerNameText != null) {
-    //         playerNameText.text = name;
-    //     } else {
-    //         Debug.LogError("Text component not found on the GameObject.");
-    //     }
-    // }
-
     [PunRPC]
     public void SetPlayerNameRPC(string name) {
         if (playerNameText != null) {

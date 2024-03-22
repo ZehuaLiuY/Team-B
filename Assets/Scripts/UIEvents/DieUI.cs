@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Cinemachine;
 using Photon.Pun;
 using Photon.Realtime;
