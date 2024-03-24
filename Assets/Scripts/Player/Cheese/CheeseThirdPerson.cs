@@ -102,6 +102,9 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         public Vector3 currentPos;
         public Quaternion currentRot;
 
+        private Vector2 _lastMoveInput;
+        private Vector2 _lastLookInput;
+
         private MiniMapController _miniMapController;
 
         private CheeseSmellController _cheeseSmellController;
@@ -415,17 +418,61 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         {
             if (stream.IsWriting)
             {
-                stream.SendNext(_input.move);
-                stream.SendNext(transform.position);
-                stream.SendNext(transform.rotation);
-                stream.SendNext(_input.look);
+                bool positionChanged = Vector3.Distance(transform.position, currentPos) > 0.1f;
+                bool rotationChanged = Quaternion.Angle(transform.rotation, currentRot) > 5.0f;
+                bool moveChanged = _lastMoveInput != _input.move;
+                bool lookChanged = _lastLookInput != _input.look;
+
+                stream.SendNext(positionChanged);
+                stream.SendNext(rotationChanged);
+                stream.SendNext(moveChanged);
+                stream.SendNext(lookChanged);
+
+                if(positionChanged)
+                {
+                    stream.SendNext(transform.position);
+                    currentPos = transform.position;
+                }
+                if(rotationChanged)
+                {
+                    stream.SendNext(transform.rotation);
+                    currentRot = transform.rotation;
+                }
+
+                if(moveChanged)
+                {
+                    stream.SendNext(_input.move);
+                    _lastMoveInput = _input.move;
+                }
+                if(lookChanged)
+                {
+                    stream.SendNext(_input.look);
+                    _lastLookInput = _input.look;
+                }
             }
             else
             {
-                _input.move = (Vector2)stream.ReceiveNext();
-                currentPos = (Vector3)stream.ReceiveNext();
-                currentRot = (Quaternion)stream.ReceiveNext();
-                _input.look = (Vector2)stream.ReceiveNext();
+                bool positionChanged = (bool)stream.ReceiveNext();
+                bool rotationChanged = (bool)stream.ReceiveNext();
+                bool moveChanged = (bool)stream.ReceiveNext();
+                bool lookChanged = (bool)stream.ReceiveNext();
+
+                if(positionChanged)
+                {
+                    currentPos = (Vector3)stream.ReceiveNext();
+                }
+                if(rotationChanged)
+                {
+                    currentRot = (Quaternion)stream.ReceiveNext();
+                }
+                if(moveChanged)
+                {
+                    _input.move = (Vector2)stream.ReceiveNext();
+                }
+                if(lookChanged)
+                {
+                    _input.look = (Vector2)stream.ReceiveNext();
+                }
             }
         }
 
