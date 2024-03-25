@@ -26,7 +26,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private bool _isHumanWin = false;
     private List<int> _humanPlayerActorNumbers = new List<int>();
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
-    private bool _allCheeseDie = false;
+
 
     public MiniMapController miniMapController;
 
@@ -47,7 +47,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     void Start()
     {
         Game.uiManager.CloseAllUI();
-        _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // 减去1是因为其中一个玩家是人类玩家
+        _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // TODO: change this to the actual number of human players
     }
 
     void DisplayUIBasedOnRole()
@@ -60,14 +60,6 @@ public class FightManager : MonoBehaviourPunCallbacks
                 fightUI = Game.uiManager.ShowUI<HumanFightUI>("HumanFightUI");
                 break;
             case "Cheese":
-                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
-                fightUI1.InitializeUI(playerType);
-                break;
-            case "Cheese1":
-                fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
-                fightUI1.InitializeUI(playerType);
-                break;
-            case "Cheese2":
                 fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
                 fightUI1.InitializeUI(playerType);
                 break;
@@ -249,7 +241,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             _isHumanWin = true;
             _gameOver = true;
-            _allCheeseDie = true;
            
             Debug.Log("human win!");
 

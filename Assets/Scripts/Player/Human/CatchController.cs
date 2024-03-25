@@ -20,11 +20,8 @@ public class CatchController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
 
-        Debug.Log("Enter triger");
         if (other.CompareTag("Target"))
         {
-            Debug.Log("Player caught the cheese!");
-
             PhotonView targetPhotonView = other.gameObject.GetComponent<PhotonView>();
 
             if (targetPhotonView != null && Input.GetKeyDown(KeyCode.R))

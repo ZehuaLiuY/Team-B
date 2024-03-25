@@ -16,33 +16,7 @@ public class CheeseFightUI : MonoBehaviour
 
     private float previousTime;
     private bool iscount;
-    //public static float countdownTimer = 180f;
-    // private void Start(string playerType)
-    // {
-    //     Debug.Log(playerType);
-    //     iscount = true;
-    //     countdownText = transform.Find("CountdownText").GetComponent<Text>();
-    //     tutorialPanel = transform.Find($"TutorialPanel_{playerType}");
-    //     Transform Invisible = transform.Find($"{playerType} Skills");
-    //     Invisible.gameObject.SetActive(true);
-    //     if (Invisible != null && Invisible.childCount > 0) {
-    //         // 假设hp下只有一个子对象，直接获取第一个子对象
-    //         Transform firstChild = Invisible.GetChild(0);
-    //         Image image = firstChild.GetComponent<Image>();
-    //         if (image != null) {
-    //             // 成功找到了Image组件
-    //             Skill_Icon = image;
-    //         }
-    //     }
-    //     StartCoroutine(BeginStartSequence());
-    //     
-    //     //--------------------------
-    //     // top left placeholder components
-    //     // transform.Find("hp/fill").GetComponent<Image>().fillAmount =
-    //     // transform.Find("hp/Text").GetComponent<Text>().text =
-    //     //--------------------------
-    //
-    // }
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -53,6 +27,9 @@ public class CheeseFightUI : MonoBehaviour
         {
             Instance = this;
         }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     

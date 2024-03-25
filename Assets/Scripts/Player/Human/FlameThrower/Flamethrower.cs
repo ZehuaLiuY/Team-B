@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Pool;
 using Photon.Pun;
 using StarterAssets;
 
@@ -17,7 +16,7 @@ public class Flamethrower : MonoBehaviourPun
     public AudioClip loopClip;
     
     private bool isShooting = false;
-    private bool updateStaminaBar = true;
+    // private bool updateStaminaBar = true;
     private StarterAssetsInputs _input;
 
     void Awake()

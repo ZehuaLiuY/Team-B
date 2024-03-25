@@ -12,7 +12,6 @@ public class CheckCheeseInside : MonoBehaviour
         if (other.CompareTag("Target"))
         {
             isCheeseInside = true;
-            Debug.Log("cheese inside");
         }
     }
 
@@ -21,7 +20,6 @@ public class CheckCheeseInside : MonoBehaviour
         if (other.CompareTag("Target"))
         {
             isCheeseInside = false;
-            Debug.Log("cheese not inside");
         }
     }
 

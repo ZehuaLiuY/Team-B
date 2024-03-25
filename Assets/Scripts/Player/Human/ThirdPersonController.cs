@@ -656,14 +656,6 @@ namespace StarterAssets
                     _lastLookInput = _input.look;
                 }
                 // stream.SendNext(_input.shoot);
-
-
-                stream.SendNext(_animator.GetFloat(_animIDSpeed));
-                stream.SendNext(_animator.GetBool(_animIDGrounded));
-                stream.SendNext(_animator.GetBool(_animIDJump));
-                stream.SendNext(_animator.GetBool(_animIDFreeFall));
-                stream.SendNext(_animator.GetFloat(_animIDMotionSpeed));
-
             }
             else
             {
@@ -691,12 +683,6 @@ namespace StarterAssets
                 }
 
                 // _input.shoot = (bool)stream.ReceiveNext();
-                
-                _animator.SetFloat(_animIDSpeed, (float)stream.ReceiveNext());
-                _animator.SetBool(_animIDGrounded, (bool)stream.ReceiveNext());
-                _animator.SetBool(_animIDJump, (bool)stream.ReceiveNext());
-                _animator.SetBool(_animIDFreeFall, (bool)stream.ReceiveNext());
-                _animator.SetFloat(_animIDMotionSpeed, (float)stream.ReceiveNext());
             }
         }
     }
