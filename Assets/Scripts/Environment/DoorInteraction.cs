@@ -116,7 +116,6 @@ public class DoorInteraction : MonoBehaviour
     {
         // 实例化 Visual Effect 预制体并放置在门的位置
         currentVFXInstance = PhotonNetwork.Instantiate("VFXSmell", transform.position, Quaternion.identity);
-        Debug.Log("generate smell");
 
         // 让 Visual Effect 开始播放
         //currentVFXInstance.GetComponent<VisualEffect>().Play();
