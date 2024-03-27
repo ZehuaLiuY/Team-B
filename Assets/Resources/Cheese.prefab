@@ -1291,6 +1291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invisibleMaterial: {fileID: 2100000, guid: ae5e97af3ce8d3d4fa7e8bbd7adce3a7, type: 2}
+  Smell: {fileID: 5225884884396166529}
   Skill_Duration: 3
 --- !u!114 &6394952327717741775
 MonoBehaviour:

@@ -91,14 +91,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         // timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
-
-        // animation IDs
-        private int _animIDSpeed;
-        private int _animIDGrounded;
-        private int _animIDJump;
-        private int _animIDFreeFall;
-        private int _animIDMotionSpeed;
-
+        
         public Vector3 currentPos;
         public Quaternion currentRot;
 
@@ -150,11 +143,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             }
 
             _hasAnimator = TryGetComponent(out _animator);
-
-            if (_hasAnimator)
-            {
-                AssignAnimationIDs();
-            }
 
             _miniMapController = FindObjectOfType<MiniMapController>();
             _recorder = GetComponent<Recorder>();
@@ -231,18 +219,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
             _miniMapController.UpdatePlayerIcon(gameObject, transform.position, transform.rotation);
         }
-
         
-
-        private void AssignAnimationIDs()
-        {
-            _animIDSpeed = Animator.StringToHash("Speed");
-            _animIDGrounded = Animator.StringToHash("Grounded");
-            _animIDJump = Animator.StringToHash("Jump");
-            _animIDFreeFall = Animator.StringToHash("FreeFall");
-            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-        }
-
         private void GroundedCheck()
         {
             // set sphere position, with offset
