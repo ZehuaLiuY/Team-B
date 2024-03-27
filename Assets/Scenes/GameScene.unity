@@ -8632,7 +8632,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &336802099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8646,9 +8646,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillBallPrefabs:
+  - {fileID: 1402390600775885671, guid: eeded8882f65f4894aceb2a737e960d7, type: 3}
   - {fileID: 1402390600775885671, guid: 7404057bfe4ce49c4bb84a99991bb72d, type: 3}
   - {fileID: 1402390600775885671, guid: 78bfef230bd99429eac6d535419e77b9, type: 3}
-  - {fileID: 1402390600775885671, guid: eeded8882f65f4894aceb2a737e960d7, type: 3}
   - {fileID: 1402390600775885671, guid: 2df958c8b1f424c5cad41a2781a4023f, type: 3}
   - {fileID: 1402390600775885671, guid: a849ea6d15c4c486da1f10c8fd9cf6f9, type: 3}
   skillPointTf: {fileID: 1653419560}
@@ -18848,7 +18848,7 @@ Light:
   m_InnerSpotAngle: 21.802082
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -18879,9 +18879,9 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 27017
   m_RenderingLayerMask: 1
-  m_Lightmapping: 1
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -28210,7 +28210,7 @@ MonoBehaviour:
   CameraDistance: 100
   CameraCollisionFilter:
     serializedVersion: 2
-    m_Bits: 75776
+    m_Bits: 337920
   IgnoreTag: Player
   CameraRadius: 0.2
   DampingIntoCollision: 0
@@ -29411,7 +29411,7 @@ Transform:
   m_GameObject: {fileID: 1087291528}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 465, y: 2.3, z: 156}
+  m_LocalPosition: {x: 563, y: 2.3, z: 156}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -33756,7 +33756,7 @@ GameObject:
   - component: {fileID: 1258354874}
   - component: {fileID: 1258354873}
   - component: {fileID: 1258354872}
-  m_Layer: 13
+  m_Layer: 18
   m_Name: ceiling
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39219,7 +39219,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1460542657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39261,7 +39261,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -39294,7 +39294,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 2
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -44852,7 +44852,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1666738382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44894,7 +44894,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -44927,7 +44927,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 2
+  m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1

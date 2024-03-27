@@ -13,6 +13,11 @@ TagManager:
   - Skill
   - Collision
   - Smell
+  - Clone Skill
+  - Detector Skill
+  - Sprint Skill
+  - Jump Skill
+  - Invisible Skill
   layers:
   - Default
   - TransparentFX
@@ -32,7 +37,7 @@ TagManager:
   - BoxColliderLayer
   - Cabinet
   - Smell
-  - 
+  - UP
   - 
   - 
   - 

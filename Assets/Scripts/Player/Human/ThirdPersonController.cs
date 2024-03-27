@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Voice.Unity;
-using UnityEngine.UI;
-using TMPro;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -36,9 +34,6 @@ namespace StarterAssets
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
-
-        [Space(10)] [Tooltip("The height the player can jump")]
-        public float JumpHeight = 1.2f;
 
         [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
         public float Gravity = -15.0f;
@@ -102,15 +97,9 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
-        // timeout deltatime
-        private float _jumpTimeoutDelta;
-        private float _fallTimeoutDelta;
-
         // animation IDs
         private int _animIDSpeed;
         private int _animIDGrounded;
-        private int _animIDJump;
-        private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
 #if ENABLE_INPUT_SYSTEM
@@ -192,10 +181,7 @@ namespace StarterAssets
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
-
-            // reset our timeouts on start
-            _jumpTimeoutDelta = JumpTimeout;
-            _fallTimeoutDelta = FallTimeout;
+            
 
             currentPos = transform.position;
             currentRot = transform.rotation;
@@ -262,7 +248,7 @@ namespace StarterAssets
         {
             if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup) {
                 canPickup = false;
-                photonView.RPC("HideFlameThrower", RpcTarget.All);
+                photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,false);
                 _animator.SetTrigger("pickup");
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
                 
@@ -289,39 +275,31 @@ namespace StarterAssets
                         break;
                     }
                 }
-                StartCoroutine(ActivateFlameThrowerAfterDelay());
+                StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
                 StartCoroutine(ResetPickupAfterDelay());
             }
         }
-
-
-
         [PunRPC]
-        void HideFlameThrower()
+        void SetPlayerIK_FlameThrower(bool state)
         {
-            FlameThrower.SetActive(false);
+            FlameThrower.SetActive(state);
+            PlayerIK playerIK = GetComponent<PlayerIK>();
+            playerIK.EnableIK(state);
         }
         
-       IEnumerator ActivateFlameThrowerAfterDelay()
+       IEnumerator ActivatePlayerIK_FlameThrowerAfterDelay()
         {
-            yield return new WaitForSeconds(1.2f);
+            yield return new WaitForSeconds(2f);
             
-            photonView.RPC("ActivateFlameThrower", RpcTarget.All);
+            photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,true);
         }
        
         private IEnumerator ResetPickupAfterDelay()
         {
-            yield return new WaitForSeconds(2f); // 等待时间，防止r键连续触发
+            yield return new WaitForSeconds(2f); 
             canPickup = true;
         }
         
-        [PunRPC]
-        void ActivateFlameThrower()
-        {
-            FlameThrower.SetActive(true);
-        }
-       
-
         //private void OnControllerColliderHit(ControllerColliderHit hit)
         //{
         //    if (hit.gameObject.CompareTag("Target"))
@@ -364,8 +342,6 @@ namespace StarterAssets
         {
             _animIDSpeed = Animator.StringToHash("Speed");
             _animIDGrounded = Animator.StringToHash("Grounded");
-            _animIDJump = Animator.StringToHash("Jump");
-            _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
@@ -505,15 +481,6 @@ namespace StarterAssets
         {
             if (Grounded)
             {
-                // reset the fall timeout timer
-                _fallTimeoutDelta = FallTimeout;
-
-                // update animator if using character
-                if (_hasAnimator)
-                {
-                    _animator.SetBool(_animIDJump, false);
-                    _animator.SetBool(_animIDFreeFall, false);
-                }
 
                 // stop our velocity dropping infinitely when grounded
                 if (_verticalVelocity < 0.0f)
@@ -531,34 +498,7 @@ namespace StarterAssets
                 //         _animator.SetBool(_animIDJump, true);
                 //     }
                 // }
-
-                // jump timeout - still count down to handle any existing logic dependencies, but jumping is disabled
-                if (_jumpTimeoutDelta >= 0.0f)
-                {
-                    _jumpTimeoutDelta -= Time.deltaTime;
-                }
-            }
-            else
-            {
-                // reset the jump timeout timer
-                _jumpTimeoutDelta = JumpTimeout;
-
-                // fall timeout
-                if (_fallTimeoutDelta >= 0.0f)
-                {
-                    _fallTimeoutDelta -= Time.deltaTime;
-                }
-                else
-                {
-                    // update animator if using character
-                    if (_hasAnimator)
-                    {
-                        _animator.SetBool(_animIDFreeFall, true);
-                    }
-                }
-
-                // if we are not grounded, do not jump
-                // _input.jump = false; - This line is now unnecessary as jumping is disabled
+                
             }
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)

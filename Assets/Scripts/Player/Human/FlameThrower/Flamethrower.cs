@@ -23,11 +23,6 @@ public class Flamethrower : MonoBehaviourPun
     {
         audioSource.clip = introClip;
         _input = GetComponent<StarterAssetsInputs>();
-    }
-
-    private void Start()
-    {
-        // 确保在开始时，喷火器和攻击半径是关闭的
         ShootingSystem.gameObject.SetActive(false);
         AttackRadius.gameObject.SetActive(false);
     }
@@ -55,13 +50,13 @@ public class Flamethrower : MonoBehaviourPun
     void StartShooting()
     {
         isShooting = true;
-        audioSource.Play(); // 播放 introClip
+        audioSource.Play(); 
         Invoke("PlayLoopClip", introClip.length);
         photonView.RPC("ActivateShootingSystems", RpcTarget.All);
         ThirdPersonController thirdPersonController = GetComponentInParent<ThirdPersonController>();
         if (thirdPersonController != null)
         {
-            thirdPersonController.EnableSprinting(false); // 重新启用冲刺
+            thirdPersonController.EnableSprinting(false); 
         }else
         {
             Debug.LogWarning("PlayerMovement script not found!");

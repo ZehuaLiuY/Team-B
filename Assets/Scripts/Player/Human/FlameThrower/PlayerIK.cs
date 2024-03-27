@@ -14,6 +14,7 @@ public class PlayerIK : MonoBehaviour
     private Transform RightElbowIKTarget;
 
     private Animator Animator;
+    public bool IKActive = true; // 控制IK是否激活的变量
 
     private void Awake()
     {
@@ -22,6 +23,9 @@ public class PlayerIK : MonoBehaviour
 
     private void OnAnimatorIK(int layerIndex)
     {
+        if (!IKActive) // 如果IKActive为false，则不执行IK设置
+            return;
+
         Animator.SetIKHintPositionWeight(AvatarIKHint.RightElbow, 1);
         Animator.SetIKHintPositionWeight(AvatarIKHint.LeftElbow, 1);
         Animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
@@ -37,5 +41,10 @@ public class PlayerIK : MonoBehaviour
 
         Animator.SetIKRotation(AvatarIKGoal.LeftHand, LeftHandIKTarget.rotation);
         Animator.SetIKRotation(AvatarIKGoal.RightHand, RightHandIKTarget.rotation);
+    }
+    
+    public void EnableIK(bool enable)
+    {
+        IKActive = enable;
     }
 }
