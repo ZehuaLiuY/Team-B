@@ -1,60 +1,21 @@
-- name: Checkout
-uses: actions/checkout@v4.1.1
-
-- name: Cache
-uses: actions/cache@v4.0.2
-
-- name: Unity - Test runner
-uses: game-ci/unity-test-runner@v4
-  env:
-    UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-  with:
-    projectPath: '.'
-    githubToken: ${{ secrets.GITHUB_TOKEN }}
-
-- name: Unity - Builder
-uses: game-ci/unity-builder@v4
-  env:
-    UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-    UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-    UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-  with:
-    targetPlatform: WebGL
-
-
-
 name: Actions 😎
 
 on: [push, pull_request]
 
 jobs:
-  build:
-    name: Build my project ✨
+  test:
+    name: Test my project 🧪
     runs-on: ubuntu-latest
     steps:
-      # Checkout (without LFS)
+      # Checkout
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
-      # Git LFS
-      - name: Create LFS file list
-        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
-
-      - name: Restore LFS cache
-        uses: actions/cache@v3
-        id: lfs-cache
         with:
-          path: .git/lfs
-          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
-
-      - name: Git LFS Pull
-        run: |
-          git lfs pull
-          git add .
-          git reset --hard
+          lfs: true
 
       # Cache
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4.0.2
         with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
@@ -71,6 +32,25 @@ jobs:
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
+  build:
+    name: Build my project ✨
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+
+        with:
+          lfs: true
+
+      # Cache
+      - uses: actions/cache@v4.0.2
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
       # Build
       - name: Build project
         uses: game-ci/unity-builder@v4
@@ -79,7 +59,8 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: WebGL
+          targetPlatform: StandaloneWindows64
+          allowDirtyBuild: true
 
       # Output
       - uses: actions/upload-artifact@v3
