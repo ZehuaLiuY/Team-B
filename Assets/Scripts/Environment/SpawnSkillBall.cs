@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class SpawnSkillBall : MonoBehaviour
+public class SpawnSkillBall : MonoBehaviourPun
 {
     public GameObject[] skillBallPrefabs;
     public Transform skillPointTf;
@@ -22,28 +23,24 @@ public class SpawnSkillBall : MonoBehaviour
         }
     }
 
+    
     void GenerateSkillBalls()
     {
-       
-        foreach(Transform child in skillPointTf)
+        if (PhotonNetwork.IsMasterClient)
         {
-            GameObject.Destroy(child.gameObject);
-        }
+            foreach (Transform child in skillPointTf)
+            {
+                PhotonNetwork.Destroy(child.gameObject);
+            }
 
-        List<Transform> spawnPoints = new List<Transform>();
-
-        for (int i = 0; i < skillPointTf.childCount; i++)
-        {
-            spawnPoints.Add(skillPointTf.GetChild(i));
-        }
-
-        int ballsToGenerate = spawnPoints.Count;
-
-        for (int i = 0; i < ballsToGenerate; i++)
-        {
-            int skillType = UnityEngine.Random.Range(0, skillBallPrefabs.Length);
-            Instantiate(skillBallPrefabs[skillType], spawnPoints[i].position, Quaternion.identity, skillPointTf);
+            foreach (Transform spawnPoint in skillPointTf)
+            {
+                int skillType = UnityEngine.Random.Range(0, skillBallPrefabs.Length);
+                GameObject skillBall = PhotonNetwork.Instantiate(skillBallPrefabs[skillType].name, spawnPoint.position, Quaternion.identity);
+                skillBall.AddComponent<SkillBallVisibility>();
+            }
         }
     }
+
 }
 

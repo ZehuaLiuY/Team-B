@@ -80,10 +80,13 @@ public class DoorInteraction : MonoBehaviour
     void Update()
     {
         checkCheese();
-        if (isPlayerNear && Keyboard.current.eKey.wasPressedThisFrame && playerPhotonView.IsMine)
+        if (isPlayerNear && Keyboard.current.eKey.wasPressedThisFrame)
         {
-            playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,false);
-            StartCoroutine(ResetAnimation(1f));
+            if (playerPhotonView.IsMine && playerPhotonView.CompareTag("Player"))
+            {
+                playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
+                StartCoroutine(ResetAnimation(1f));
+            }
             photonView.RPC("ToggleDoor", RpcTarget.All); // Call the RPC method
             if (characterAnimator != null)
             {

@@ -8,6 +8,7 @@ public class Sprint_Skill : MonoBehaviourPun
 {
     private bool skillUsed = false;
     public float Skill_Duration = 5f;
+    public GameObject Trail;
     private float skillDurationTimer; 
     private CheeseThirdPerson _cheeseThirdPerson;
     // Start is called before the first frame update
@@ -56,6 +57,7 @@ public class Sprint_Skill : MonoBehaviourPun
         {
             _cheeseThirdPerson.MoveSpeed = 250f;
             StartCoroutine(RestoreSpeed(5f));
+            Trail.gameObject.SetActive(true);
         }
     }
 
@@ -66,6 +68,7 @@ public class Sprint_Skill : MonoBehaviourPun
         {
             _cheeseThirdPerson.MoveSpeed = 100.0f;
         }
+        Trail.gameObject.SetActive(false);
     }
     
     private void UpdateIcon(float fillAmount)

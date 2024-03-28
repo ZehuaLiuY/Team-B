@@ -2,7 +2,7 @@ Shader "Unlit/Detector"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "red" {}
+        _MainTex ("Texture", 2D) = "white" {}
     }
     SubShader
     {
