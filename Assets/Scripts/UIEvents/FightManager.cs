@@ -17,7 +17,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     // points
     public Transform cheeseSpawnPoints; // respawn points
-    public GameObject skillBallSpawner;
     public Transform humanSpawnPoints;
 
     private HumanFightUI fightUI;
@@ -129,7 +128,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         Vector3 spawnPos;
         string prefabName;
         byte interestGroup;
-
+        
         // check the player type
         if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
@@ -182,20 +181,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         if (recorder != null)
         {
             recorder.InterestGroup = interestGroup;
-        }
-    }
-    
-    private void UpdateSkillBallSpawnerActivity()
-    {
-        if (!PhotonNetwork.IsConnected || PhotonNetwork.LocalPlayer.CustomProperties == null)
-        {
-            return;
-        }
-
-        object playerType;
-        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerType", out playerType))
-        {
-            skillBallSpawner.SetActive(playerType.ToString() == "Cheese");
         }
     }
     
@@ -347,7 +332,6 @@ public class FightManager : MonoBehaviourPunCallbacks
                 _humanPlayerActorNumbers.AddRange(actorNumbers);
                 SpawnPlayers();
                 DisplayUIBasedOnRole();
-                UpdateSkillBallSpawnerActivity();
             }
         }
     }

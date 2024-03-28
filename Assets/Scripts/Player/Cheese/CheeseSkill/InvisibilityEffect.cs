@@ -6,7 +6,6 @@ using Photon.Pun;
 public class InvisibilityEffect : MonoBehaviourPunCallbacks
 {
     public Material invisibleMaterial;
-    public GameObject Smell;
     public float Skill_Duration = 3f;
     private Material[] originalMaterials;
     private SkinnedMeshRenderer[] childRenderers;
@@ -17,6 +16,7 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
     {
         childRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
         originalMaterials = new Material[childRenderers.Length];
+        
 
         for (int i = 0; i < childRenderers.Length; i++)
         {
@@ -44,7 +44,6 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
             {
                 renderer.material = invisibleMaterial;
             }
-            Smell.SetActive(false); 
         }
 
         skillDurationTimer = Skill_Duration;
@@ -57,14 +56,13 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
             yield return null;
         }
 
-        // 恢复可见性
+
         if (photonView.IsMine)
         {
             for (int i = 0; i < childRenderers.Length; i++)
             {
                 childRenderers[i].material = originalMaterials[i];
             }
-            Smell.SetActive(true);
         }
         photonView.RPC("RestoreVisibility", RpcTarget.Others);
 
@@ -72,8 +70,6 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
         GetComponent<GetSkill>().DeactivateSkill("Invisible Skill");
         skillUsed = false;
     }
-
-
     
     private void UpdateIcon(float fillAmount)
     {

@@ -149,7 +149,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8306817048745832345
 Transform:
   m_ObjectHideFlags: 0
@@ -1291,7 +1291,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invisibleMaterial: {fileID: 2100000, guid: ae5e97af3ce8d3d4fa7e8bbd7adce3a7, type: 2}
-  Smell: {fileID: 5225884884396166529}
   Skill_Duration: 3
 --- !u!114 &6394952327717741775
 MonoBehaviour:
@@ -1319,6 +1318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Skill_Duration: 5
+  Trail: {fileID: 5225884884396166529}
 --- !u!114 &8155168758065590833
 MonoBehaviour:
   m_ObjectHideFlags: 0

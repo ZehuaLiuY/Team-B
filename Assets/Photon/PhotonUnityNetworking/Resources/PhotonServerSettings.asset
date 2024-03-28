@@ -85,6 +85,9 @@ MonoBehaviour:
   - SetPlayerIK_FlameThrower
   - SetPlayerIK
   - SetPlayerIK_Flamethrower
+  - GenerateSkillBalls
+  - DestroySkillBall
+  - HideSkillBall
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
