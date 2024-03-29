@@ -71,7 +71,6 @@ public class DoorInteraction : MonoBehaviour
                 isPlayerNear = false;
                 text.SetActive(false);
                 characterAnimator = null;
-                playerPhotonView = null;
             }
         }
        
@@ -80,10 +79,13 @@ public class DoorInteraction : MonoBehaviour
     void Update()
     {
         checkCheese();
-        if (isPlayerNear && Keyboard.current.eKey.wasPressedThisFrame && playerPhotonView.IsMine)
+        if (isPlayerNear && Keyboard.current.eKey.wasPressedThisFrame)
         {
-            playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,false);
-            StartCoroutine(ResetAnimation(1f));
+            if (playerPhotonView.IsMine && playerPhotonView.CompareTag("Player"))
+            {
+                playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
+                StartCoroutine(ResetAnimation(1f));
+            }
             photonView.RPC("ToggleDoor", RpcTarget.All); // Call the RPC method
             if (characterAnimator != null)
             {
@@ -118,12 +120,16 @@ public class DoorInteraction : MonoBehaviour
     private IEnumerator ResetAnimation(float delay)
     {
         yield return new WaitForSeconds(delay);
-        playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,true);
+        if (playerPhotonView != null) {
+            playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, true);
+        }
     }
 
     private void checkCheese()
     {
-        _cheeseInSide = _checkCheeseInside.isCheeseInside;
+        if (_checkCheeseInside != null) {
+            _cheeseInSide = _checkCheeseInside.isCheeseInside;
+        }
     }
 
     [PunRPC]

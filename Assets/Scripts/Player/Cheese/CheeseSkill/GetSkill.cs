@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using CheeseController;
+using Photon.Pun;
 using UnityEngine;
-public class GetSkill : MonoBehaviour
+public class GetSkill : MonoBehaviourPunCallbacks
 {
     private bool hasSkill = false;
 
@@ -23,35 +24,72 @@ public class GetSkill : MonoBehaviour
         
     }
 
+    // private void OnTriggerEnter(Collider other)
+    // {
+    //     if (photonView.IsMine)
+    //     {
+    //         if (other.CompareTag(Invisible) && !hasSkill)
+    //         {
+    //             other.gameObject.SetActive(false);
+    //             ActivateSkill(Invisible);
+    //             hasSkill = true;
+    //         } else if (other.CompareTag(Clone) && !hasSkill)
+    //         {
+    //             other.gameObject.SetActive(false);
+    //             ActivateSkill(Clone);
+    //             hasSkill = true;
+    //         } else if (other.CompareTag(Detector) && !hasSkill)
+    //         {
+    //             other.gameObject.SetActive(false);
+    //             ActivateSkill(Detector);
+    //             hasSkill = true;
+    //         } else if (other.CompareTag(Sprint) && !hasSkill)
+    //         {
+    //             other.gameObject.SetActive(false);
+    //             ActivateSkill(Sprint);
+    //             hasSkill = true; 
+    //         } else if (other.CompareTag(Jump) && !hasSkill)
+    //         {
+    //             other.gameObject.SetActive(false);
+    //             ActivateSkill(Jump);
+    //             hasSkill = true; 
+    //         }
+    //     }
+    // }
+    
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(Invisible) && !hasSkill)
+        if (photonView.IsMine)
         {
-            other.gameObject.SetActive(false);
-            ActivateSkill(Invisible);
-            hasSkill = true;
-        } else if (other.CompareTag(Clone) && !hasSkill)
-        {
-            other.gameObject.SetActive(false);
-            ActivateSkill(Clone);
-            hasSkill = true;
-        } else if (other.CompareTag(Detector) && !hasSkill)
-        {
-            other.gameObject.SetActive(false);
-            ActivateSkill(Detector);
-            hasSkill = true;
-        } else if (other.CompareTag(Sprint) && !hasSkill)
-        {
-            other.gameObject.SetActive(false);
-            ActivateSkill(Sprint);
-            hasSkill = true; 
-        } else if (other.CompareTag(Jump) && !hasSkill)
-        {
-            other.gameObject.SetActive(false);
-            ActivateSkill(Jump);
-            hasSkill = true; 
+            string skillTag = null;
+
+            if (other.CompareTag(Invisible) && !hasSkill) skillTag = Invisible;
+            else if (other.CompareTag(Clone) && !hasSkill) skillTag = Clone;
+            else if (other.CompareTag(Detector) && !hasSkill) skillTag = Detector;
+            else if (other.CompareTag(Sprint) && !hasSkill) skillTag = Sprint;
+            else if (other.CompareTag(Jump) && !hasSkill) skillTag = Jump;
+
+            if (skillTag != null)
+            {
+                // 调用RPC来隐藏技能球
+                photonView.RPC("HideSkillBall", RpcTarget.All, other.gameObject.GetPhotonView().ViewID);
+                ActivateSkill(skillTag);
+                hasSkill = true;
+            }
         }
     }
+
+    [PunRPC]
+    void HideSkillBall(int ballViewID)
+    {
+        PhotonView ballPhotonView = PhotonView.Find(ballViewID);
+        if (ballPhotonView != null)
+        {
+            ballPhotonView.gameObject.SetActive(false);
+        }
+    }
+    
+    
     
     public void ActivateSkill(string skills)
     {

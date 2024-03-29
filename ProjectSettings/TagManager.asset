@@ -18,6 +18,7 @@ TagManager:
   - Sprint Skill
   - Jump Skill
   - Invisible Skill
+  - Clone
   layers:
   - Default
   - TransparentFX

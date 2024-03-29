@@ -297,8 +297,10 @@ namespace StarterAssets
                 StartCoroutine(ResetPickupAfterDelay());
             }
         }
+        
+        
         [PunRPC]
-        void SetPlayerIK_FlameThrower(bool state)
+        public void SetPlayerIK_FlameThrower(bool state)
         {
             FlameThrower.SetActive(state);
             PlayerIK playerIK = GetComponent<PlayerIK>();

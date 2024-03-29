@@ -10,7 +10,7 @@ public class CheeseSmellController : MonoBehaviourPun
 
     public ParticleSystem smellEverywhere;
 
-    private int _smellGenerateInterval = 30;
+    private int _smellGenerateInterval = 25;
 
     public List<ParticleSystem> smellParticles = new List<ParticleSystem>();
 
@@ -68,8 +68,4 @@ public class CheeseSmellController : MonoBehaviourPun
         }
 
     }
-
-
-
-
 }
