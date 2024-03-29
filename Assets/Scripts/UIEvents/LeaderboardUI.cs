@@ -50,7 +50,7 @@ public class LeaderboardUI : MonoBehaviourPunCallbacks
             Text playerNameText = itemObj.transform.Find("playerName").GetComponent<Text>();
             if (playerNameText != null)
             {
-                string playerName = "Player" + photonView.Owner.ActorNumber; // default name
+                string playerName = "Player"; // default name
                 if (info.Player.CustomProperties.TryGetValue("PlayerName", out object name))
                 {
                     playerName = (string)name;
