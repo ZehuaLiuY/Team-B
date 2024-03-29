@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
@@ -23,51 +24,45 @@ public class LeaderboardUI : MonoBehaviourPunCallbacks
 
     private void UpdateLeaderboard()
     {
-        // Remove old player items from the leaderboard
-        // foreach (PlayerItem item in _playerItems)
-        // {
-        //     Destroy(item.gameObject);
-        // }
-        // _playerItems.Clear();
-
-        // Get the list of human players from the custom room properties
-        int[] humanPlayerActorNumbers;
-        if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("HumanPlayerActorNumbers", out object humanActorNumbers) && humanActorNumbers is int[])
+        // destroy all existing player items
+        foreach (Transform child in _contentTf)
         {
-            humanPlayerActorNumbers = (int[])humanActorNumbers;
-        }
-        else
-        {
-            humanPlayerActorNumbers = new int[PhotonNetwork.PlayerList.Length];
-            for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
-            {
-                humanPlayerActorNumbers[i] = PhotonNetwork.PlayerList[i].ActorNumber;
-            }
+            Destroy(child.gameObject);
         }
 
-        // Add new player items to the leaderboard
-        foreach (Player player in PhotonNetwork.PlayerList)
+        // get all players who are humans and have a cheese count
+        var playerInfoList = PhotonNetwork.PlayerList
+            .Where(player => player.CustomProperties.TryGetValue("PlayerType", out object type) && type.ToString() == "Human")
+            .Select(player => new {
+                Player = player,
+                CheeseCount = player.CustomProperties.TryGetValue("CheeseCount", out object cheeseCount) ? (int)cheeseCount : 0
+            })
+            .OrderByDescending(info => info.CheeseCount)
+            .ToList();
+
+        // create UI elements for each player
+        foreach (var info in playerInfoList)
         {
-            if (System.Array.IndexOf(humanPlayerActorNumbers, player.ActorNumber) >= 0)
+            GameObject itemObj = Instantiate(_roomPrefab, _contentTf);
+            itemObj.SetActive(true);
+
+            // set player name
+            Text playerNameText = itemObj.transform.Find("playerName").GetComponent<Text>();
+            if (playerNameText != null)
             {
-                if (player.CustomProperties.TryGetValue("CheeseCount", out object cheeseCountObj))
+                string playerName = "Player" + photonView.Owner.ActorNumber; // default name
+                if (info.Player.CustomProperties.TryGetValue("PlayerName", out object name))
                 {
-                    // Create a new player item
-                    GameObject itemObj = Instantiate(_roomPrefab, _contentTf);
-                    itemObj.SetActive(true);
-
-                    // set player name
-                    Text playerNameText = itemObj.transform.Find("playerName").GetComponent<Text>();
-                    if (playerNameText != null) {
-                        playerNameText.text = player.NickName;
-                    }
-
-                    // set cheese count
-                    Text cheeseCountText = itemObj.transform.Find("Counter").GetComponent<Text>();
-                    if (cheeseCountText != null) {
-                        cheeseCountText.text = $"Cheese Caught:  {cheeseCountObj}";
-                    }
+                    playerName = (string)name;
                 }
+                playerNameText.text = playerName;
+            }
+
+            // set cheese count
+            Text cheeseCountText = itemObj.transform.Find("Counter").GetComponent<Text>();
+            if (cheeseCountText != null)
+            {
+                cheeseCountText.text = $"Cheese Caught: {info.CheeseCount}";
             }
         }
     }
@@ -77,5 +72,4 @@ public class LeaderboardUI : MonoBehaviourPunCallbacks
             UpdateLeaderboard();
         }
     }
-
 }
