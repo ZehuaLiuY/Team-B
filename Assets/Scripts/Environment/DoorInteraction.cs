@@ -71,7 +71,6 @@ public class DoorInteraction : MonoBehaviour
                 isPlayerNear = false;
                 text.SetActive(false);
                 characterAnimator = null;
-                playerPhotonView = null;
             }
         }
        
@@ -121,12 +120,16 @@ public class DoorInteraction : MonoBehaviour
     private IEnumerator ResetAnimation(float delay)
     {
         yield return new WaitForSeconds(delay);
-        playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,true);
+        if (playerPhotonView != null) {
+            playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, true);
+        }
     }
 
     private void checkCheese()
     {
-        _cheeseInSide = _checkCheeseInside.isCheeseInside;
+        if (_checkCheeseInside != null) {
+            _cheeseInSide = _checkCheeseInside.isCheeseInside;
+        }
     }
 
     [PunRPC]
