@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine.UI;
 
 public class LobbyUI : MonoBehaviourPunCallbacks
 {
-    TypedLobby lobby;
+    private TypedLobby _lobby;
 
-    private Transform contentTf;
-    private GameObject roomPrefab;
+    private Transform _contentTf;
+    private GameObject _roomPrefab;
 
     void Start()
     {
@@ -19,11 +18,11 @@ public class LobbyUI : MonoBehaviourPunCallbacks
         transform.Find("content/createBtn").GetComponent<Button>().onClick.AddListener(OnCreateRoomBtn);
         transform.Find("content/updateBtn").GetComponent<Button>().onClick.AddListener(OnUpdateRoomBtn);
 
-        contentTf = transform.Find("content/Scroll View/Viewport/Content");
-        roomPrefab = transform.Find("content/Scroll View/Viewport/item").gameObject;
+        _contentTf = transform.Find("content/Scroll View/Viewport/Content");
+        _roomPrefab = transform.Find("content/Scroll View/Viewport/item").gameObject;
         // join lobby
-        lobby = new TypedLobby("myLobby", LobbyType.SqlLobby);
-        PhotonNetwork.JoinLobby(lobby);
+        _lobby = new TypedLobby("myLobby", LobbyType.SqlLobby);
+        PhotonNetwork.JoinLobby(_lobby);
     }
 
     public override void OnJoinedLobby()
@@ -46,15 +45,15 @@ public class LobbyUI : MonoBehaviourPunCallbacks
     public void OnUpdateRoomBtn()
     {
         Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Updating room list...");
-        PhotonNetwork.GetCustomRoomList(lobby, "1");
+        PhotonNetwork.GetCustomRoomList(_lobby, "1");
     }
 
     // clear exist room item
     private void ClearRoomList()
     {
-        while (contentTf.childCount != 0)
+        while (_contentTf.childCount != 0)
         {
-            DestroyImmediate(contentTf.GetChild(0).gameObject);
+            DestroyImmediate(_contentTf.GetChild(0).gameObject);
         }
     }
 
@@ -66,7 +65,7 @@ public class LobbyUI : MonoBehaviourPunCallbacks
 
         for (int i = 0; i < roomList.Count; i++)
         {
-            GameObject obj = Instantiate(roomPrefab, contentTf);
+            GameObject obj = Instantiate(_roomPrefab, _contentTf);
             obj.SetActive(true);
             string roomName = roomList[i].Name;
             obj.transform.Find("roomName").GetComponent<Text>().text = roomName;
