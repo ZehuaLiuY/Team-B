@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Voice.Unity;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -128,6 +129,8 @@ namespace StarterAssets
 
         private MiniMapController _miniMapController;
         private Transform _cachedTransform;
+
+        public int caughtCheeseCount = 0;
         
         public void EnableSprinting(bool enable)
         {
@@ -168,6 +171,11 @@ namespace StarterAssets
             _cachedTransform = transform;
             _miniMapController = FindObjectOfType<MiniMapController>();
             _recorder = GetComponent<Recorder>();
+
+            Hashtable props = new Hashtable {
+                { "CheeseCount", caughtCheeseCount }
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
 
         private void Start()
@@ -243,6 +251,15 @@ namespace StarterAssets
             }
         }
 
+        private void IncrementCheeseCount() {
+            caughtCheeseCount++;
+            Hashtable props = new Hashtable() {
+                { "CheeseCount", caughtCheeseCount }
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+            Debug.Log("Cheese count: " + caughtCheeseCount);
+        }
+
 
         private void pickup()
         {
@@ -269,6 +286,7 @@ namespace StarterAssets
                             if (HumanFightUI.Instance != null)
                             {
                                 HumanFightUI.Instance.showCheeseCaught();
+                                IncrementCheeseCount();
                             }
                         }
 

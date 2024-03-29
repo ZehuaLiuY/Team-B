@@ -2901,6 +2901,7 @@ MonoBehaviour:
     type: 3}
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
+  caughtCheeseCount: 0
 --- !u!114 &895068226843850010
 MonoBehaviour:
   m_ObjectHideFlags: 0
