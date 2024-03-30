@@ -88,6 +88,8 @@ MonoBehaviour:
   - GenerateSkillBalls
   - DestroySkillBall
   - HideSkillBall
+  - SetSkillBallVisibility
+  - UpdateSkillBallsVisibilityRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
@@ -18,6 +19,9 @@ public class FightManager : MonoBehaviourPunCallbacks
     // points
     public Transform cheeseSpawnPoints; // respawn points
     public Transform humanSpawnPoints;
+    public GameObject[] skillBallPrefabs; // 球体预制体数组
+    public Transform skillPointTf;        // 技能球生成点
+    public float refreshInterval = 60f;   // 刷新间隔
 
     private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
@@ -25,6 +29,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private bool _isHumanWin = false;
     private List<int> _humanPlayerActorNumbers = new List<int>();
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
+    private GameObject skillBall;
 
 
     public MiniMapController miniMapController;
@@ -46,7 +51,77 @@ public class FightManager : MonoBehaviourPunCallbacks
     void Start()
     {
         Game.uiManager.CloseAllUI();
-        _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // TODO: change this to the actual number of human players
+        _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
+        StartCoroutine(SpawnSkillBallsPeriodically());
+    }
+
+    IEnumerator SpawnSkillBallsPeriodically()
+    {
+        while (true) 
+        {
+            GenerateSkillBalls();
+            yield return new WaitForSeconds(refreshInterval);
+        }
+    }
+
+    void GenerateSkillBalls()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // 删除并生成新的技能球
+            foreach (Transform spawnPoint in skillPointTf)
+            {
+                if (spawnPoint.childCount > 0)
+                {
+                    foreach (Transform child in spawnPoint)
+                    {
+                        PhotonNetwork.Destroy(child.gameObject);
+                    }
+                }
+                int skillType = UnityEngine.Random.Range(0, skillBallPrefabs.Length);
+                PhotonNetwork.Instantiate(skillBallPrefabs[skillType].name, spawnPoint.position, Quaternion.identity);
+            }
+            
+        }
+        
+        photonView.RPC("UpdateSkillBallsVisibilityRPC", RpcTarget.All);
+    }
+
+    [PunRPC]
+    void UpdateSkillBallsVisibilityRPC()
+    {
+        UpdateSkillBallsVisibility();
+    }
+
+    
+    void UpdateSkillBallsVisibility()
+    {
+        string[] skillTags = { "Jump Skill", "Sprint Skill", "Invisible Skill", "Detector Skill","Clone Skill" };
+        bool shouldShow = PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerType", out object playerType) && playerType.ToString() == "Cheese";
+
+        foreach (string tag in skillTags)
+        {
+            GameObject[] skillBalls = GameObject.FindGameObjectsWithTag(tag);
+            foreach (var skillBall in skillBalls)
+            {
+                skillBall.SetActive(shouldShow);
+            }
+        }
+    }
+    
+    public override void OnJoinedRoom()
+    {
+        UpdateSkillBallsVisibility();
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        UpdateSkillBallsVisibility();
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        UpdateSkillBallsVisibility();
     }
 
     void DisplayUIBasedOnRole()
@@ -67,6 +142,7 @@ public class FightManager : MonoBehaviourPunCallbacks
                 break;
         }
     }
+    
     
     void AssignRoles()
     {
@@ -318,8 +394,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         
         
     }
-    
-   
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
@@ -336,6 +410,13 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
     }
 
+    public override void OnPlayerPropertiesUpdate(Player target, Hashtable changedProps)
+    {
+        if (changedProps.ContainsKey("PlayerType"))
+        {
+            UpdateSkillBallsVisibility();
+        }
+    }
 
     public void QuitToLoginScene()
     {
