@@ -63,11 +63,12 @@ public class FightManager : MonoBehaviourPunCallbacks
             yield return new WaitForSeconds(refreshInterval);
         }
     }
-    
+
     void GenerateSkillBalls()
     {
         if (PhotonNetwork.IsMasterClient)
         {
+            // 删除并生成新的技能球
             foreach (Transform spawnPoint in skillPointTf)
             {
                 if (spawnPoint.childCount > 0)
@@ -77,21 +78,18 @@ public class FightManager : MonoBehaviourPunCallbacks
                         PhotonNetwork.Destroy(child.gameObject);
                     }
                 }
-            }
-            foreach (Transform spawnPoint in skillPointTf)
-            {
                 int skillType = UnityEngine.Random.Range(0, skillBallPrefabs.Length);
                 PhotonNetwork.Instantiate(skillBallPrefabs[skillType].name, spawnPoint.position, Quaternion.identity);
             }
+            
         }
-
-        StartCoroutine(DelayedUpdateSkillBallsVisibility());
+        
+        photonView.RPC("UpdateSkillBallsVisibilityRPC", RpcTarget.All);
     }
 
-
-    IEnumerator DelayedUpdateSkillBallsVisibility()
+    [PunRPC]
+    void UpdateSkillBallsVisibilityRPC()
     {
-        yield return new WaitForSeconds(0.1f);
         UpdateSkillBallsVisibility();
     }
 
@@ -109,6 +107,21 @@ public class FightManager : MonoBehaviourPunCallbacks
                 skillBall.SetActive(shouldShow);
             }
         }
+    }
+    
+    public override void OnJoinedRoom()
+    {
+        UpdateSkillBallsVisibility();
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        UpdateSkillBallsVisibility();
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        UpdateSkillBallsVisibility();
     }
 
     void DisplayUIBasedOnRole()
@@ -129,6 +142,7 @@ public class FightManager : MonoBehaviourPunCallbacks
                 break;
         }
     }
+    
     
     void AssignRoles()
     {
