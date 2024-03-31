@@ -17,9 +17,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [Header("Player")] [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
 
-        [Tooltip("Sprint speed of the character in m/s")]
-        public float SprintSpeed = 3.0f;
-
         [Tooltip("How fast the character turns to face movement direction")] [Range(0.0f, 0.3f)]
         public float RotationSmoothTime = 0.12f;
 
@@ -253,7 +250,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed = MoveSpeed;
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -494,7 +491,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             }
             MoveSpeed -= 20f; // 减少MoveSpeed
             MoveSpeed = Mathf.Max(MoveSpeed, 20f); // 确保MoveSpeed不会小于0
-            SprintSpeed = MoveSpeed; // 将SprintSpeed设置为MoveSpeed的当前值
 
             StartCoroutine(RestoreSpeedAfterDelay(5)); // 5秒后恢复速度
         }
@@ -513,7 +509,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
      
             OnFireSystemPrefab.gameObject.SetActive(false);
             MoveSpeed = 100.0f;
-            SprintSpeed = 120.0f;
         }
         [PunRPC]
         public void DeactivateOnFireSystem()

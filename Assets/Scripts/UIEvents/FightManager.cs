@@ -30,6 +30,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private List<int> _humanPlayerActorNumbers = new List<int>();
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
     private GameObject skillBall;
+    private List<GameObject> skillBalls = new List<GameObject>();
 
 
     public MiniMapController miniMapController;
@@ -66,33 +67,38 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void GenerateSkillBalls()
     {
+        photonView.RPC("UpdateSkillBallsVisibilityRPC", RpcTarget.All);
         if (PhotonNetwork.IsMasterClient)
         {
-            // 删除并生成新的技能球
+            DeleteExistingSkillBalls();
             foreach (Transform spawnPoint in skillPointTf)
             {
-                if (spawnPoint.childCount > 0)
-                {
-                    foreach (Transform child in spawnPoint)
-                    {
-                        PhotonNetwork.Destroy(child.gameObject);
-                    }
-                }
-                int skillType = UnityEngine.Random.Range(0, skillBallPrefabs.Length);
-                PhotonNetwork.Instantiate(skillBallPrefabs[skillType].name, spawnPoint.position, Quaternion.identity);
+                int skillType = Random.Range(0, skillBallPrefabs.Length);
+                var skillBall = PhotonNetwork.Instantiate(skillBallPrefabs[skillType].name, spawnPoint.position, Quaternion.identity);
+                skillBalls.Add(skillBall);
             }
-            
         }
-        
         photonView.RPC("UpdateSkillBallsVisibilityRPC", RpcTarget.All);
     }
+    
+    void DeleteExistingSkillBalls()
+    {
+        foreach (var skillBall in skillBalls)
+        {
+            if (skillBall != null)
+            {
+                PhotonNetwork.Destroy(skillBall);
+            }
+        }
+        skillBalls.Clear();
+    }
+    
 
     [PunRPC]
     void UpdateSkillBallsVisibilityRPC()
     {
         UpdateSkillBallsVisibility();
     }
-
     
     void UpdateSkillBallsVisibility()
     {
@@ -113,12 +119,12 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
         UpdateSkillBallsVisibility();
     }
-
+    
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         UpdateSkillBallsVisibility();
     }
-
+    
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         UpdateSkillBallsVisibility();
