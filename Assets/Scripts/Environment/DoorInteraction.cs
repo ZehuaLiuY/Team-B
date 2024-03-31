@@ -71,7 +71,7 @@ public class DoorInteraction : MonoBehaviour
                 isPlayerNear = false;
                 text.SetActive(false);
                 characterAnimator = null;
-                playerPhotonView = null;
+                //playerPhotonView = null;
             }
         }
        

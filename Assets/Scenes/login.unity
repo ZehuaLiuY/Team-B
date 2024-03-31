@@ -23,8 +23,8 @@ RenderSettings:
   m_AmbientSkyColor: {r: 0.5169811, g: 0.51015306, b: 0.51015306, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 1
-  m_AmbientMode: 3
+  m_AmbientIntensity: 0.53
+  m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.2603773, g: 0.2603773, b: 0.2603773, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: 7e1e5781d39549148abcbf66c428df00, type: 2}
   m_HaloStrength: 0.5
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 5c78c567663d43e42acd1530335f102f,
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 2187db9ad2ab3ae4db38008e664e2fd9,
     type: 2}
 --- !u!196 &4
 NavMeshSettings:
