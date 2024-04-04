@@ -154,7 +154,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
             // _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _input = GetComponent<CheeseControllerInputs>();
+            // _input = GetComponent<CheeseControllerInputs>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else

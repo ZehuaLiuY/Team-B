@@ -29,11 +29,11 @@ public class FightManager : MonoBehaviourPunCallbacks
     public static float countdownTimer = 180f;
     private bool _isHumanWin = false;
 
-    private List<int> _humanPlayerActorNumbers = new List<int>();
+    private HashSet<int> _humanPlayerActorNumbers = new HashSet<int>();
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
 
     private GameObject skillBall;
-    private List<GameObject> skillBalls = new List<GameObject>();
+    private HashSet<GameObject> skillBalls = new HashSet<GameObject>();
 
 
     public MiniMapController miniMapController;
@@ -410,12 +410,13 @@ public class FightManager : MonoBehaviourPunCallbacks
             if (actorNumbers != null)
             {
                 _humanPlayerActorNumbers.Clear();
-                _humanPlayerActorNumbers.AddRange(actorNumbers);
+                _humanPlayerActorNumbers.UnionWith(actorNumbers);
                 SpawnPlayers();
                 DisplayUIBasedOnRole();
             }
         }
     }
+
 
     public override void OnPlayerPropertiesUpdate(Player target, Hashtable changedProps)
     {
