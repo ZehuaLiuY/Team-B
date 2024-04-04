@@ -2897,6 +2897,7 @@ MonoBehaviour:
   StaminaDecreaseRate: 0.3
   StaminaRecoveryRate: 0.15
   FlameThrower: {fileID: 2384035920976913515}
+  text: {fileID: 0}
   leaderboardUIPrefab: {fileID: 631377414879184098, guid: 75eb34312d912e24fb06a4288cd16ef7,
     type: 3}
   currentPos: {x: 0, y: 0, z: 0}

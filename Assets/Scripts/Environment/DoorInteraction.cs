@@ -28,7 +28,7 @@ public class DoorInteraction : MonoBehaviour
 
     void Awake()
     {
-        text.SetActive(false); // 开始时禁用提示
+        text.SetActive(false);
         photonView = transform.GetComponent<PhotonView>();
         doorAnimator = GetComponent<Animator>();
         playerIK = GetComponent<PlayerIK>();

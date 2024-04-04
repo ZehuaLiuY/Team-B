@@ -24807,7 +24807,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &705507994
 Light:
   m_ObjectHideFlags: 0
@@ -24826,7 +24826,7 @@ Light:
   m_InnerSpotAngle: 21.802082
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 1
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -54757,6 +54757,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.x
       value: 1.0060108
       objectReference: {fileID: 0}
+    - target: {fileID: 7186201189528070243, guid: 718858842d63de44f8f49aa6e89713e2,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4.2815
+      objectReference: {fileID: 0}
     - target: {fileID: 7186510065063526799, guid: 718858842d63de44f8f49aa6e89713e2,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -80261,7 +80266,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1972149481
 RectTransform:
   m_ObjectHideFlags: 0
@@ -80301,7 +80306,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press E to open the door
+  m_text: 'Press E to open '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}

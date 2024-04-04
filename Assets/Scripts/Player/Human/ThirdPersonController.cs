@@ -80,6 +80,7 @@ namespace StarterAssets
         public float StaminaDecreaseRate = 0.2f;
         public float StaminaRecoveryRate = 0.1f;
         public GameObject FlameThrower;
+        public GameObject text; 
 
         // leader board ui
         public GameObject leaderboardUIPrefab;
@@ -128,6 +129,7 @@ namespace StarterAssets
 
         private MiniMapController _miniMapController;
         private Transform _cachedTransform;
+        private bool canShowCatchText = false; // 控制显示文本UI的标志
         
         public void EnableSprinting(bool enable)
         {
@@ -244,30 +246,97 @@ namespace StarterAssets
         }
 
 
+        // private void pickup()
+        // {
+        //     if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup) {
+        //         canPickup = false;
+        //         photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,false);
+        //         _animator.SetTrigger("pickup");
+        //         photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
+        //         
+        //         int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
+        //         Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
+        //         foreach (Collider collider in colliders)
+        //         {
+        //             if (collider.gameObject.CompareTag("Target"))
+        //             {
+        //                 Debug.Log("cheese is there");
+        //                 PhotonView targetPhotonView = collider.gameObject.GetComponent<PhotonView>();
+        //
+        //                 if (targetPhotonView != null)
+        //                 {
+        //                     targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+        //                     if (HumanFightUI.Instance != null)
+        //                     {
+        //                         HumanFightUI.Instance.showCheeseCaught();
+        //                     }
+        //                 }
+        //
+        //                 break;
+        //             }
+        //         }
+        //         StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
+        //         StartCoroutine(ResetPickupAfterDelay());
+        //     }
+        // }
+        
+        
+        // 假设你有一个方法来显示和隐藏提示UI
+        private void ShowPickupPrompt(bool show)
+        {
+            if (HumanFightUI.Instance != null)
+            {
+                if (show)
+                {
+                    HumanFightUI.Instance.showCatchText(); 
+                }
+                else
+                {
+                    HumanFightUI.Instance.stopCatchText();
+                }
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.CompareTag("Target"))
+            {
+                ShowPickupPrompt(true);
+                canPickup = true;
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.CompareTag("Target"))
+            {
+                ShowPickupPrompt(false);
+                canPickup = false;
+            }
+        }
+
         private void pickup()
         {
-            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup) {
+            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup)
+            {
                 canPickup = false;
-                photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,false);
+                photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
                 _animator.SetTrigger("pickup");
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
                 
-                // 在人类周围创建一个盒形区域，检测是否存在 Cheese
-                int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
-                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
+                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity);
                 foreach (Collider collider in colliders)
                 {
                     if (collider.gameObject.CompareTag("Target"))
                     {
-                        Debug.Log("cheese is there");
                         PhotonView targetPhotonView = collider.gameObject.GetComponent<PhotonView>();
-
+                        
                         if (targetPhotonView != null)
                         {
-                            // 调用目标上的RPC方法来显示DeiUI
                             targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
                             if (HumanFightUI.Instance != null)
                             {
+                                HumanFightUI.Instance.stopCatchText();
                                 HumanFightUI.Instance.showCheeseCaught();
                             }
                         }
@@ -275,12 +344,13 @@ namespace StarterAssets
                         break;
                     }
                 }
+
                 StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
                 StartCoroutine(ResetPickupAfterDelay());
             }
         }
-        
-        
+
+
         [PunRPC]
         public void SetPlayerIK_FlameThrower(bool state)
         {

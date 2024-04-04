@@ -20,7 +20,6 @@ public class SmellBombSkill : MonoBehaviourPun
 
     void DeploySmellBomb()
     {
-        // 在Cheese位置实例化烟雾弹预制体
         PhotonNetwork.Instantiate("OdorParticle", transform.position, Quaternion.identity);
 
     }
