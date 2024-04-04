@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
@@ -27,17 +28,18 @@ public class FightManager : MonoBehaviourPunCallbacks
     private CheeseFightUI fightUI1;
     public static float countdownTimer = 180f;
     private bool _isHumanWin = false;
+
     private List<int> _humanPlayerActorNumbers = new List<int>();
     private int _remainingCheeseCount; // 剩余活着的 cheese 数量
+
     private GameObject skillBall;
     private List<GameObject> skillBalls = new List<GameObject>();
 
 
     public MiniMapController miniMapController;
+    private PhotonView _miniMapPhotonView;
 
     public string playerName;
-
-    private PhotonView _miniMapPhotonView;
 
 
     void Awake()
@@ -48,7 +50,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             AssignRoles();
         }
     }
-    
+
     void Start()
     {
         Game.uiManager.CloseAllUI();
@@ -58,7 +60,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     IEnumerator SpawnSkillBallsPeriodically()
     {
-        while (true) 
+        while (true)
         {
             GenerateSkillBalls();
             yield return new WaitForSeconds(refreshInterval);
@@ -80,7 +82,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         photonView.RPC("UpdateSkillBallsVisibilityRPC", RpcTarget.All);
     }
-    
+
     void DeleteExistingSkillBalls()
     {
         foreach (var skillBall in skillBalls)
@@ -92,14 +94,14 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         skillBalls.Clear();
     }
-    
+
 
     [PunRPC]
     void UpdateSkillBallsVisibilityRPC()
     {
         UpdateSkillBallsVisibility();
     }
-    
+
     void UpdateSkillBallsVisibility()
     {
         string[] skillTags = { "Jump Skill", "Sprint Skill", "Invisible Skill", "Detector Skill","Clone Skill" };
@@ -114,17 +116,17 @@ public class FightManager : MonoBehaviourPunCallbacks
             }
         }
     }
-    
+
     public override void OnJoinedRoom()
     {
         UpdateSkillBallsVisibility();
     }
-    
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         UpdateSkillBallsVisibility();
     }
-    
+
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         UpdateSkillBallsVisibility();
@@ -133,7 +135,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     void DisplayUIBasedOnRole()
     {
         string playerType = (string)PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"];
-        
+
         switch (playerType)
         {
             case "Human":
@@ -148,8 +150,7 @@ public class FightManager : MonoBehaviourPunCallbacks
                 break;
         }
     }
-    
-    
+
     void AssignRoles()
     {
         var players = PhotonNetwork.PlayerList;
@@ -210,7 +211,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         Vector3 spawnPos;
         string prefabName;
         byte interestGroup;
-        
+
         // check the player type
         if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
@@ -225,6 +226,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             spawnPos = spawnPoint.position;
             prefabName = "Human";
             interestGroup = 1;
+            Destroy(spawnPoint.gameObject);
         }
         else
         {
@@ -239,6 +241,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             spawnPos = spawnPoint.position;
             prefabName = "Cheese";
             interestGroup = 2;
+            Destroy(spawnPoint.gameObject);
         }
 
         // spawn the player
@@ -265,7 +268,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             recorder.InterestGroup = interestGroup;
         }
     }
-    
+
 
     // Update is called once per frame
     void Update()
@@ -295,7 +298,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             countdownTimer -= Time.deltaTime;
         }
-        
+
         return countdownTimer;
     }
 
@@ -308,8 +311,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             _isHumanWin = true;
             _gameOver = true;
-           
-            Debug.Log("human win!");
 
             // when all cheese die, the obeserved also show the lose UI
             Game.uiManager.CloseAllUI();
@@ -336,7 +337,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void UpdateCountdownTimerRPC(float newTimer)
     {
-        
+
         if (fightUI != null)
         {
             fightUI.SetCountdownTimer(newTimer);
@@ -353,7 +354,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
 
         Game.uiManager.CloseUI("DieUI");
-        
+
         if (isHumanWin)
         {
             if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
@@ -389,7 +390,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void CheckGameResult()
     {
-       
+
         // 如果倒计时结束
         if (countdownTimer <= 0f)
         {
@@ -397,8 +398,8 @@ public class FightManager : MonoBehaviourPunCallbacks
             _isHumanWin = false;
             // Debug.Log("gameover: " + _gameOver);
         }
-        
-        
+
+
     }
 
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
@@ -408,7 +409,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             var actorNumbers = propertiesThatChanged["HumanPlayerActorNumbers"] as int[];
             if (actorNumbers != null)
             {
-                _humanPlayerActorNumbers.Clear(); 
+                _humanPlayerActorNumbers.Clear();
                 _humanPlayerActorNumbers.AddRange(actorNumbers);
                 SpawnPlayers();
                 DisplayUIBasedOnRole();
