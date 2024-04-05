@@ -89,10 +89,15 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
 
     void OnStartBtn()
     {
-        // Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
-        // Debug.Log(PhotonNetwork.IsMasterClient);
+        PhotonNetwork.CurrentRoom.IsOpen = false;
+        PhotonNetwork.CurrentRoom.IsVisible = false;
+        StartCoroutine(WaitAndLoadScene());
+    }
+
+    IEnumerator WaitAndLoadScene()
+    {
+        yield return new WaitForSeconds(1);
         PhotonNetwork.LoadLevel("GameScene");
-        Debug.Log("Start button clicked, loading game scene.");
     }
 
     // new player enter the room
