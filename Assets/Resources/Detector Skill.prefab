@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4741033190669801547}
   - component: {fileID: 8056976006915013113}
   - component: {fileID: 5125389964591747635}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Detector Skill
   m_TagString: Detector Skill
   m_Icon: {fileID: 0}

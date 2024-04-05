@@ -13,22 +13,21 @@ using Random = UnityEngine.Random;
 
 public class FightManager : MonoBehaviourPunCallbacks
 {
-    private bool _gameOver = false; // 游戏是否已经结束
-    // private float captureDistance = 2f; // 抓住奶酪的距离阈值
+    private bool _gameOver = false; 
 
-    // points
-    public Transform cheeseSpawnPoints; // respawn points
+ 
+    public Transform cheeseSpawnPoints; 
     public Transform humanSpawnPoints;
-    public GameObject[] skillBallPrefabs; // 球体预制体数组
-    public Transform skillPointTf;        // 技能球生成点
-    public float refreshInterval = 60f;   // 刷新间隔
+    public GameObject[] skillBallPrefabs;
+    public Transform skillPointTf;       
+    public float refreshInterval = 60f;  
 
     private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
     public static float countdownTimer = 180f;
     private bool _isHumanWin = false;
     private List<int> _humanPlayerActorNumbers = new List<int>();
-    private int _remainingCheeseCount; // 剩余活着的 cheese 数量
+    private int _remainingCheeseCount; 
     private GameObject skillBall;
     private List<GameObject> skillBalls = new List<GameObject>();
 
@@ -67,7 +66,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void GenerateSkillBalls()
     {
-        photonView.RPC("UpdateSkillBallsVisibilityRPC", RpcTarget.All);
         if (PhotonNetwork.IsMasterClient)
         {
             DeleteExistingSkillBalls();
@@ -78,7 +76,6 @@ public class FightManager : MonoBehaviourPunCallbacks
                 skillBalls.Add(skillBall);
             }
         }
-        photonView.RPC("UpdateSkillBallsVisibilityRPC", RpcTarget.All);
     }
     
     void DeleteExistingSkillBalls()
@@ -91,43 +88,6 @@ public class FightManager : MonoBehaviourPunCallbacks
             }
         }
         skillBalls.Clear();
-    }
-    
-
-    [PunRPC]
-    void UpdateSkillBallsVisibilityRPC()
-    {
-        UpdateSkillBallsVisibility();
-    }
-    
-    void UpdateSkillBallsVisibility()
-    {
-        string[] skillTags = { "Jump Skill", "Sprint Skill", "Invisible Skill", "Detector Skill","Clone Skill" };
-        bool shouldShow = PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerType", out object playerType) && playerType.ToString() == "Cheese";
-
-        foreach (string tag in skillTags)
-        {
-            GameObject[] skillBalls = GameObject.FindGameObjectsWithTag(tag);
-            foreach (var skillBall in skillBalls)
-            {
-                skillBall.SetActive(shouldShow);
-            }
-        }
-    }
-    
-    public override void OnJoinedRoom()
-    {
-        UpdateSkillBallsVisibility();
-    }
-    
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        UpdateSkillBallsVisibility();
-    }
-    
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        UpdateSkillBallsVisibility();
     }
 
     void DisplayUIBasedOnRole()
@@ -211,8 +171,9 @@ public class FightManager : MonoBehaviourPunCallbacks
         string prefabName;
         byte interestGroup;
         
+        bool isHuman = _humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber);
         // check the player type
-        if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
+        if (isHuman)
         {
             // human available points
             List<Transform> humanAvailablePoints = new List<Transform>();
@@ -246,10 +207,16 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         // minimap icon display
         _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
+        
+        if (isHuman)
+        {
+            SetupHumanCamera(playerObject);
+        }
 
         // camera follow
         CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
         vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
+
 
         // display the player name
         PlayerNameDisplay nameDisplay = playerObject.GetComponentInChildren<PlayerNameDisplay>();
@@ -266,18 +233,28 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
     }
     
+    void SetupHumanCamera(GameObject playerObject)
+    {
+        CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+        if (vc != null)
+        {
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                int skillBallsLayer = LayerMask.NameToLayer("Skillballs");
+                mainCamera.cullingMask &= ~(1 << skillBallsLayer);
+            }
+        }
+    }
 
     // Update is called once per frame
     void Update()
     {
         if (!_gameOver)
         {
-            // 检查游戏结果
             CheckGameResult();
-            // 检查当前客户端是否是房主
             if (PhotonNetwork.IsMasterClient)
             {
-                // 如果是房主，更新倒计时并发送 RPC
                 float newTimer = UpdateCountdownTimer();
                 // fightUI.SetCountdownTimer(newTimer);
                 photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.AllBuffered, newTimer);
@@ -302,8 +279,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     public void CheeseDied()
     {
         _remainingCheeseCount--;
-
-        // 检查是否所有 cheese 都死亡了
+        
         if (_remainingCheeseCount <= 0)
         {
             _isHumanWin = true;
@@ -389,11 +365,9 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void CheckGameResult()
     {
-       
-        // 如果倒计时结束
         if (countdownTimer <= 0f)
         {
-            _gameOver = true; // 设置游戏结束标志为 true
+            _gameOver = true;
             _isHumanWin = false;
             // Debug.Log("gameover: " + _gameOver);
         }
@@ -413,14 +387,6 @@ public class FightManager : MonoBehaviourPunCallbacks
                 SpawnPlayers();
                 DisplayUIBasedOnRole();
             }
-        }
-    }
-
-    public override void OnPlayerPropertiesUpdate(Player target, Hashtable changedProps)
-    {
-        if (changedProps.ContainsKey("PlayerType"))
-        {
-            UpdateSkillBallsVisibility();
         }
     }
 
