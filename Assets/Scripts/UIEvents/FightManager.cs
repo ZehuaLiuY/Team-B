@@ -17,13 +17,19 @@ public class FightManager : MonoBehaviourPunCallbacks
     private bool _gameOver = false; // 游戏是否已经结束
     // private float captureDistance = 2f; // 抓住奶酪的距离阈值
 
-    // points
+    // spawn points
     public Transform cheeseSpawnPoints; // respawn points
     public Transform humanSpawnPoints;
+
+    private List<Transform> _cheeseAvailablePoints;
+    private List<Transform> _humanAvailablePoints;
+    
+    // skill balls
     public GameObject[] skillBallPrefabs; // 球体预制体数组
     public Transform skillPointTf;        // 技能球生成点
     public float refreshInterval = 60f;   // 刷新间隔
 
+    // UI
     private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
     public static float countdownTimer = 180f;
@@ -56,6 +62,19 @@ public class FightManager : MonoBehaviourPunCallbacks
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
         StartCoroutine(SpawnSkillBallsPeriodically());
+
+        _humanAvailablePoints = new List<Transform>();
+        for (int i = 0; i < humanSpawnPoints.childCount; i++)
+        {
+            _humanAvailablePoints.Add(humanSpawnPoints.GetChild(i));
+        }
+
+        _cheeseAvailablePoints = new List<Transform>();
+        for (int i = 0; i < cheeseSpawnPoints.childCount; i++)
+        {
+            _cheeseAvailablePoints.Add(cheeseSpawnPoints.GetChild(i));
+        }
+
     }
 
     IEnumerator SpawnSkillBallsPeriodically()
@@ -154,7 +173,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     void AssignRoles()
     {
         var players = PhotonNetwork.PlayerList;
-        List<int> humanIndices = new List<int>();
+        HashSet<int> humanIndices = new HashSet<int>();
 
         int numberOfHumans = Math.Max(1, players.Length / 4);
 
@@ -215,14 +234,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         // check the player type
         if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
-            // human available points
-            List<Transform> humanAvailablePoints = new List<Transform>();
-            for (int i = 0; i < humanSpawnPoints.childCount; i++)
-            {
-                humanAvailablePoints.Add(humanSpawnPoints.GetChild(i));
-            }
-
-            spawnPoint = humanAvailablePoints[Random.Range(0, humanAvailablePoints.Count)];
+            spawnPoint = _humanAvailablePoints[Random.Range(0, _humanAvailablePoints.Count)];
             spawnPos = spawnPoint.position;
             prefabName = "Human";
             interestGroup = 1;
@@ -230,14 +242,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            // cheese available points
-            List<Transform> cheeseAvailablePoints = new List<Transform>();
-            for (int i = 0; i < cheeseSpawnPoints.childCount; i++)
-            {
-                cheeseAvailablePoints.Add(cheeseSpawnPoints.GetChild(i));
-            }
-
-            spawnPoint = cheeseAvailablePoints[Random.Range(0, cheeseAvailablePoints.Count)];
+            spawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
             spawnPos = spawnPoint.position;
             prefabName = "Cheese";
             interestGroup = 2;
