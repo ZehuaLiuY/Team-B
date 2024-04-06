@@ -27,7 +27,7 @@ public class CheeseSmellController : MonoBehaviourPun
     // Update is called once per frame
     void Update()
     {
-        // 在 Update 方法中控制气味生成的频率
+        // control the smell generation on the Update function
         if (_enable)
         {
             if (Time.frameCount % _smellGenerateInterval == 0)
@@ -54,10 +54,10 @@ public class CheeseSmellController : MonoBehaviourPun
     {
         if (!disable)
         {
-            // 在奶酪当前位置生成气味足迹
+            // generate smell particle at the player position
             ParticleSystem smellParticle = Instantiate(smellParticlePrefab, transform.position, Quaternion.identity);
 
-            // 持续释放气味
+            // continue to play the particle
             smellParticle.Play();
         }
         else

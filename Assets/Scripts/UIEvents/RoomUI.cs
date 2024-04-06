@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.SceneManagement;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class RoomUI : MonoBehaviour, IInRoomCallbacks
@@ -60,8 +59,8 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
         // Set initial values for readiness and player name.
         if (p.CustomProperties.TryGetValue("IsReady", out object isReadyVal))
         {
-            item.IsReady = (bool)isReadyVal;
-            item.ChangeReady(item.IsReady);
+            item.isReady = (bool)isReadyVal;
+            item.ChangeReady(item.isReady);
         }
         if (p.CustomProperties.TryGetValue("PlayerName", out object playerNameVal))
         {
@@ -126,8 +125,8 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
             // Update readiness if it has changed.
             if (changedProps.ContainsKey("IsReady"))
             {
-                item.IsReady = (bool)changedProps["IsReady"];
-                item.ChangeReady(item.IsReady);
+                item.isReady = (bool)changedProps["IsReady"];
+                item.ChangeReady(item.isReady);
             }
 
             // Update player name if it has changed.
@@ -144,7 +143,7 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
             bool isAllReady = true;
             foreach (var roomItem in roomList)
             {
-                if (!roomItem.IsReady)
+                if (!roomItem.isReady)
                 {
                     isAllReady = false;
                     break;

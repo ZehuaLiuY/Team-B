@@ -27,5 +27,4 @@ public class WinUI : MonoBehaviour
             fightManager.QuitToLoginScene();
         }
     }
-
 }

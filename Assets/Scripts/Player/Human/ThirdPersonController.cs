@@ -269,7 +269,7 @@ namespace StarterAssets
                 _animator.SetTrigger("pickup");
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
                 
-                // 在人类周围创建一个盒形区域，检测是否存在 Cheese
+                // detect if there is a cheese in the box collider
                 int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
                 Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
                 foreach (Collider collider in colliders)
@@ -281,7 +281,7 @@ namespace StarterAssets
 
                         if (targetPhotonView != null)
                         {
-                            // 调用目标上的RPC方法来显示DeiUI
+                            // show the DeiUI on the target
                             targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
                             if (HumanFightUI.Instance != null)
                             {
@@ -410,7 +410,7 @@ namespace StarterAssets
                 if (Stamina <= 0)
                 {
                     Stamina = 0;
-                    canSprint = false; // 体力耗尽，不能再奔跑
+                    canSprint = false; // the player can't sprint when stamina is 0
                 }
             }
 
@@ -487,7 +487,7 @@ namespace StarterAssets
                 if (Stamina >= 1)
                 {
                     Stamina = 1;
-                    canSprint = true; // 体力完全恢复，现在可以再次奔跑
+                    canSprint = true; // the player can sprint when stamina is full
                 }
             }
 

@@ -14,8 +14,7 @@ using Random = UnityEngine.Random;
 
 public class FightManager : MonoBehaviourPunCallbacks
 {
-    private bool _gameOver = false; // 游戏是否已经结束
-    // private float captureDistance = 2f; // 抓住奶酪的距离阈值
+    private bool _gameOver = false;
 
     // spawn points
     public Transform cheeseSpawnPoints; // respawn points
@@ -23,11 +22,12 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     private List<Transform> _cheeseAvailablePoints;
     private List<Transform> _humanAvailablePoints;
+    private CinemachineVirtualCamera _vc;
     
     // skill balls
-    public GameObject[] skillBallPrefabs; // 球体预制体数组
-    public Transform skillPointTf;        // 技能球生成点
-    public float refreshInterval = 60f;   // 刷新间隔
+    public GameObject[] skillBallPrefabs;
+    public Transform skillPointTf;
+    public float refreshInterval = 60f;
 
     // UI
     private HumanFightUI fightUI;
@@ -36,7 +36,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private bool _isHumanWin = false;
 
     private HashSet<int> _humanPlayerActorNumbers = new HashSet<int>();
-    private int _remainingCheeseCount; // 剩余活着的 cheese 数量
+    private int _remainingCheeseCount;
 
     private GameObject skillBall;
     private HashSet<GameObject> skillBalls = new HashSet<GameObject>();
@@ -47,6 +47,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     public string playerName;
 
+    private Dictionary<int, Queue<GameObject>> skillBallPools = new Dictionary<int, Queue<GameObject>>();
 
     void Awake()
     {
@@ -74,6 +75,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             _cheeseAvailablePoints.Add(cheeseSpawnPoints.GetChild(i));
         }
+        _vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
 
     }
 
@@ -88,7 +90,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void GenerateSkillBalls()
     {
-        photonView.RPC("UpdateSkillBallsVisibilityRPC", RpcTarget.All);
         if (PhotonNetwork.IsMasterClient)
         {
             DeleteExistingSkillBalls();
@@ -99,7 +100,6 @@ public class FightManager : MonoBehaviourPunCallbacks
                 skillBalls.Add(skillBall);
             }
         }
-        photonView.RPC("UpdateSkillBallsVisibilityRPC", RpcTarget.All);
     }
 
     void DeleteExistingSkillBalls()
@@ -114,41 +114,17 @@ public class FightManager : MonoBehaviourPunCallbacks
         skillBalls.Clear();
     }
 
-
-    [PunRPC]
-    void UpdateSkillBallsVisibilityRPC()
+    void SetupHumanCamera(GameObject playerObject)
     {
-        UpdateSkillBallsVisibility();
-    }
-
-    void UpdateSkillBallsVisibility()
-    {
-        string[] skillTags = { "Jump Skill", "Sprint Skill", "Invisible Skill", "Detector Skill","Clone Skill" };
-        bool shouldShow = PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("PlayerType", out object playerType) && playerType.ToString() == "Cheese";
-
-        foreach (string tag in skillTags)
+        if (_vc != null)
         {
-            GameObject[] skillBalls = GameObject.FindGameObjectsWithTag(tag);
-            foreach (var skillBall in skillBalls)
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null)
             {
-                skillBall.SetActive(shouldShow);
+                int skillBallsLayer = LayerMask.NameToLayer("Skillballs");
+                mainCamera.cullingMask &= ~(1 << skillBallsLayer);
             }
         }
-    }
-
-    public override void OnJoinedRoom()
-    {
-        UpdateSkillBallsVisibility();
-    }
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        UpdateSkillBallsVisibility();
-    }
-
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        UpdateSkillBallsVisibility();
     }
 
     void DisplayUIBasedOnRole()
@@ -255,9 +231,13 @@ public class FightManager : MonoBehaviourPunCallbacks
         // minimap icon display
         _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
 
+        if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
+        {
+            SetupHumanCamera(playerObject);
+        }
+
         // camera follow
-        CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
-        vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
+        _vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
 
         // display the player name
         PlayerNameDisplay nameDisplay = playerObject.GetComponentInChildren<PlayerNameDisplay>();
@@ -419,15 +399,6 @@ public class FightManager : MonoBehaviourPunCallbacks
                 SpawnPlayers();
                 DisplayUIBasedOnRole();
             }
-        }
-    }
-
-
-    public override void OnPlayerPropertiesUpdate(Player target, Hashtable changedProps)
-    {
-        if (changedProps.ContainsKey("PlayerType"))
-        {
-            UpdateSkillBallsVisibility();
         }
     }
 

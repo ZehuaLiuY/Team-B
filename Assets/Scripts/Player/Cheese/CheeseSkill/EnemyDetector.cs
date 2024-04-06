@@ -115,41 +115,41 @@ using Photon.Pun;
 
 public class EnemyDetector : MonoBehaviourPunCallbacks
 {
-    public Material highlightMaterial; // 用于高亮显示敌人的材质
-    private Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
-    public float detectionDuration = 5f; // 检测敌人的持续时间
-    private bool skillUsed = false; // 表示技能是否正在使用
-    private float skillTimer; // 跟踪技能持续时间的计时器
+    public Material highlightMaterial; // using to highlight the enemy
+    private Dictionary<Renderer, Material[]> _originalMaterials = new Dictionary<Renderer, Material[]>();
+    public float detectionDuration = 5f; // detection duration
+    private bool _skillUsed = false; // skill used flag
+    private float _skillTimer; // skill timer to track skill duration
 
     void Update()
     {
-        if (photonView.IsMine && !skillUsed && Input.GetKeyDown(KeyCode.F))
+        if (photonView.IsMine && !_skillUsed && Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(DetectEnemies());
         }
 
-        // 如果技能正在使用，则连续更新技能图标的填充量
-        if (skillUsed)
+        // if the skill has been used, continuously update the skill icon
+        if (_skillUsed)
         {
-            UpdateIcon(skillTimer / detectionDuration);
+            UpdateIcon(_skillTimer / detectionDuration);
         }
     }
 
     IEnumerator DetectEnemies()
     {
-        skillUsed = true; // 标记技能为正在使用状态
-        skillTimer = detectionDuration; // 重置技能计时器
+        _skillUsed = true; // mark the skill as used
+        _skillTimer = detectionDuration; // reset the skill timer
 
-        // 执行敌人检测逻辑
+        // highlight all enemies in the detection range
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius, LayerMask.GetMask("Human"));
         foreach (var hitCollider in hitColliders)
         {
             SkinnedMeshRenderer[] renderers = hitCollider.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var renderer in renderers)
             {
-                if (!originalMaterials.ContainsKey(renderer))
+                if (!_originalMaterials.ContainsKey(renderer))
                 {
-                    originalMaterials[renderer] = renderer.materials;
+                    _originalMaterials[renderer] = renderer.materials;
                 }
 
                 Material[] newMaterials = new Material[renderer.materials.Length];
@@ -161,26 +161,26 @@ public class EnemyDetector : MonoBehaviourPunCallbacks
             }
         }
 
-        while (skillTimer > 0)
+        while (_skillTimer > 0)
         {
-            skillTimer -= Time.deltaTime;
-            UpdateIcon(skillTimer / detectionDuration);
+            _skillTimer -= Time.deltaTime;
+            UpdateIcon(_skillTimer / detectionDuration);
             yield return null;
         }
         
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
         GetComponentInParent<GetSkill>().DeactivateSkill("Detector Skill");
-        skillUsed = false; // 重置技能使用状态
+        _skillUsed = false; // reset the skill used flag
 
-        // 恢复所有更改过的材质
-        foreach (var renderer in originalMaterials.Keys)
+        // reset the materials of all highlighted enemies
+        foreach (var renderer in _originalMaterials.Keys)
         {
-            if (renderer != null && originalMaterials.ContainsKey(renderer))
+            if (renderer != null && _originalMaterials.ContainsKey(renderer))
             {
-                renderer.materials = originalMaterials[renderer];
+                renderer.materials = _originalMaterials[renderer];
             }
         }
-        originalMaterials.Clear();
+        _originalMaterials.Clear();
     }
 
     private void UpdateIcon(float fillAmount)

@@ -8,15 +8,15 @@ using Photon.Realtime;
 public class CreateRoomUI : MonoBehaviourPunCallbacks
 {
 
-    InputField roomNameInput;
+    private InputField _roomNameInput;
     // Start is called before the first frame update
     void Start()
     {
         transform.Find("bg/okBtn").GetComponent<Button>().onClick.AddListener(OnCreateBtn);
         transform.Find("bg/title/closeBtn").GetComponent<Button>().onClick.AddListener(OnCloseBtn);
-        roomNameInput = transform.Find("bg/InputField").GetComponent<InputField>();
+        _roomNameInput = transform.Find("bg/InputField").GetComponent<InputField>();
 
-        roomNameInput.text = "Room_" + Random.Range(0, 1000);
+        _roomNameInput.text = "Room_" + Random.Range(0, 1000);
     }
 
 
@@ -25,7 +25,7 @@ public class CreateRoomUI : MonoBehaviourPunCallbacks
         Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Creating room...");
         RoomOptions room = new RoomOptions();
         room.MaxPlayers = 20;
-        PhotonNetwork.CreateRoom(roomNameInput.text, room);
+        PhotonNetwork.CreateRoom(_roomNameInput.text, room);
     }
 
     public void OnCloseBtn()

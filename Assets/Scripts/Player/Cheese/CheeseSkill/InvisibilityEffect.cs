@@ -1,32 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun; 
+using Photon.Pun;
+using UnityEngine.Serialization;
 
 public class InvisibilityEffect : MonoBehaviourPunCallbacks
 {
     public Material invisibleMaterial;
-    public float Skill_Duration = 3f;
-    private Material[] originalMaterials;
-    private SkinnedMeshRenderer[] childRenderers;
-    private bool skillUsed = false;
-    private float skillDurationTimer; 
+    public float skillDuration = 3f;
+    private Material[] _originalMaterials;
+    private SkinnedMeshRenderer[] _childRenderers;
+    private bool _skillUsed = false;
+    private float _skillDurationTimer;
 
     void Start()
     {
-        childRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
-        originalMaterials = new Material[childRenderers.Length];
+        _childRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+        _originalMaterials = new Material[_childRenderers.Length];
         
 
-        for (int i = 0; i < childRenderers.Length; i++)
+        for (int i = 0; i < _childRenderers.Length; i++)
         {
-            originalMaterials[i] = childRenderers[i].material;
+            _originalMaterials[i] = _childRenderers[i].material;
         }
     }
 
     void Update()
     {
-        if (photonView.IsMine && !skillUsed && Input.GetKeyDown(KeyCode.F))
+        if (photonView.IsMine && !_skillUsed && Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ApplyInvisibilityEffect());
         }
@@ -34,41 +35,41 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
     
     IEnumerator ApplyInvisibilityEffect()
     {
-        skillUsed = true;
+        _skillUsed = true;
         
         photonView.RPC("SetInvisibility", RpcTarget.Others, true);
         
         if (photonView.IsMine)
         {
-            foreach (var renderer in childRenderers)
+            foreach (var renderer in _childRenderers)
             {
                 renderer.material = invisibleMaterial;
             }
         }
 
-        skillDurationTimer = Skill_Duration;
-        UpdateIcon(skillDurationTimer);
+        _skillDurationTimer = skillDuration;
+        UpdateIcon(_skillDurationTimer);
     
-        while(skillDurationTimer > 0)
+        while(_skillDurationTimer > 0)
         {
-            skillDurationTimer -= Time.deltaTime;
-            UpdateIcon(skillDurationTimer / Skill_Duration);
+            _skillDurationTimer -= Time.deltaTime;
+            UpdateIcon(_skillDurationTimer / skillDuration);
             yield return null;
         }
 
 
         if (photonView.IsMine)
         {
-            for (int i = 0; i < childRenderers.Length; i++)
+            for (int i = 0; i < _childRenderers.Length; i++)
             {
-                childRenderers[i].material = originalMaterials[i];
+                _childRenderers[i].material = _originalMaterials[i];
             }
         }
         photonView.RPC("RestoreVisibility", RpcTarget.Others);
 
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
         GetComponent<GetSkill>().DeactivateSkill("Invisible Skill");
-        skillUsed = false;
+        _skillUsed = false;
     }
     
     private void UpdateIcon(float fillAmount)
@@ -79,12 +80,12 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
     [PunRPC]
     void SetInvisibility(bool state)
     {
-            gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     [PunRPC]
     void RestoreVisibility()
     {
-            gameObject.SetActive(true);
+        gameObject.SetActive(true);
     }
 }
