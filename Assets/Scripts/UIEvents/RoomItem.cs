@@ -10,13 +10,11 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class RoomItem : MonoBehaviour
 {
     public int ownerId;
-    public bool isReady = false;
+    public bool isReady;
     public InputField nameInputField;
-    private PhotonView _photonView;
 
     void Awake()
     {
-        _photonView = GetComponent<PhotonView>();
         isReady = false;
     }
 
@@ -24,6 +22,7 @@ public class RoomItem : MonoBehaviour
     {
         nameInputField = transform.Find("InputField").GetComponent<InputField>();
         nameInputField.characterLimit = 8;
+
         if (ownerId == PhotonNetwork.LocalPlayer.ActorNumber)
         {
             transform.Find("Button").GetComponent<Button>().onClick.AddListener(OnReadyBtn);
@@ -34,6 +33,7 @@ public class RoomItem : MonoBehaviour
             transform.Find("Button").GetComponent<Image>().color = Color.black;
             nameInputField.interactable = false;
         }
+
         ChangeReady(isReady);
     }
 
@@ -64,7 +64,6 @@ public class RoomItem : MonoBehaviour
     public void ChangeReady(bool isReady)
     {
         transform.Find("Button/Text").GetComponent<Text>().text = isReady == true ? "Ready!" : "Ready?";
-
     }
 
     private void OnNameChanged(string newName)

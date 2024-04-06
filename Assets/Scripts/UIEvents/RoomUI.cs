@@ -91,12 +91,27 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
         PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.CurrentRoom.IsVisible = false;
         StartCoroutine(WaitAndLoadScene());
+
+    }
+
+    void ResetAllPlayersReadyState()
+    {
+        var playerList = PhotonNetwork.PlayerList;
+        foreach (var player in playerList)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                Hashtable props = new Hashtable {{"IsReady", false}};
+                player.SetCustomProperties(props);
+            }
+        }
     }
 
     IEnumerator WaitAndLoadScene()
     {
         yield return new WaitForSeconds(1);
         PhotonNetwork.LoadLevel("GameScene");
+        ResetAllPlayersReadyState();
     }
 
     // new player enter the room
