@@ -14,8 +14,9 @@ using Random = UnityEngine.Random;
 
 public class FightManager : MonoBehaviourPunCallbacks
 {
-    private bool _gameOver = false;
+    // private bool _gameOver = false;
 
+    // Instantiate the player
     // spawn points
     public Transform cheeseSpawnPoints; // respawn points
     public Transform humanSpawnPoints;
@@ -23,31 +24,32 @@ public class FightManager : MonoBehaviourPunCallbacks
     private List<Transform> _cheeseAvailablePoints;
     private List<Transform> _humanAvailablePoints;
     private CinemachineVirtualCamera _vc;
+    public string playerName;
+
+    private HashSet<int> _humanPlayerActorNumbers = new HashSet<int>();
     
     // skill balls
     public GameObject[] skillBallPrefabs;
     public Transform skillPointTf;
     public float refreshInterval = 60f;
+    private GameObject skillBall;
+    private HashSet<GameObject> skillBalls = new HashSet<GameObject>();
+    // private Dictionary<int, Queue<GameObject>> skillBallPools = new Dictionary<int, Queue<GameObject>>();
 
     // UI
     private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
-    public static float countdownTimer = 180f;
-    private bool _isHumanWin = false;
 
-    private HashSet<int> _humanPlayerActorNumbers = new HashSet<int>();
+    // countdown timer and game end event
+    public static float countdownTimer = 180f;
+    public event Action<bool> OnGameEnd;
+    private bool _isHumanWin = false;
     private int _remainingCheeseCount;
 
-    private GameObject skillBall;
-    private HashSet<GameObject> skillBalls = new HashSet<GameObject>();
-
-
+    // minimap
     public MiniMapController miniMapController;
     private PhotonView _miniMapPhotonView;
 
-    public string playerName;
-
-    private Dictionary<int, Queue<GameObject>> skillBallPools = new Dictionary<int, Queue<GameObject>>();
 
     void Awake()
     {
@@ -62,7 +64,14 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
-        StartCoroutine(SpawnSkillBallsPeriodically());
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            StartCoroutine(CountdownTimerCoroutine());
+            StartCoroutine(SpawnSkillBallsPeriodically());
+        }
+
+        OnGameEnd += HandleGameEnd;
 
         _humanAvailablePoints = new List<Transform>();
         for (int i = 0; i < humanSpawnPoints.childCount; i++)
@@ -75,8 +84,14 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             _cheeseAvailablePoints.Add(cheeseSpawnPoints.GetChild(i));
         }
+
         _vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
 
+    }
+
+    void OnDestroy()
+    {
+        OnGameEnd -= HandleGameEnd;
     }
 
     IEnumerator SpawnSkillBallsPeriodically()
@@ -85,6 +100,25 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             GenerateSkillBalls();
             yield return new WaitForSeconds(refreshInterval);
+        }
+    }
+
+    IEnumerator CountdownTimerCoroutine()
+    {
+        while (countdownTimer > 0)
+        {
+            yield return new WaitForSeconds(1f);
+
+            countdownTimer -= 1f;
+            photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.All, countdownTimer);
+
+            if (countdownTimer <= 0)
+            {
+                // _gameOver = true;
+                _isHumanWin = false;
+                OnGameEnd?.Invoke(_isHumanWin);
+                yield break;
+            }
         }
     }
 
@@ -258,66 +292,30 @@ public class FightManager : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        if (!_gameOver)
-        {
-            // 检查游戏结果
-            CheckGameResult();
-            // 检查当前客户端是否是房主
-            if (PhotonNetwork.IsMasterClient)
-            {
-                // 如果是房主，更新倒计时并发送 RPC
-                float newTimer = UpdateCountdownTimer();
-                // fightUI.SetCountdownTimer(newTimer);
-                photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.AllBuffered, newTimer);
-            }
-        }
-        else if (PhotonNetwork.IsConnected)
-        {
-            photonView.RPC("EndGame", RpcTarget.All, _isHumanWin);
-            _gameOver = false;
-        }
-    }
-    private float UpdateCountdownTimer()
-    {
-        if(countdownTimer > 0)
-        {
-            countdownTimer -= Time.deltaTime;
-        }
 
-        return countdownTimer;
     }
 
     public void CheeseDied()
     {
         _remainingCheeseCount--;
 
-        // 检查是否所有 cheese 都死亡了
         if (_remainingCheeseCount <= 0)
         {
             _isHumanWin = true;
-            _gameOver = true;
+            // _gameOver = true;
 
             // when all cheese die, the obeserved also show the lose UI
             Game.uiManager.CloseAllUI();
-            ShowEndGameUI(false);
-
+            // ShowEndGameUI(false);
+            OnGameEnd?.Invoke(_isHumanWin);
         }
     }
 
-    private void ShowEndGameUI(bool isHumanWin)
+    private void HandleGameEnd(bool isHumanWin)
     {
-        if (isHumanWin)
-        {
-            Game.uiManager.ShowUI<LossUI>("LossUI");
-        }
-        else
-        {
-            Game.uiManager.ShowUI<WinUI>("WinUI");
-        }
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        photonView.RPC("EndGame", RpcTarget.All, isHumanWin);
     }
+
 
     [PunRPC]
     private void UpdateCountdownTimerRPC(float newTimer)
@@ -369,21 +367,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-    }
-
-
-    void CheckGameResult()
-    {
-
-        // 如果倒计时结束
-        if (countdownTimer <= 0f)
-        {
-            _gameOver = true; // 设置游戏结束标志为 true
-            _isHumanWin = false;
-            // Debug.Log("gameover: " + _gameOver);
-        }
-
 
     }
 
