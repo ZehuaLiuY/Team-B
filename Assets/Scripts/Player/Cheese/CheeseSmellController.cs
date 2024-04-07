@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-using CheeseController;
 
 public class CheeseSmellController : MonoBehaviourPun
 {
@@ -18,25 +18,23 @@ public class CheeseSmellController : MonoBehaviourPun
 
     private bool _disable = false;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-
+        StartCoroutine(GenerateSmell());
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator GenerateSmell()
     {
-        // control the smell generation on the Update function
-        if (_enable)
+        while (_enable)
         {
-            if (Time.frameCount % _smellGenerateInterval == 0)
+            yield return new WaitForSeconds(0.5f);
+            photonView.RPC("GenerateSmell", RpcTarget.All, _disable);
+
+            if (_disable)
             {
-                photonView.RPC("GenerateSmell", RpcTarget.All, _disable);
+                break;
             }
         }
-        
-       
     }
 
     public void setEnable(bool enable)
