@@ -127,6 +127,11 @@ namespace StarterAssets
         private Vector2 _lastMoveInput;
         private Vector2 _lastLookInput;
 
+        private float _minLerpRate = 10f;
+        private float _maxLerpRate = 20f;
+        private float _lerpRate;
+        private float _networkLatencyFactor;
+
         private MiniMapController _miniMapController;
         private Transform _cachedTransform;
 
@@ -352,8 +357,20 @@ namespace StarterAssets
 
         void UpdateOther()
         {
-            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
-            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
+            int currentPing = PhotonNetwork.GetPing();
+
+            if (currentPing > 100)
+            {
+                _networkLatencyFactor = Mathf.InverseLerp(0, 200, currentPing);
+                _lerpRate = Mathf.Lerp(_minLerpRate, _maxLerpRate, _networkLatencyFactor);
+            }
+            else
+            {
+                _lerpRate = _minLerpRate;
+            }
+
+            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * _lerpRate);
+            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * _lerpRate);
 
             _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
         }
