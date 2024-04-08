@@ -1,45 +1,46 @@
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.Serialization;
 
 public class Clone_Skill : MonoBehaviourPunCallbacks
 {
-    public float Skill_Duration = 10f; // Clone duration
-    private bool skillUsed = false;
-    private float skillTimer; // Timer to track skill duration
+    public float skillDuration = 10f; // Clone duration
+    private bool _skillUsed = false;
+    private float _skillTimer; // Timer to track skill duration
 
     void Update()
     {
-        if (photonView.IsMine && !skillUsed && Input.GetKeyDown(KeyCode.F))
+        if (photonView.IsMine && !_skillUsed && Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ApplyCloneEffect());
         }
 
         // Continuously update the skill icon if the skill has been used
-        if (skillUsed)
+        if (_skillUsed)
         {
-            UpdateIcon(skillTimer / Skill_Duration);
+            UpdateIcon(_skillTimer / skillDuration);
         }
     }
 
     IEnumerator ApplyCloneEffect()
     {
-        skillUsed = true; // Mark the skill as used
+        _skillUsed = true; // Mark the skill as used
 
         Clone(); // Create the clone
 
-        skillTimer = Skill_Duration; // Reset the skill timer
+        _skillTimer = skillDuration; // Reset the skill timer
 
-        while (skillTimer > 0)
+        while (_skillTimer > 0)
         {
-            skillTimer -= Time.deltaTime;
-            UpdateIcon(skillTimer / Skill_Duration);
+            _skillTimer -= Time.deltaTime;
+            UpdateIcon(_skillTimer / skillDuration);
             yield return null;
         }
         
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
         GetComponent<GetSkill>().DeactivateSkill("Clone Skill"); 
-        skillUsed = false; 
+        _skillUsed = false;
     }
 
          void Clone()
@@ -48,7 +49,7 @@ public class Clone_Skill : MonoBehaviourPunCallbacks
          // GameObject clone = PhotonNetwork.Instantiate(this.gameObject.name.Replace("(Clone)",""), transform.position, transform.rotation);
          GameObject clone = PhotonNetwork.Instantiate("Clone", transform.position, transform.rotation);
          var cloneMovement = clone.AddComponent<CloneMovement>();
-         StartCoroutine(DestroyNetworkObject(clone, Skill_Duration));
+         StartCoroutine(DestroyNetworkObject(clone, skillDuration));
      }
 
     IEnumerator DestroyNetworkObject(GameObject target, float delay)

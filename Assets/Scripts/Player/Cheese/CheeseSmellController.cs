@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-using CheeseController;
 
 public class CheeseSmellController : MonoBehaviourPun
 {
@@ -18,25 +18,23 @@ public class CheeseSmellController : MonoBehaviourPun
 
     private bool _disable = false;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-
+        StartCoroutine(GenerateSmell());
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator GenerateSmell()
     {
-        // 在 Update 方法中控制气味生成的频率
-        if (_enable)
+        while (_enable)
         {
-            if (Time.frameCount % _smellGenerateInterval == 0)
+            yield return new WaitForSeconds(0.5f);
+            photonView.RPC("GenerateSmell", RpcTarget.All, _disable);
+
+            if (_disable)
             {
-                photonView.RPC("GenerateSmell", RpcTarget.All, _disable);
+                break;
             }
         }
-        
-       
     }
 
     public void setEnable(bool enable)
@@ -54,10 +52,10 @@ public class CheeseSmellController : MonoBehaviourPun
     {
         if (!disable)
         {
-            // 在奶酪当前位置生成气味足迹
+            // generate smell particle at the player position
             ParticleSystem smellParticle = Instantiate(smellParticlePrefab, transform.position, Quaternion.identity);
 
-            // 持续释放气味
+            // continue to play the particle
             smellParticle.Play();
         }
         else

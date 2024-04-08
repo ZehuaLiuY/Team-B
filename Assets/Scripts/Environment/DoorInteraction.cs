@@ -12,16 +12,16 @@ public class DoorInteraction : MonoBehaviour
 {
     public GameObject text; // 开门提示的UI元素引用
     public GameObject vfxSmell;
-    private Animator characterAnimator;
+    private Animator _characterAnimator;
 
-    private Animator doorAnimator;
-    private bool isPlayerNear;
-    private bool doorIsOpen;
-    private PhotonView photonView;
-    private GameObject currentVFXInstance; // 用于存储当前播放的 Visual Effect 实例
-    private PlayerIK playerIK;
-    private Transform targetChild;
-    private PhotonView playerPhotonView;
+    private Animator _doorAnimator;
+    private bool _isPlayerNear;
+    private bool _doorIsOpen;
+    private PhotonView _photonView;
+    private GameObject _currentVFXInstance; // 用于存储当前播放的 Visual Effect 实例
+    private PlayerIK _playerIK;
+    private Transform _targetChild;
+    private PhotonView _playerPhotonView;
 
     private bool _cheeseInSide = false;
     private CheckCheeseInside _checkCheeseInside;
@@ -29,9 +29,9 @@ public class DoorInteraction : MonoBehaviour
     void Awake()
     {
         text.SetActive(false); // 开始时禁用提示
-        photonView = transform.GetComponent<PhotonView>();
-        doorAnimator = GetComponent<Animator>();
-        playerIK = GetComponent<PlayerIK>();
+        _photonView = transform.GetComponent<PhotonView>();
+        _doorAnimator = GetComponent<Animator>();
+        _playerIK = GetComponent<PlayerIK>();
     }
 
     private void Start()
@@ -47,14 +47,14 @@ public class DoorInteraction : MonoBehaviour
         {
             if (other.GetComponent<PhotonView>().IsMine)
             {
-                isPlayerNear = true;
+                _isPlayerNear = true;
                 text.SetActive(true);
                 
                 if(other != null)
                 {
-                    playerPhotonView = other.GetComponent<PhotonView>();
+                    _playerPhotonView = other.GetComponent<PhotonView>();
                     // playerIK = other.GetComponent<PlayerIK>();
-                    characterAnimator = other.GetComponent<Animator>();
+                    _characterAnimator = other.GetComponent<Animator>();
                     // targetChild = other.transform.Find("mixamorig:Hips/mixamorig:Spine/mixamorig:Spine1/mixamorig:Spine2/mixamorig:RightShoulder/Flamethrower");
                 }
             }
@@ -68,9 +68,9 @@ public class DoorInteraction : MonoBehaviour
         {
             if (other.GetComponent<PhotonView>().IsMine)
             {
-                isPlayerNear = false;
+                _isPlayerNear = false;
                 text.SetActive(false);
-                characterAnimator = null;
+                _characterAnimator = null;
             }
         }
        
@@ -79,37 +79,37 @@ public class DoorInteraction : MonoBehaviour
     void Update()
     {
         checkCheese();
-        if (isPlayerNear && Keyboard.current.eKey.wasPressedThisFrame)
+        if (_isPlayerNear && Keyboard.current.eKey.wasPressedThisFrame)
         {
-            if (playerPhotonView.IsMine && playerPhotonView.CompareTag("Player"))
+            if (_playerPhotonView.IsMine && _playerPhotonView.CompareTag("Player"))
             {
-                playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
+                _playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
                 StartCoroutine(ResetAnimation(1f));
             }
-            photonView.RPC("ToggleDoor", RpcTarget.All); // Call the RPC method
-            if (characterAnimator != null)
+            _photonView.RPC("ToggleDoor", RpcTarget.All); // Call the RPC method
+            if (_characterAnimator != null)
             {
-                characterAnimator.SetTrigger("OpenDoorTrigger");
+                _characterAnimator.SetTrigger("OpenDoorTrigger");
             }
             
             //Debug.Log("_cheeseInSide: " + _cheeseInSide);
-            if (doorAnimator.GetBool("IsOpen") && _cheeseInSide)
+            if (_doorAnimator.GetBool("IsOpen") && _cheeseInSide)
             {
-                photonView.RPC("PlayVFX", RpcTarget.All);
+                _photonView.RPC("PlayVFX", RpcTarget.All);
             }
             else
             {
-                photonView.RPC("StopVFX", RpcTarget.All);
+                _photonView.RPC("StopVFX", RpcTarget.All);
             }
         }
         
-        if (!_cheeseInSide && currentVFXInstance != null)
+        if (!_cheeseInSide && _currentVFXInstance != null)
         {
-            photonView.RPC("StopVFX", RpcTarget.All);
+            _photonView.RPC("StopVFX", RpcTarget.All);
         }
-        else if(_cheeseInSide && currentVFXInstance == null && doorAnimator.GetBool("IsOpen"))
+        else if(_cheeseInSide && _currentVFXInstance == null && _doorAnimator.GetBool("IsOpen"))
         {
-            photonView.RPC("PlayVFX", RpcTarget.All);
+            _photonView.RPC("PlayVFX", RpcTarget.All);
         }
         //else if(_cheeseInSide && currentVFXInstance == null)
         //{
@@ -120,8 +120,8 @@ public class DoorInteraction : MonoBehaviour
     private IEnumerator ResetAnimation(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (playerPhotonView != null) {
-            playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, true);
+        if (_playerPhotonView != null) {
+            _playerPhotonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, true);
         }
     }
 
@@ -135,28 +135,28 @@ public class DoorInteraction : MonoBehaviour
     [PunRPC]
     void ToggleDoor() {
 
-        doorAnimator.SetBool("IsOpen", !doorAnimator.GetBool("IsOpen")); // Toggle door state
+        _doorAnimator.SetBool("IsOpen", !_doorAnimator.GetBool("IsOpen")); // Toggle door state
     }
 
     [PunRPC]
     void PlayVFX()
     {
-        // 实例化 Visual Effect 预制体并放置在门的位置
-        currentVFXInstance = PhotonNetwork.Instantiate("VFXSmell", transform.position, Quaternion.identity);
+        // instantiate visual effect
+        _currentVFXInstance = PhotonNetwork.Instantiate("VFXSmell", transform.position, Quaternion.identity);
 
-        // 让 Visual Effect 开始播放
+        // let the visual effect play
         //currentVFXInstance.GetComponent<VisualEffect>().Play();
     }
 
     [PunRPC]
     void StopVFX()
     {
-        if (currentVFXInstance != null)
+        if (_currentVFXInstance != null)
         {
-            // 如果有正在播放的 Visual Effect，停止播放并销毁实例
+            // if the visual effect is playing, stop
             //currentVFXInstance.GetComponent<VisualEffect>().Stop();
-            PhotonNetwork.Destroy(currentVFXInstance);
-            currentVFXInstance = null;
+            PhotonNetwork.Destroy(_currentVFXInstance);
+            _currentVFXInstance = null;
         }
     }
 }

@@ -91,6 +91,13 @@ public class LobbyUI : MonoBehaviourPunCallbacks
         //join room failed
         Game.uiManager.CloseUI("MaskUI");
         Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Join room failed: " + message);
+        StartCoroutine(ReEnterLobbyAfterDelay(3f));
+    }
+
+    private IEnumerator ReEnterLobbyAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Game.uiManager.CloseUI("MaskUI");
         Game.uiManager.ShowUI<LobbyUI>("LobbyUI");
     }
 }

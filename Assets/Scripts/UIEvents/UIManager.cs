@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class UIManager
 {
-    private Transform canvasTf; // Canvas transform component
+    private Transform _canvasTf; // Canvas transform component
 
-    private List<GameObject> uiList; // Collection to store loaded interfaces
+    private List<GameObject> _uiList; // Collection to store loaded interfaces
 
     public void Init()
     {
         // Find the canvas in the world
-        canvasTf = GameObject.Find("Canvas").transform;
+        _canvasTf = GameObject.Find("Canvas").transform;
         // Initialize the collection
-        uiList = new List<GameObject>();
+        _uiList = new List<GameObject>();
     }
 
     // Show
@@ -23,7 +23,7 @@ public class UIManager
         if (ui == null)
         {
             // Not in the collection, need to load from Resources/UI folder
-            GameObject obj = Object.Instantiate(Resources.Load("UI/" + uiName), canvasTf) as GameObject;
+            GameObject obj = Object.Instantiate(Resources.Load("UI/" + uiName), _canvasTf) as GameObject;
 
             // Rename
             obj.name = uiName;
@@ -32,7 +32,7 @@ public class UIManager
             ui = obj.AddComponent<T>();
 
             // Add to the collection for storage
-            uiList.Add(obj);
+            _uiList.Add(obj);
         }
         else
         {
@@ -56,12 +56,12 @@ public class UIManager
     // Close all interfaces
     public void CloseAllUI()
     {
-        for (int i = uiList.Count - 1; i >= 0; i--)
+        for (int i = _uiList.Count - 1; i >= 0; i--)
         {
-            Object.Destroy(uiList[i].gameObject);
+            Object.Destroy(_uiList[i].gameObject);
         }
 
-        uiList.Clear();// Clear the collection
+        _uiList.Clear();// Clear the collection
     }
 
     // Close a specific interface
@@ -70,7 +70,7 @@ public class UIManager
         GameObject ui = Find(uiName);
         if (ui != null)
         {
-            uiList.Remove(ui);
+            _uiList.Remove(ui);
             Object.Destroy(ui.gameObject);
         }
     }
@@ -78,11 +78,11 @@ public class UIManager
     // Find a specific interface
     public T Find<T>(string uiName) where T : Component
     {
-        for (int i = 0; i < uiList.Count; i++)
+        for (int i = 0; i < _uiList.Count; i++)
         {
-            if (uiList[i].name == uiName)
+            if (_uiList[i].name == uiName)
             {
-                return uiList[i].GetComponent<T>();
+                return _uiList[i].GetComponent<T>();
             }
         }
         return null;
@@ -90,11 +90,11 @@ public class UIManager
 
     public GameObject Find(string uiName)
     {
-        for (int i = 0; i < uiList.Count; i++)
+        for (int i = 0; i < _uiList.Count; i++)
         {
-            if (uiList[i].name == uiName)
+            if (_uiList[i].name == uiName)
             {
-                return uiList[i];
+                return _uiList[i];
             }
         }
         return null;

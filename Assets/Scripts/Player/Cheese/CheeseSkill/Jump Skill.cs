@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using CheeseController;
 using UnityEngine;
-using Photon.Pun; 
+using Photon.Pun;
+using UnityEngine.Serialization;
 
 public class Jump_Skill : MonoBehaviourPun
 {
-    private bool skillUsed = false;
-    public float Skill_Duration = 5f;
-    private float skillDurationTimer; 
+    private bool _skillUsed = false;
+    public float skillDuration = 5f;
+    private float _skillDurationTimer;
     private CheeseThirdPerson _cheeseThirdPerson;
     // Start is called before the first frame update
     void Start()
@@ -23,7 +24,7 @@ public class Jump_Skill : MonoBehaviourPun
     // Update is called once per frame
     void Update()
     {
-        if (photonView.IsMine && !skillUsed && Input.GetKeyDown(KeyCode.F))
+        if (photonView.IsMine && !_skillUsed && Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ApplyJumpSkill());
         }
@@ -31,22 +32,22 @@ public class Jump_Skill : MonoBehaviourPun
 
     IEnumerator ApplyJumpSkill()
     {
-        skillUsed = true;
+        _skillUsed = true;
         photonView.RPC("JumpSkill", RpcTarget.All);
 
-        skillDurationTimer = Skill_Duration;
+        _skillDurationTimer = skillDuration;
         UpdateIcon(1f);
 
-        while (skillDurationTimer > 0)
+        while (_skillDurationTimer > 0)
         {
-            skillDurationTimer -= Time.deltaTime;
-            UpdateIcon(skillDurationTimer / Skill_Duration);
+            _skillDurationTimer -= Time.deltaTime;
+            UpdateIcon(_skillDurationTimer / skillDuration);
             yield return null;
         }
 
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
         GetComponent<GetSkill>().DeactivateSkill("Jump Skill");
-        skillUsed = false;
+        _skillUsed = false;
     }
     
     [PunRPC]

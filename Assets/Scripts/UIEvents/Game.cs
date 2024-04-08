@@ -5,13 +5,13 @@ using UnityEngine;
 public class Game : MonoBehaviour
 {
     public static UIManager uiManager;
-    public static bool isLoaded = false;
+    private static bool _isLoaded = false;
 
     private void Awake()
     {
-        if (isLoaded == false)
+        if (_isLoaded == false)
         {
-            isLoaded = true;
+            _isLoaded = true;
             DontDestroyOnLoad(gameObject);
             uiManager = new UIManager();
             uiManager.Init();

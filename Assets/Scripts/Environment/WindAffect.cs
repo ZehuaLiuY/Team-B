@@ -9,7 +9,7 @@ public class WindAffect : MonoBehaviour
     {
         if (other.CompareTag("Target"))
         {
-            Debug.Log("cheese in trigger");
+            // Debug.Log("cheese in trigger");
             _cheeseSmellController = other.GetComponent<CheeseSmellController>();
             _cheeseSmellController.setDisable(true);
         }
@@ -19,7 +19,7 @@ public class WindAffect : MonoBehaviour
     {
         if (other.CompareTag("Target"))
         {
-            Debug.Log("cheese leave trigger");
+            // Debug.Log("cheese leave trigger");
             _cheeseSmellController = other.GetComponent<CheeseSmellController>();
             _cheeseSmellController.setDisable(false);
         }

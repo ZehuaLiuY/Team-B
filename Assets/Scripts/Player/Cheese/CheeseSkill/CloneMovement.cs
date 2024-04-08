@@ -9,25 +9,25 @@ public class CloneMovement : MonoBehaviourPunCallbacks
     public float turnSpeed = 300f;
     public float backStepDistance = 1f; // 后退距离
     
-    private Animator animator;
+    private Animator _animator;
 
     private void Start()
     {
-        animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
         if (photonView.IsMine)
         {
-            // 前进移动
+            // moving forward
             float move = moveSpeed * Time.deltaTime;
             transform.Translate(Vector3.forward * move);
 
-            // 更新动画状态
-            if (animator != null)
+            // update animation
+            if (_animator != null)
             {
-                animator.SetBool("IsWalking", move > 0);
+                _animator.SetBool("IsWalking", move > 0);
             }
         }
     }
@@ -36,11 +36,11 @@ public class CloneMovement : MonoBehaviourPunCallbacks
     {
         if (collision.gameObject.tag != "Target")
         {
-            // 随机转向
+            // random direction
             float randomDirection = Random.Range(-1f, 1f);
             transform.Rotate(0f, randomDirection * turnSpeed * Time.deltaTime, 0f);
 
-            // 后退一小步
+            // back step
             transform.Translate(Vector3.back * backStepDistance);
         }
     }

@@ -127,6 +127,11 @@ namespace StarterAssets
         private Vector2 _lastMoveInput;
         private Vector2 _lastLookInput;
 
+        private float _minLerpRate = 10f;
+        private float _maxLerpRate = 20f;
+        private float _lerpRate;
+        private float _networkLatencyFactor;
+
         private MiniMapController _miniMapController;
         private Transform _cachedTransform;
 
@@ -269,7 +274,7 @@ namespace StarterAssets
                 _animator.SetTrigger("pickup");
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
                 
-                // 在人类周围创建一个盒形区域，检测是否存在 Cheese
+                // detect if there is a cheese in the box collider
                 int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
                 Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
                 foreach (Collider collider in colliders)
@@ -281,7 +286,7 @@ namespace StarterAssets
 
                         if (targetPhotonView != null)
                         {
-                            // 调用目标上的RPC方法来显示DeiUI
+                            // show the DeiUI on the target
                             targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
                             if (HumanFightUI.Instance != null)
                             {
@@ -352,8 +357,20 @@ namespace StarterAssets
 
         void UpdateOther()
         {
-            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
-            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
+            int currentPing = PhotonNetwork.GetPing();
+
+            if (currentPing > 100)
+            {
+                _networkLatencyFactor = Mathf.InverseLerp(0, 200, currentPing);
+                _lerpRate = Mathf.Lerp(_minLerpRate, _maxLerpRate, _networkLatencyFactor);
+            }
+            else
+            {
+                _lerpRate = _minLerpRate;
+            }
+
+            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * _lerpRate);
+            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * _lerpRate);
 
             _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
         }
@@ -410,7 +427,7 @@ namespace StarterAssets
                 if (Stamina <= 0)
                 {
                     Stamina = 0;
-                    canSprint = false; // 体力耗尽，不能再奔跑
+                    canSprint = false; // the player can't sprint when stamina is 0
                 }
             }
 
@@ -487,7 +504,7 @@ namespace StarterAssets
                 if (Stamina >= 1)
                 {
                     Stamina = 1;
-                    canSprint = true; // 体力完全恢复，现在可以再次奔跑
+                    canSprint = true; // the player can sprint when stamina is full
                 }
             }
 
