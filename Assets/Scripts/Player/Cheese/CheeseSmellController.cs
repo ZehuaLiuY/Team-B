@@ -14,6 +14,10 @@ public class CheeseSmellController : MonoBehaviourPun
 
     public List<ParticleSystem> smellParticles = new List<ParticleSystem>();
 
+    private Transform _targetFan = null;
+
+    private bool _isFan = false;
+
     private bool _enable = true;
 
     private bool _disable = false;
@@ -50,13 +54,18 @@ public class CheeseSmellController : MonoBehaviourPun
     [PunRPC]
     void GenerateSmell(bool disable)
     {
-        if (!disable)
+        if (!disable && !_isFan)
         {
             // generate smell particle at the player position
             ParticleSystem smellParticle = Instantiate(smellParticlePrefab, transform.position, Quaternion.identity);
 
             // continue to play the particle
             smellParticle.Play();
+        }
+        else if(!disable && _isFan) 
+        {
+            GameObject smellParticle = Instantiate(smellParticlePrefab, transform.position, Quaternion.identity).gameObject;
+            SetFanEffect(smellParticle);
         }
         else
         {
@@ -66,4 +75,31 @@ public class CheeseSmellController : MonoBehaviourPun
         }
 
     }
+
+    public void setFan(bool isFan, Transform targetFan)
+    {
+        _isFan = isFan;
+        _targetFan = targetFan;
+    }
+
+    void SetFanEffect(GameObject smellParticle)
+    {
+        Vector3 directionToExhaustFan = _targetFan.position - smellParticle.transform.position;
+
+        ParticleSystem particleSystem = smellParticle.GetComponent<ParticleSystem>();
+
+        var velocityOverLifetime = particleSystem.velocityOverLifetime;
+        velocityOverLifetime.enabled = true;
+        velocityOverLifetime.space = ParticleSystemSimulationSpace.World;
+        velocityOverLifetime.x = directionToExhaustFan.x;
+        velocityOverLifetime.y = directionToExhaustFan.y;
+        velocityOverLifetime.z = directionToExhaustFan.z;
+
+        velocityOverLifetime.speedModifier = 0.5f;
+
+        particleSystem.Play();
+
+    }
+
+
 }
