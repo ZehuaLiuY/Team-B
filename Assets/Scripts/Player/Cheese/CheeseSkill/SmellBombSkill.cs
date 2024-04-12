@@ -20,6 +20,7 @@ public class SmellBombSkill : MonoBehaviourPun
 
     void DeploySmellBomb()
     {
+        // generate a smell bomb at the player's position
         PhotonNetwork.Instantiate("OdorParticle", transform.position, Quaternion.identity);
 
     }

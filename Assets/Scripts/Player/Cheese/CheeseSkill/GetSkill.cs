@@ -7,11 +7,11 @@ public class GetSkill : MonoBehaviourPunCallbacks
 {
     private bool hasSkill = false;
 
-    private string Invisible = "Invisible Skill";
-    private string Clone = "Clone Skill";
-    private string Detector = "Detector Skill";
-    private string Sprint = "Sprint Skill";
-    private string Jump = "Jump Skill";
+    private string _invisible = "Invisible Skill";
+    private string _clone = "Clone Skill";
+    private string _detector = "Detector Skill";
+    private string _sprint = "Sprint Skill";
+    private string _jump = "Jump Skill";
     // Start is called before the first frame update
     void Start()
     {
@@ -63,15 +63,15 @@ public class GetSkill : MonoBehaviourPunCallbacks
         {
             string skillTag = null;
 
-            if (other.CompareTag(Invisible) && !hasSkill) skillTag = Invisible;
-            else if (other.CompareTag(Clone) && !hasSkill) skillTag = Clone;
-            else if (other.CompareTag(Detector) && !hasSkill) skillTag = Detector;
-            else if (other.CompareTag(Sprint) && !hasSkill) skillTag = Sprint;
-            else if (other.CompareTag(Jump) && !hasSkill) skillTag = Jump;
+            if (other.CompareTag(_invisible) && !hasSkill) skillTag = _invisible;
+            else if (other.CompareTag(_clone) && !hasSkill) skillTag = _clone;
+            else if (other.CompareTag(_detector) && !hasSkill) skillTag = _detector;
+            else if (other.CompareTag(_sprint) && !hasSkill) skillTag = _sprint;
+            else if (other.CompareTag(_jump) && !hasSkill) skillTag = _jump;
 
             if (skillTag != null)
             {
-                // 调用RPC来隐藏技能球
+                // call RPC to hide the skill ball
                 photonView.RPC("HideSkillBall", RpcTarget.All, other.gameObject.GetPhotonView().ViewID);
                 ActivateSkill(skillTag);
                 hasSkill = true;
@@ -93,95 +93,95 @@ public class GetSkill : MonoBehaviourPunCallbacks
     
     public void ActivateSkill(string skills)
     {
-        if (skills == Invisible)
+        if (skills == _invisible)
         {
             InvisibilityEffect invisibilityEffect = GetComponent<InvisibilityEffect>();
             if (invisibilityEffect != null && CheeseFightUI.Instance != null)
             {
                 invisibilityEffect.enabled = true;
-                CheeseFightUI.Instance.ShowSkillUI(true, Invisible); 
+                CheeseFightUI.Instance.ShowSkillUI(true, _invisible);
             }
-        } else if (skills == Clone)
+        } else if (skills == _clone)
         {
             Clone_Skill cloneSkill = GetComponent<Clone_Skill>();
             if (cloneSkill != null && CheeseFightUI.Instance != null)
             {
                 cloneSkill.enabled = true; 
-                CheeseFightUI.Instance.ShowSkillUI(true, Clone);
+                CheeseFightUI.Instance.ShowSkillUI(true, _clone);
             }
-        } else if (skills == Detector)
+        } else if (skills == _detector)
         {
             EnemyDetector enemyDetector = GetComponentInChildren<EnemyDetector>();
             if (enemyDetector != null && CheeseFightUI.Instance != null)
             {
                 enemyDetector.enabled = true; 
-                CheeseFightUI.Instance.ShowSkillUI(true, Detector); 
+                CheeseFightUI.Instance.ShowSkillUI(true, _detector);
             }
-        } else if (skills == Sprint)
+        } else if (skills == _sprint)
         {
             Sprint_Skill sprintSkill = GetComponent<Sprint_Skill>();
             if (sprintSkill != null && CheeseFightUI.Instance != null)
             {
                 sprintSkill.enabled = true; 
-                CheeseFightUI.Instance.ShowSkillUI(true, Sprint); 
+                CheeseFightUI.Instance.ShowSkillUI(true, _sprint);
             }
-        } else if (skills == Jump)
+        } else if (skills == _jump)
         {
             Jump_Skill jumpSkill = GetComponent<Jump_Skill>();
             if (jumpSkill != null && CheeseFightUI.Instance != null)
             {
                 jumpSkill.enabled = true; 
-                CheeseFightUI.Instance.ShowSkillUI(true, Jump); 
+                CheeseFightUI.Instance.ShowSkillUI(true, _jump);
             }
         }
     }
 
     public void DeactivateSkill(string skills)
     {
-        if (skills == Invisible)
+        if (skills == _invisible)
         {
             hasSkill = false; 
             InvisibilityEffect invisibilityEffect = GetComponent<InvisibilityEffect>();
             if (invisibilityEffect != null)
             {
                 invisibilityEffect.enabled = false;
-                CheeseFightUI.Instance.ShowSkillUI(false, Invisible);
+                CheeseFightUI.Instance.ShowSkillUI(false, _invisible);
             }
-        } else if (skills == Clone)
+        } else if (skills == _clone)
         {
             hasSkill = false; 
             Clone_Skill cloneSkill = GetComponent<Clone_Skill>();
             if (cloneSkill != null)
             {
                 cloneSkill.enabled = false; 
-                CheeseFightUI.Instance.ShowSkillUI(false, Clone); 
+                CheeseFightUI.Instance.ShowSkillUI(false, _clone);
             }
-        } else if (skills == Detector)
+        } else if (skills == _detector)
         {
             hasSkill = false;
             EnemyDetector enemyDetector = GetComponentInChildren<EnemyDetector>();
             if (enemyDetector != null)
             {
                 enemyDetector.enabled = false; 
-                CheeseFightUI.Instance.ShowSkillUI(false, Detector); 
+                CheeseFightUI.Instance.ShowSkillUI(false, _detector);
             }
-        } else if (skills == Sprint)
+        } else if (skills == _sprint)
         {
             hasSkill = false; 
             Sprint_Skill sprintSkill = GetComponent<Sprint_Skill>();
             if (sprintSkill != null)
             {
                 sprintSkill.enabled = false;
-                CheeseFightUI.Instance.ShowSkillUI(false, Sprint);
+                CheeseFightUI.Instance.ShowSkillUI(false, _sprint);
             }
-        } else if (skills == Jump)
+        } else if (skills == _jump)
         {
             hasSkill = false; 
             Jump_Skill jumpSkill = GetComponent<Jump_Skill>();
             if (jumpSkill != null)
             {
                 jumpSkill.enabled = false;
-                CheeseFightUI.Instance.ShowSkillUI(false, Jump);
+                CheeseFightUI.Instance.ShowSkillUI(false, _jump);
             }
         }
     }

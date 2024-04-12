@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using CheeseController;
 using UnityEngine;
-using Photon.Pun; 
+using Photon.Pun;
+using UnityEngine.Serialization;
 
 public class Sprint_Skill : MonoBehaviourPun
 {
-    private bool skillUsed = false;
-    public float Skill_Duration = 5f;
-    public GameObject Trail;
-    private float skillDurationTimer; 
+    private bool _skillUsed = false;
+    public float skillDuration = 5f;
+    public GameObject trail;
+    private float _skillDurationTimer;
     private CheeseThirdPerson _cheeseThirdPerson;
     // Start is called before the first frame update
     void Start()
@@ -24,7 +25,7 @@ public class Sprint_Skill : MonoBehaviourPun
     // Update is called once per frame
     void Update()
     {
-        if (photonView.IsMine && !skillUsed && Input.GetKeyDown(KeyCode.F))
+        if (photonView.IsMine && !_skillUsed && Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ApplySprintSkill());
         }
@@ -32,22 +33,22 @@ public class Sprint_Skill : MonoBehaviourPun
 
     IEnumerator ApplySprintSkill()
     {
-        skillUsed = true;
+        _skillUsed = true;
         photonView.RPC("SprintSkill", RpcTarget.All);
 
-        skillDurationTimer = Skill_Duration;
+        _skillDurationTimer = skillDuration;
         UpdateIcon(1f);
 
-        while (skillDurationTimer > 0)
+        while (_skillDurationTimer > 0)
         {
-            skillDurationTimer -= Time.deltaTime;
-            UpdateIcon(skillDurationTimer / Skill_Duration);
+            _skillDurationTimer -= Time.deltaTime;
+            UpdateIcon(_skillDurationTimer / skillDuration);
             yield return null;
         }
 
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
         GetComponent<GetSkill>().DeactivateSkill("Sprint Skill");
-        skillUsed = false;
+        _skillUsed = false;
     }
     
     [PunRPC]
@@ -57,7 +58,7 @@ public class Sprint_Skill : MonoBehaviourPun
         {
             _cheeseThirdPerson.MoveSpeed = 250f;
             StartCoroutine(RestoreSpeed(5f));
-            Trail.gameObject.SetActive(true);
+            trail.gameObject.SetActive(true);
         }
     }
 
@@ -68,7 +69,7 @@ public class Sprint_Skill : MonoBehaviourPun
         {
             _cheeseThirdPerson.MoveSpeed = 100.0f;
         }
-        Trail.gameObject.SetActive(false);
+        trail.gameObject.SetActive(false);
     }
     
     private void UpdateIcon(float fillAmount)

@@ -8,14 +8,14 @@ using UnityEngine.UI;
 public class CheeseFightUI : MonoBehaviour
 {
     public static CheeseFightUI Instance { get; private set; }
-    // public Image StaminaBar; // 确保在Unity编辑器中已经设置了这个引用
-    //private GameManager gameManager;
-    private Text countdownText;
-    private Image Skill_Icon;
-    private Transform tutorialPanel;
 
-    private float previousTime;
-    private bool iscount;
+    //private GameManager gameManager;
+    private Text _countdownText;
+    private Image _skillIcon;
+    private Transform _tutorialPanel;
+
+    private float _previousTime;
+    private bool _iscount;
 
     void Awake()
     {
@@ -35,10 +35,10 @@ public class CheeseFightUI : MonoBehaviour
     
     public void InitializeUI(string playerType)
     {
-        Debug.Log($"Initializing UI for playerType: {playerType}");
-        iscount = true;
-        countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        tutorialPanel = transform.Find($"TutorialPanel_{playerType}");
+        // Debug.Log($"Initializing UI for playerType: {playerType}");
+        _iscount = true;
+        _countdownText = transform.Find("CountdownText").GetComponent<Text>();
+        _tutorialPanel = transform.Find($"TutorialPanel_{playerType}");
         StartCoroutine(BeginStartSequence());
     }
 
@@ -48,10 +48,10 @@ public class CheeseFightUI : MonoBehaviour
         Transform skillTransform = transform.Find(skills);
         if (skillTransform != null)
         {
-            skillTransform.gameObject.SetActive(show); // 根据传入的参数显示或隐藏UI
+            skillTransform.gameObject.SetActive(show); // render the skill UI or not
             if (show)
             {
-                Skill_Icon = skillTransform.GetComponent<Image>();
+                _skillIcon = skillTransform.GetComponent<Image>();
                 Transform currentChild = skillTransform.GetChild(0);
                 StartCoroutine(ShowSkillsTutorial(currentChild));
             }
@@ -60,32 +60,32 @@ public class CheeseFightUI : MonoBehaviour
     
     IEnumerator ShowSkillsTutorial(Transform skillTutorial)
     {
-        skillTutorial.gameObject.SetActive(true); // 激活教程面板
-        yield return new WaitForSeconds(5f); // 等待指定的秒数
-        skillTutorial.gameObject.SetActive(false); // 隐藏教程面板
+        skillTutorial.gameObject.SetActive(true); // activate the skill tutorial panel
+        yield return new WaitForSeconds(5f); // wait for 5 seconds
+        skillTutorial.gameObject.SetActive(false); // deactivate the skill tutorial panel
     }
 
     public void UpdateSkill_Icon(float fillAmount)
     {
-        if (Skill_Icon != null)
+        if (_skillIcon != null)
         {
-            Skill_Icon.fillAmount = fillAmount;
+            _skillIcon.fillAmount = fillAmount;
         }
     }
     
     IEnumerator BeginStartSequence()
     {
-        yield return new WaitForSeconds(2); // 首先等待2秒
-        StartCoroutine(ShowTutorialPanel()); // 然后显示教程面板
+        yield return new WaitForSeconds(2); // wait for 2 seconds
+        StartCoroutine(ShowTutorialPanel()); // show the tutorial panel
     }
     
     IEnumerator ShowTutorialPanel()
     {
-        for (int i = 0; i < tutorialPanel.childCount; i++)
+        for (int i = 0; i < _tutorialPanel.childCount; i++)
         {
-            Transform currentChild = tutorialPanel.GetChild(i);
+            Transform currentChild = _tutorialPanel.GetChild(i);
             currentChild.gameObject.SetActive(true);
-            if (i == tutorialPanel.childCount - 1)
+            if (i == _tutorialPanel.childCount - 1)
             {
                 yield return new WaitForSeconds(10);
             }
@@ -107,22 +107,22 @@ public class CheeseFightUI : MonoBehaviour
 
     public void SetCountdownTimer(float countdownTimer) 
     {
-        // 获取 GameManager 中的倒计时时间
+        // get the countdown time from the game manager
         //float countdownTime = gameManager.GetCountdownTime();
 
-        // 将倒计时时间格式化为分钟:秒钟的形式
+        // standard time format
         string formattedTime = string.Format("{0:0}:{1:00}", Mathf.Floor(countdownTimer / 60), Mathf.Floor(countdownTimer % 60));
 
 
 
-        // 更新 TextMeshProUGUI 文本内容
-        if (countdownText != null && iscount)
+        // update the countdown text
+        if (_countdownText != null && _iscount)
         {
-            // 判断是否小于等于10秒，如果是，将颜色设置为红色
+            // if the countdown time is less than 10 seconds, change the color to red
             if (Mathf.Floor(countdownTimer) <= 10 && Mathf.Floor(countdownTimer) > 0f)
             {
-                countdownText.color = Color.red;
-                // 在10秒之后的每一秒播放倒计时音效
+                _countdownText.color = Color.red;
+                // play the countdown sound
                 //if(Mathf.Floor(countdownTime) != previousTime)
                 //{
                 //    this.GetComponent<AudioSource>().PlayOneShot(countSound);
@@ -135,16 +135,16 @@ public class CheeseFightUI : MonoBehaviour
             else if (Mathf.Floor(countdownTimer) == 0f)
             {
                 //this.GetComponent<AudioSource>().PlayOneShot(timesupSound);
-                iscount = false;
+                _iscount = false;
             }
             else
             {
-                // 如果不是，将颜色还原为之前的颜色
-                countdownText.color = Color.black;
+                // if the countdown time is more than 10 seconds, change the color to black
+                _countdownText.color = Color.black;
             }
-            countdownText.text = "Time: " + formattedTime;
-            // 更新上一次的整数部分时间
-            previousTime = Mathf.Floor(countdownTimer);
+            _countdownText.text = "Time: " + formattedTime;
+            // update the previous time
+            _previousTime = Mathf.Floor(countdownTimer);
         }
     }
 }

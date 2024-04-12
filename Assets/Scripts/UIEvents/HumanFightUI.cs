@@ -9,18 +9,17 @@ using UnityEngine.VFX;
 
 public class HumanFightUI : MonoBehaviour
 {
-    // public Image StaminaBar; // 确保在Unity编辑器中已经设置了这个引用
+    // public Image StaminaBar; // make sure to assign this in the inspector
     public static HumanFightUI Instance { get; private set; }
     //private GameManager gameManager;
-    private Text countdownText;
-    private Transform tutorialPanel;
-    private Image StaminaBar;
-    private TMP_Text cheeseCaughtText;
-    private TMP_Text catchText;
+    private Text _countdownText;
+    private Transform _tutorialPanel;
+    private Image _staminaBar;
+    private TMP_Text _cheeseCaughtText;
 
 
-    private float previousTime;
-    private bool iscount;
+    private float _previousTime;
+    private bool _iscount;
     //public static float countdownTimer = 180f;
 
     private void Awake()
@@ -39,20 +38,19 @@ public class HumanFightUI : MonoBehaviour
     }
     private void Start()
     {
-        iscount = true;
-        countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        tutorialPanel = transform.Find("TutorialPanel");
-        cheeseCaughtText = transform.Find("CheeseCaughtText").GetComponent<TMP_Text>();
-        catchText = transform.Find("CatchText").GetComponent<TMP_Text>();
-        
+        _iscount = true;
+        _countdownText = transform.Find("CountdownText").GetComponent<Text>();
+        _tutorialPanel = transform.Find("TutorialPanel");
+        _cheeseCaughtText = transform.Find("CheeseCaughtText").GetComponent<TMP_Text>();
+     
         Transform hpTransform = transform.Find("hp");
         if (hpTransform != null && hpTransform.childCount > 0) {
-            // 假设hp下只有一个子对象，直接获取第一个子对象
+            // suppose the first child is the fill image
             Transform firstChild = hpTransform.GetChild(0);
             Image image = firstChild.GetComponent<Image>();
             if (image != null) {
-                // 成功找到了Image组件
-                StaminaBar = image;
+                // get the stamina bar image
+                _staminaBar = image;
             }
         }
 
@@ -67,34 +65,25 @@ public class HumanFightUI : MonoBehaviour
 
     public void showCheeseCaught()
     {
-        cheeseCaughtText.gameObject.SetActive(true);
+        _cheeseCaughtText.gameObject.SetActive(true);
         StartCoroutine(ResetCheeseCaught());
     }
 
     IEnumerator ResetCheeseCaught()
     { 
+        
+        // wait for 2 seconds
         yield return new WaitForSeconds(2f);
-        cheeseCaughtText.gameObject.SetActive(false);
+        // hide the cheese caught text
+        _cheeseCaughtText.gameObject.SetActive(false);
 
     }
-    
-    public void showCatchText()
-    {
-        catchText.gameObject.SetActive(true);
-    }
-    
-    public void stopCatchText()
-    {
-        catchText.gameObject.SetActive(false);
-    }
-    
-   
 
     public void UpdateStaminaBar(float fillAmount)
     {
-        if (StaminaBar != null)
+        if (_staminaBar != null)
         {
-            StaminaBar.fillAmount = fillAmount;
+            _staminaBar.fillAmount = fillAmount;
         }
     }
     IEnumerator BeginStartSequence()
@@ -105,11 +94,11 @@ public class HumanFightUI : MonoBehaviour
     
     IEnumerator ShowTutorialPanel()
     {
-        for (int i = 0; i < tutorialPanel.childCount; i++)
+        for (int i = 0; i < _tutorialPanel.childCount; i++)
         {
-            Transform currentChild = tutorialPanel.GetChild(i);
+            Transform currentChild = _tutorialPanel.GetChild(i);
             currentChild.gameObject.SetActive(true);
-            if (i == tutorialPanel.childCount - 1)
+            if (i == _tutorialPanel.childCount - 1)
             {
                 yield return new WaitForSeconds(10);
             }
@@ -131,22 +120,22 @@ public class HumanFightUI : MonoBehaviour
 
     public void SetCountdownTimer(float countdownTimer) 
     {
-        // 获取 GameManager 中的倒计时时间
+        // get the countdown time from the game manager
         //float countdownTime = gameManager.GetCountdownTime();
 
-        // 将倒计时时间格式化为分钟:秒钟的形式
+        // format the time to minutes and seconds
         string formattedTime = string.Format("{0:0}:{1:00}", Mathf.Floor(countdownTimer / 60), Mathf.Floor(countdownTimer % 60));
 
 
 
-        // 更新 TextMeshProUGUI 文本内容
-        if (countdownText != null && iscount)
+        // update the countdown text
+        if (_countdownText != null && _iscount)
         {
-            // 判断是否小于等于10秒，如果是，将颜色设置为红色
+            // if the countdown time is less than 10 seconds, change the color to red
             if (Mathf.Floor(countdownTimer) <= 10 && Mathf.Floor(countdownTimer) > 0f)
             {
-                countdownText.color = Color.red;
-                // 在10秒之后的每一秒播放倒计时音效
+                _countdownText.color = Color.red;
+                // play the countdown sound
                 //if(Mathf.Floor(countdownTime) != previousTime)
                 //{
                 //    this.GetComponent<AudioSource>().PlayOneShot(countSound);
@@ -159,16 +148,16 @@ public class HumanFightUI : MonoBehaviour
             else if (Mathf.Floor(countdownTimer) == 0f)
             {
                 //this.GetComponent<AudioSource>().PlayOneShot(timesupSound);
-                iscount = false;
+                _iscount = false;
             }
             else
             {
-                // 如果不是，将颜色还原为之前的颜色
-                countdownText.color = Color.black;
+                // if the countdown time is more than 10 seconds, change the color to black
+                _countdownText.color = Color.black;
             }
-            countdownText.text = "Time: " + formattedTime;
-            // 更新上一次的整数部分时间
-            previousTime = Mathf.Floor(countdownTimer);
+            _countdownText.text = "Time: " + formattedTime;
+            // update the previous time
+            _previousTime = Mathf.Floor(countdownTimer);
         }
     }
 }

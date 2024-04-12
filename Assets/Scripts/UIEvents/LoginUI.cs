@@ -7,9 +7,9 @@ using Photon.Realtime;
 
 public class LoginUI : MonoBehaviour, IConnectionCallbacks
 {
-    private bool isTryingToConnect = false;
-    private float connectionTimeout = 10.0f; // 10 seconds for timeout
-    private float connectionStartTime;
+    private bool _isTryingToConnect = false;
+    private float _connectionTimeout = 10.0f; // 10 seconds for timeout
+    private float _connectionStartTime;
 
     // Start is called before the first frame update
     void Start()
@@ -23,26 +23,26 @@ public class LoginUI : MonoBehaviour, IConnectionCallbacks
     {
         if (Application.internetReachability == NetworkReachability.NotReachable)
         {
-            Debug.Log("No internet connection available. Please connect to the internet and try again.");
+            // Debug.Log("No internet connection available. Please connect to the internet and try again.");
             return; // Exit if no internet
         }
 
         Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
 
-        isTryingToConnect = true;
-        connectionStartTime = Time.time;
+        _isTryingToConnect = true;
+        _connectionStartTime = Time.time;
         PhotonNetwork.ConnectUsingSettings();
     }
 
     private void Update()
     {
-        if (isTryingToConnect && (Time.time - connectionStartTime > connectionTimeout))
+        if (_isTryingToConnect && (Time.time - _connectionStartTime > _connectionTimeout))
         {
             // Timeout logic
-            isTryingToConnect = false;
+            _isTryingToConnect = false;
             PhotonNetwork.Disconnect();
             Game.uiManager.CloseUI("MaskUI");
-            Debug.Log("Connection timed out. Please check your network and try again.");
+            // Debug.Log("Connection timed out. Please check your network and try again.");
         }
     }
 
@@ -68,7 +68,7 @@ public class LoginUI : MonoBehaviour, IConnectionCallbacks
 
     public void OnConnectedToMaster()
     {
-        isTryingToConnect = false;
+        _isTryingToConnect = false;
         Game.uiManager.CloseAllUI();
         // Debug.Log("Connected to master");
         Game.uiManager.ShowUI<LobbyUI>("LobbyUI");
@@ -77,7 +77,7 @@ public class LoginUI : MonoBehaviour, IConnectionCallbacks
 
     public void OnDisconnected(DisconnectCause cause)
     {
-        isTryingToConnect = false;
+        _isTryingToConnect = false;
         Game.uiManager.CloseUI("MaskUI");
         Debug.Log($"Disconnected: {cause}");
     }

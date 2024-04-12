@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
@@ -12,25 +14,40 @@ using Random = UnityEngine.Random;
 
 public class FightManager : MonoBehaviourPunCallbacks
 {
-    private bool _gameOver = false; // 游戏是否已经结束
-    // private float captureDistance = 2f; // 抓住奶酪的距离阈值
+    // private bool _gameOver = false;
 
-    // points
+    // Instantiate the player
+    // spawn points
     public Transform cheeseSpawnPoints; // respawn points
     public Transform humanSpawnPoints;
 
-    private HumanFightUI fightUI;
-    private CheeseFightUI fightUI1;
-    public static float countdownTimer = 180f;
-    private bool _isHumanWin = false;
-    private List<int> _humanPlayerActorNumbers = new List<int>();
-    private int _remainingCheeseCount; // 剩余活着的 cheese 数量
-
-
-    public MiniMapController miniMapController;
-
+    private List<Transform> _cheeseAvailablePoints;
+    private List<Transform> _humanAvailablePoints;
+    private CinemachineVirtualCamera _vc;
     public string playerName;
 
+    private HashSet<int> _humanPlayerActorNumbers = new HashSet<int>();
+    
+    // skill balls
+    public GameObject[] skillBallPrefabs;
+    public Transform skillPointTf;
+    public float refreshInterval = 60f;
+    private GameObject skillBall;
+    private HashSet<GameObject> skillBalls = new HashSet<GameObject>();
+    // private Dictionary<int, Queue<GameObject>> skillBallPools = new Dictionary<int, Queue<GameObject>>();
+
+    // UI
+    private HumanFightUI fightUI;
+    private CheeseFightUI fightUI1;
+
+    // countdown timer and game end event
+    public static float countdownTimer = 180f;
+    public event Action<bool> OnGameEnd;
+    private bool _isHumanWin = false;
+    private int _remainingCheeseCount;
+
+    // minimap
+    public MiniMapController miniMapController;
     private PhotonView _miniMapPhotonView;
 
 
@@ -42,17 +59,112 @@ public class FightManager : MonoBehaviourPunCallbacks
             AssignRoles();
         }
     }
-    
+
     void Start()
     {
         Game.uiManager.CloseAllUI();
-        _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1; // TODO: change this to the actual number of human players
+        _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            StartCoroutine(CountdownTimerCoroutine());
+            StartCoroutine(SpawnSkillBallsPeriodically());
+        }
+
+        OnGameEnd += HandleGameEnd;
+
+        _humanAvailablePoints = new List<Transform>();
+        for (int i = 0; i < humanSpawnPoints.childCount; i++)
+        {
+            _humanAvailablePoints.Add(humanSpawnPoints.GetChild(i));
+        }
+
+        _cheeseAvailablePoints = new List<Transform>();
+        for (int i = 0; i < cheeseSpawnPoints.childCount; i++)
+        {
+            _cheeseAvailablePoints.Add(cheeseSpawnPoints.GetChild(i));
+        }
+
+        _vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
+
+    }
+
+    void OnDestroy()
+    {
+        OnGameEnd -= HandleGameEnd;
+    }
+
+    IEnumerator SpawnSkillBallsPeriodically()
+    {
+        while (true)
+        {
+            GenerateSkillBalls();
+            yield return new WaitForSeconds(refreshInterval);
+        }
+    }
+
+    IEnumerator CountdownTimerCoroutine()
+    {
+        while (countdownTimer > 0)
+        {
+            yield return new WaitForSeconds(1f);
+
+            countdownTimer -= 1f;
+            photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.All, countdownTimer);
+
+            if (countdownTimer <= 0)
+            {
+                // _gameOver = true;
+                _isHumanWin = false;
+                OnGameEnd?.Invoke(_isHumanWin);
+                yield break;
+            }
+        }
+    }
+
+    void GenerateSkillBalls()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            DeleteExistingSkillBalls();
+            foreach (Transform spawnPoint in skillPointTf)
+            {
+                int skillType = Random.Range(0, skillBallPrefabs.Length);
+                var skillBall = PhotonNetwork.Instantiate(skillBallPrefabs[skillType].name, spawnPoint.position, Quaternion.identity);
+                skillBalls.Add(skillBall);
+            }
+        }
+    }
+
+    void DeleteExistingSkillBalls()
+    {
+        foreach (var skillBall in skillBalls)
+        {
+            if (skillBall != null)
+            {
+                PhotonNetwork.Destroy(skillBall);
+            }
+        }
+        skillBalls.Clear();
+    }
+
+    void SetupHumanCamera(GameObject playerObject)
+    {
+        if (_vc != null)
+        {
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                int skillBallsLayer = LayerMask.NameToLayer("Skillballs");
+                mainCamera.cullingMask &= ~(1 << skillBallsLayer);
+            }
+        }
     }
 
     void DisplayUIBasedOnRole()
     {
         string playerType = (string)PhotonNetwork.LocalPlayer.CustomProperties["PlayerType"];
-        
+
         switch (playerType)
         {
             case "Human":
@@ -67,11 +179,11 @@ public class FightManager : MonoBehaviourPunCallbacks
                 break;
         }
     }
-    
+
     void AssignRoles()
     {
         var players = PhotonNetwork.PlayerList;
-        List<int> humanIndices = new List<int>();
+        HashSet<int> humanIndices = new HashSet<int>();
 
         int numberOfHumans = Math.Max(1, players.Length / 4);
 
@@ -128,35 +240,23 @@ public class FightManager : MonoBehaviourPunCallbacks
         Vector3 spawnPos;
         string prefabName;
         byte interestGroup;
-        
+
         // check the player type
         if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
-            // human available points
-            List<Transform> humanAvailablePoints = new List<Transform>();
-            for (int i = 0; i < humanSpawnPoints.childCount; i++)
-            {
-                humanAvailablePoints.Add(humanSpawnPoints.GetChild(i));
-            }
-
-            spawnPoint = humanAvailablePoints[Random.Range(0, humanAvailablePoints.Count)];
+            spawnPoint = _humanAvailablePoints[Random.Range(0, _humanAvailablePoints.Count)];
             spawnPos = spawnPoint.position;
             prefabName = "Human";
             interestGroup = 1;
+            Destroy(spawnPoint.gameObject);
         }
         else
         {
-            // cheese available points
-            List<Transform> cheeseAvailablePoints = new List<Transform>();
-            for (int i = 0; i < cheeseSpawnPoints.childCount; i++)
-            {
-                cheeseAvailablePoints.Add(cheeseSpawnPoints.GetChild(i));
-            }
-
-            spawnPoint = cheeseAvailablePoints[Random.Range(0, cheeseAvailablePoints.Count)];
+            spawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
             spawnPos = spawnPoint.position;
             prefabName = "Cheese";
             interestGroup = 2;
+            Destroy(spawnPoint.gameObject);
         }
 
         // spawn the player
@@ -165,9 +265,13 @@ public class FightManager : MonoBehaviourPunCallbacks
         // minimap icon display
         _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
 
+        if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
+        {
+            SetupHumanCamera(playerObject);
+        }
+
         // camera follow
-        CinemachineVirtualCamera vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
-        vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
+        _vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
 
         // display the player name
         PlayerNameDisplay nameDisplay = playerObject.GetComponentInChildren<PlayerNameDisplay>();
@@ -183,78 +287,40 @@ public class FightManager : MonoBehaviourPunCallbacks
             recorder.InterestGroup = interestGroup;
         }
     }
-    
+
 
     // Update is called once per frame
     void Update()
     {
-        if (!_gameOver)
-        {
-            // 检查游戏结果
-            CheckGameResult();
-            // 检查当前客户端是否是房主
-            if (PhotonNetwork.IsMasterClient)
-            {
-                // 如果是房主，更新倒计时并发送 RPC
-                float newTimer = UpdateCountdownTimer();
-                // fightUI.SetCountdownTimer(newTimer);
-                photonView.RPC("UpdateCountdownTimerRPC", RpcTarget.AllBuffered, newTimer);
-            }
-        }
-        else if (PhotonNetwork.IsConnected)
-        {
-            photonView.RPC("EndGame", RpcTarget.All, _isHumanWin);
-            _gameOver = false;
-        }
-    }
-    private float UpdateCountdownTimer()
-    {
-        if(countdownTimer > 0)
-        {
-            countdownTimer -= Time.deltaTime;
-        }
-        
-        return countdownTimer;
+
     }
 
     public void CheeseDied()
     {
         _remainingCheeseCount--;
 
-        // 检查是否所有 cheese 都死亡了
         if (_remainingCheeseCount <= 0)
         {
             _isHumanWin = true;
-            _gameOver = true;
-           
-            Debug.Log("human win!");
+            // _gameOver = true;
 
             // when all cheese die, the obeserved also show the lose UI
             Game.uiManager.CloseAllUI();
-            ShowEndGameUI(false);
-
+            // ShowEndGameUI(false);
+            OnGameEnd?.Invoke(_isHumanWin);
         }
     }
 
-    private void ShowEndGameUI(bool isHumanWin)
+    private void HandleGameEnd(bool isHumanWin)
     {
-        if (isHumanWin)
-        {
-            Game.uiManager.ShowUI<LossUI>("LossUI");
-        }
-        else
-        {
-            Game.uiManager.ShowUI<WinUI>("WinUI");
-        }
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        photonView.RPC("EndGame", RpcTarget.All, isHumanWin);
     }
+
 
     [PunRPC]
     private void UpdateCountdownTimerRPC(float newTimer)
     {
-        
+
         if (fightUI != null)
         {
             fightUI.SetCountdownTimer(newTimer);
@@ -271,7 +337,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
 
         Game.uiManager.CloseUI("DieUI");
-        
+
         if (isHumanWin)
         {
             if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
@@ -304,23 +370,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     }
 
-
-    void CheckGameResult()
-    {
-       
-        // 如果倒计时结束
-        if (countdownTimer <= 0f)
-        {
-            _gameOver = true; // 设置游戏结束标志为 true
-            _isHumanWin = false;
-            // Debug.Log("gameover: " + _gameOver);
-        }
-        
-        
-    }
-    
-   
-
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
         if (propertiesThatChanged.ContainsKey("HumanPlayerActorNumbers"))
@@ -328,14 +377,13 @@ public class FightManager : MonoBehaviourPunCallbacks
             var actorNumbers = propertiesThatChanged["HumanPlayerActorNumbers"] as int[];
             if (actorNumbers != null)
             {
-                _humanPlayerActorNumbers.Clear(); 
-                _humanPlayerActorNumbers.AddRange(actorNumbers);
+                _humanPlayerActorNumbers.Clear();
+                _humanPlayerActorNumbers.UnionWith(actorNumbers);
                 SpawnPlayers();
                 DisplayUIBasedOnRole();
             }
         }
     }
-
 
     public void QuitToLoginScene()
     {

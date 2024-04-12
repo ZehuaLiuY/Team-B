@@ -2,8 +2,6 @@ using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using Photon.Pun;
-using Photon.Realtime;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 
 public class MiniMapController : MonoBehaviourPunCallbacks
@@ -46,10 +44,10 @@ public class MiniMapController : MonoBehaviourPunCallbacks
     public void AddPlayerIcon(GameObject player)
     {
         string playerType = player.GetComponent<PhotonView>().Owner.CustomProperties["PlayerType"] as string;
-        PhotonView playerPV = player.GetComponent<PhotonView>();
+        PhotonView playerPv = player.GetComponent<PhotonView>();
         if (playerType == _localPlayerType)
         {
-            GameObject iconPrefab = playerPV.IsMine ? localPlayerIconPrefab : networkPlayerIconPrefab;
+            GameObject iconPrefab = playerPv.IsMine ? localPlayerIconPrefab : networkPlayerIconPrefab;
             _playerIcon = Instantiate(iconPrefab, minimapRect).GetComponent<RectTransform>();
             _playerIcons[player] = _playerIcon;
         }

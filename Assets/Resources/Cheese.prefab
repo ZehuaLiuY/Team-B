@@ -895,7 +895,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1906610706376243840}
+      addedObject: {fileID: 6248318761626481035}
   m_SourcePrefab: {fileID: 100100000, guid: 76b1db43dfbc346c5b159481488ae965, type: 3}
 --- !u!1 &1695888432212909204 stripped
 GameObject:
@@ -962,8 +962,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e21035be6e1d34600aa02f266cba85e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 100
-  SprintSpeed: 120
+  MoveSpeed: 120
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   JumpHeight: 10
@@ -1026,6 +1025,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 9024344183414355805}
   - {fileID: 2549046913564611917}
+  - {fileID: 6248318761626481035}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -1295,7 +1295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invisibleMaterial: {fileID: 2100000, guid: ae5e97af3ce8d3d4fa7e8bbd7adce3a7, type: 2}
-  Skill_Duration: 3
+  skillDuration: 3
 --- !u!114 &6394952327717741775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1308,7 +1308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e563436cd38e0411897996eb141ae989, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Skill_Duration: 10
+  skillDuration: 10
 --- !u!114 &1532301821283551923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1321,8 +1321,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 737ab645cc4124d6f94fafcf4425bd1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Skill_Duration: 5
-  Trail: {fileID: 5225884884396166529}
+  skillDuration: 5
+  trail: {fileID: 0}
 --- !u!114 &8155168758065590833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1335,19 +1335,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 636b5853796974c26a22a9c846b93629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Skill_Duration: 5
---- !u!114 &1906610706376243840
+  skillDuration: 5
+--- !u!114 &6248318761626481035
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1695888432212909204}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a0e2476d99e5c64eb9fc7342a31687a, type: 3}
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!4 &2072448746763765294 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 76b1db43dfbc346c5b159481488ae965,
@@ -1372,15 +1376,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4235566955999968, guid: ea4fb55d0227e604386f44f905cfe7c0, type: 3}
       propertyPath: m_LocalScale.x
-      value: 4
+      value: 10.666817
       objectReference: {fileID: 0}
     - target: {fileID: 4235566955999968, guid: ea4fb55d0227e604386f44f905cfe7c0, type: 3}
       propertyPath: m_LocalScale.y
-      value: 4
+      value: 10.666817
       objectReference: {fileID: 0}
     - target: {fileID: 4235566955999968, guid: ea4fb55d0227e604386f44f905cfe7c0, type: 3}
       propertyPath: m_LocalScale.z
-      value: 4
+      value: 10.666817
       objectReference: {fileID: 0}
     - target: {fileID: 4235566955999968, guid: ea4fb55d0227e604386f44f905cfe7c0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1421,6 +1425,21 @@ PrefabInstance:
     - target: {fileID: 4235566955999968, guid: ea4fb55d0227e604386f44f905cfe7c0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198714429152696258, guid: ea4fb55d0227e604386f44f905cfe7c0,
+        type: 3}
+      propertyPath: prewarm
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198714429152696258, guid: ea4fb55d0227e604386f44f905cfe7c0,
+        type: 3}
+      propertyPath: SizeModule.enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198714429152696258, guid: ea4fb55d0227e604386f44f905cfe7c0,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 199604171885040012, guid: ea4fb55d0227e604386f44f905cfe7c0,
         type: 3}

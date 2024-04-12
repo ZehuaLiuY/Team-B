@@ -4,22 +4,22 @@ using TMPro;
 
 public class PlayerNameDisplay : MonoBehaviourPun {
 
-    private TextMeshProUGUI playerNameText;
+    private TextMeshProUGUI _playerNameText;
 
     void Awake() {
-        playerNameText = GetComponentInChildren<TextMeshProUGUI>();
+        _playerNameText = GetComponentInChildren<TextMeshProUGUI>();
     }
 
     void Start() {
         if(photonView.IsMine) {
-            playerNameText.enabled = false;
+            _playerNameText.enabled = false;
         }
     }
 
     [PunRPC]
     public void SetPlayerNameRPC(string name) {
-        if (playerNameText != null) {
-            playerNameText.text = name;
+        if (_playerNameText != null) {
+            _playerNameText.text = name;
         } else {
             Debug.LogError("Text component not found on the GameObject.");
         }
@@ -32,5 +32,4 @@ public class PlayerNameDisplay : MonoBehaviourPun {
             transform.LookAt(transform.position * 2 - cameraPosition);
         }
     }
-
 }

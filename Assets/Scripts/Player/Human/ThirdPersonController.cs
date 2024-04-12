@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Voice.Unity;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -80,7 +81,6 @@ namespace StarterAssets
         public float StaminaDecreaseRate = 0.2f;
         public float StaminaRecoveryRate = 0.1f;
         public GameObject FlameThrower;
-        public GameObject text; 
 
         // leader board ui
         public GameObject leaderboardUIPrefab;
@@ -127,9 +127,15 @@ namespace StarterAssets
         private Vector2 _lastMoveInput;
         private Vector2 _lastLookInput;
 
+        private float _minLerpRate = 10f;
+        private float _maxLerpRate = 20f;
+        private float _lerpRate;
+        private float _networkLatencyFactor;
+
         private MiniMapController _miniMapController;
         private Transform _cachedTransform;
-        private bool canShowCatchText = false; // 控制显示文本UI的标志
+
+        public int caughtCheeseCount = 0;
         
         public void EnableSprinting(bool enable)
         {
@@ -170,6 +176,11 @@ namespace StarterAssets
             _cachedTransform = transform;
             _miniMapController = FindObjectOfType<MiniMapController>();
             _recorder = GetComponent<Recorder>();
+
+            Hashtable props = new Hashtable {
+                { "CheeseCount", caughtCheeseCount }
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
 
         private void Start()
@@ -245,112 +256,54 @@ namespace StarterAssets
             }
         }
 
-
-        // private void pickup()
-        // {
-        //     if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup) {
-        //         canPickup = false;
-        //         photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,false);
-        //         _animator.SetTrigger("pickup");
-        //         photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
-        //         
-        //         int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
-        //         Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
-        //         foreach (Collider collider in colliders)
-        //         {
-        //             if (collider.gameObject.CompareTag("Target"))
-        //             {
-        //                 Debug.Log("cheese is there");
-        //                 PhotonView targetPhotonView = collider.gameObject.GetComponent<PhotonView>();
-        //
-        //                 if (targetPhotonView != null)
-        //                 {
-        //                     targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
-        //                     if (HumanFightUI.Instance != null)
-        //                     {
-        //                         HumanFightUI.Instance.showCheeseCaught();
-        //                     }
-        //                 }
-        //
-        //                 break;
-        //             }
-        //         }
-        //         StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
-        //         StartCoroutine(ResetPickupAfterDelay());
-        //     }
-        // }
-        
-        
-        // 假设你有一个方法来显示和隐藏提示UI
-        private void ShowPickupPrompt(bool show)
-        {
-            if (HumanFightUI.Instance != null)
-            {
-                if (show)
-                {
-                    HumanFightUI.Instance.showCatchText(); 
-                }
-                else
-                {
-                    HumanFightUI.Instance.stopCatchText();
-                }
-            }
+        private void IncrementCheeseCount() {
+            caughtCheeseCount++;
+            Hashtable props = new Hashtable() {
+                { "CheeseCount", caughtCheeseCount }
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+            Debug.Log("Cheese count: " + caughtCheeseCount);
         }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.gameObject.CompareTag("Target"))
-            {
-                ShowPickupPrompt(true);
-                canPickup = true;
-            }
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (other.gameObject.CompareTag("Target"))
-            {
-                ShowPickupPrompt(false);
-                canPickup = false;
-            }
-        }
 
         private void pickup()
         {
-            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup)
-            {
+            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup) {
                 canPickup = false;
-                photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
+                photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,false);
                 _animator.SetTrigger("pickup");
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
                 
-                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity);
+                // detect if there is a cheese in the box collider
+                int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
+                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
                 foreach (Collider collider in colliders)
                 {
                     if (collider.gameObject.CompareTag("Target"))
                     {
+                        Debug.Log("cheese is there");
                         PhotonView targetPhotonView = collider.gameObject.GetComponent<PhotonView>();
-                        
+
                         if (targetPhotonView != null)
                         {
+                            // show the DeiUI on the target
                             targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
                             if (HumanFightUI.Instance != null)
                             {
-                                HumanFightUI.Instance.stopCatchText();
                                 HumanFightUI.Instance.showCheeseCaught();
+                                IncrementCheeseCount();
                             }
                         }
 
                         break;
                     }
                 }
-
                 StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
                 StartCoroutine(ResetPickupAfterDelay());
             }
         }
-
-
+        
+        
         [PunRPC]
         public void SetPlayerIK_FlameThrower(bool state)
         {
@@ -404,8 +357,20 @@ namespace StarterAssets
 
         void UpdateOther()
         {
-            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
-            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
+            int currentPing = PhotonNetwork.GetPing();
+
+            if (currentPing > 100)
+            {
+                _networkLatencyFactor = Mathf.InverseLerp(0, 200, currentPing);
+                _lerpRate = Mathf.Lerp(_minLerpRate, _maxLerpRate, _networkLatencyFactor);
+            }
+            else
+            {
+                _lerpRate = _minLerpRate;
+            }
+
+            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * _lerpRate);
+            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * _lerpRate);
 
             _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
         }
@@ -462,7 +427,7 @@ namespace StarterAssets
                 if (Stamina <= 0)
                 {
                     Stamina = 0;
-                    canSprint = false; // 体力耗尽，不能再奔跑
+                    canSprint = false; // the player can't sprint when stamina is 0
                 }
             }
 
@@ -539,7 +504,7 @@ namespace StarterAssets
                 if (Stamina >= 1)
                 {
                     Stamina = 1;
-                    canSprint = true; // 体力完全恢复，现在可以再次奔跑
+                    canSprint = true; // the player can sprint when stamina is full
                 }
             }
 

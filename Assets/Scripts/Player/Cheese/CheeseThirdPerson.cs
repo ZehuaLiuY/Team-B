@@ -17,9 +17,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [Header("Player")] [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
 
-        [Tooltip("Sprint speed of the character in m/s")]
-        public float SprintSpeed = 3.0f;
-
         [Tooltip("How fast the character turns to face movement direction")] [Range(0.0f, 0.3f)]
         public float RotationSmoothTime = 0.12f;
 
@@ -95,10 +92,16 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         public Vector3 currentPos;
         public Quaternion currentRot;
 
+        private float _minLerpRate = 10f;
+        private float _maxLerpRate = 20f;
+        private float _lerpRate;
+        private float _networkLatencyFactor;
+
         private Vector2 _lastMoveInput;
         private Vector2 _lastLookInput;
 
         private MiniMapController _miniMapController;
+        private Transform _cachedTransform;
 
         private CheeseSmellController _cheeseSmellController;
 
@@ -144,7 +147,9 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
             _hasAnimator = TryGetComponent(out _animator);
 
+            _cachedTransform = transform;
             _miniMapController = FindObjectOfType<MiniMapController>();
+
             _recorder = GetComponent<Recorder>();
         }
 
@@ -157,7 +162,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
             // _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _input = GetComponent<CheeseControllerInputs>();
+            // _input = GetComponent<CheeseControllerInputs>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -185,7 +190,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
                 if (Vector3.Distance(transform.position, currentPos) > 0.1f)
                 {
-                    _miniMapController.UpdatePlayerIcon(gameObject, transform.position, transform.rotation);
+                    _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
                 }
 
                 // voice control
@@ -211,14 +216,26 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         }
 
 
-
         void UpdateOther()
         {
-            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * 10);
-            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * 500);
+            int currentPing = PhotonNetwork.GetPing();
 
-            _miniMapController.UpdatePlayerIcon(gameObject, transform.position, transform.rotation);
+            if (currentPing > 100)
+            {
+                _networkLatencyFactor = Mathf.InverseLerp(0, 200, currentPing);
+                _lerpRate = Mathf.Lerp(_minLerpRate, _maxLerpRate, _networkLatencyFactor);
+            }
+            else
+            {
+                _lerpRate = _minLerpRate;
+            }
+
+            transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * _lerpRate);
+            transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * _lerpRate);
+
+            _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
         }
+
         
         private void GroundedCheck()
         {
@@ -253,7 +270,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed = MoveSpeed;
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -494,7 +511,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             }
             MoveSpeed -= 20f; // 减少MoveSpeed
             MoveSpeed = Mathf.Max(MoveSpeed, 20f); // 确保MoveSpeed不会小于0
-            SprintSpeed = MoveSpeed; // 将SprintSpeed设置为MoveSpeed的当前值
 
             StartCoroutine(RestoreSpeedAfterDelay(5)); // 5秒后恢复速度
         }
@@ -513,7 +529,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
      
             OnFireSystemPrefab.gameObject.SetActive(false);
             MoveSpeed = 100.0f;
-            SprintSpeed = 120.0f;
         }
         [PunRPC]
         public void DeactivateOnFireSystem()

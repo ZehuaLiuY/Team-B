@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.SceneManagement;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class RoomUI : MonoBehaviour, IInRoomCallbacks
@@ -60,8 +59,8 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
         // Set initial values for readiness and player name.
         if (p.CustomProperties.TryGetValue("IsReady", out object isReadyVal))
         {
-            item.IsReady = (bool)isReadyVal;
-            item.ChangeReady(item.IsReady);
+            item.isReady = (bool)isReadyVal;
+            item.ChangeReady(item.isReady);
         }
         if (p.CustomProperties.TryGetValue("PlayerName", out object playerNameVal))
         {
@@ -89,10 +88,30 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
 
     void OnStartBtn()
     {
-        // Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
-        // Debug.Log(PhotonNetwork.IsMasterClient);
+        PhotonNetwork.CurrentRoom.IsOpen = false;
+        PhotonNetwork.CurrentRoom.IsVisible = false;
+        StartCoroutine(WaitAndLoadScene());
+
+    }
+
+    void ResetAllPlayersReadyState()
+    {
+        var playerList = PhotonNetwork.PlayerList;
+        foreach (var player in playerList)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                Hashtable props = new Hashtable {{"IsReady", false}};
+                player.SetCustomProperties(props);
+            }
+        }
+    }
+
+    IEnumerator WaitAndLoadScene()
+    {
+        yield return new WaitForSeconds(1);
         PhotonNetwork.LoadLevel("GameScene");
-        Debug.Log("Start button clicked, loading game scene.");
+        ResetAllPlayersReadyState();
     }
 
     // new player enter the room
@@ -121,8 +140,8 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
             // Update readiness if it has changed.
             if (changedProps.ContainsKey("IsReady"))
             {
-                item.IsReady = (bool)changedProps["IsReady"];
-                item.ChangeReady(item.IsReady);
+                item.isReady = (bool)changedProps["IsReady"];
+                item.ChangeReady(item.isReady);
             }
 
             // Update player name if it has changed.
@@ -139,7 +158,7 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
             bool isAllReady = true;
             foreach (var roomItem in roomList)
             {
-                if (!roomItem.IsReady)
+                if (!roomItem.isReady)
                 {
                     isAllReady = false;
                     break;

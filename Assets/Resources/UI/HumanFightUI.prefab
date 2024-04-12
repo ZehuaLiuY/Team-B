@@ -78,7 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.65
-  m_Text: info placeholder
+  m_Text: 
 --- !u!1 &456642705657131466
 GameObject:
   m_ObjectHideFlags: 0
