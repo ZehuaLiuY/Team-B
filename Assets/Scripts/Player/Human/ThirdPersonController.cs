@@ -264,40 +264,71 @@ namespace StarterAssets
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
             Debug.Log("Cheese count: " + caughtCheeseCount);
         }
+        
+        private void ShowPickupPrompt(bool show)
+        {
+            if (HumanFightUI.Instance != null)
+            {
+                if (show)
+                {
+                    HumanFightUI.Instance.showCatchText(); 
+                }
+                else
+                {
+                    HumanFightUI.Instance.stopCatchText();
+                }
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.CompareTag("Target"))
+            {
+                ShowPickupPrompt(true);
+                canPickup = true;
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.CompareTag("Target"))
+            {
+                ShowPickupPrompt(false);
+                canPickup = false;
+            }
+        }
 
 
         private void pickup()
         {
-            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup) {
+            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup)
+            {
                 canPickup = false;
-                photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,false);
+                photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
                 _animator.SetTrigger("pickup");
                 photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
                 
-                // detect if there is a cheese in the box collider
-                int layerMask = 1 << LayerMask.NameToLayer("BoxColliderLayer");
-                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity, layerMask);
+                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity);
                 foreach (Collider collider in colliders)
                 {
                     if (collider.gameObject.CompareTag("Target"))
                     {
-                        Debug.Log("cheese is there");
                         PhotonView targetPhotonView = collider.gameObject.GetComponent<PhotonView>();
-
+                        
                         if (targetPhotonView != null)
                         {
-                            // show the DeiUI on the target
                             targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
                             if (HumanFightUI.Instance != null)
                             {
+                                HumanFightUI.Instance.stopCatchText();
                                 HumanFightUI.Instance.showCheeseCaught();
-                                IncrementCheeseCount();
                             }
                         }
 
                         break;
                     }
                 }
+
                 StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
                 StartCoroutine(ResetPickupAfterDelay());
             }
@@ -419,82 +450,61 @@ namespace StarterAssets
         }
 
         private void Move()
+{
+    float targetSpeed = (_input.move != Vector2.zero && canSprint && Stamina > 0 && _input.sprint && canShift) ? SprintSpeed : MoveSpeed;
+    if (_input.sprint && canSprint && Stamina > 0 && _input.move != Vector2.zero && canShift)
+    {
+        Stamina -= StaminaDecreaseRate * Time.deltaTime;
+        if (Stamina <= 0)
         {
-            float targetSpeed = (_input.move != Vector2.zero && canSprint && Stamina > 0 && _input.sprint && canShift) ? SprintSpeed : MoveSpeed;
-            if (_input.sprint && canSprint && Stamina > 0 && _input.move != Vector2.zero && canShift)
-            {
-                Stamina -= StaminaDecreaseRate * Time.deltaTime;
-                if (Stamina <= 0)
-                {
-                    Stamina = 0;
-                    canSprint = false; // the player can't sprint when stamina is 0
-                }
-            }
-
-            UpdateStamina();
-
-            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
-
-            // a reference to the players current horizontal velocity
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
-            float speedOffset = 0.1f;
-            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
-
-            // accelerate or decelerate to target speed
-            if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-                currentHorizontalSpeed > targetSpeed + speedOffset)
-            {
-                // creates curved result rather than a linear one giving a more organic speed change
-                // note T in Lerp is clamped, so we don't need to clamp our speed
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                    Time.deltaTime * SpeedChangeRate);
-
-                // round speed to 3 decimal places
-                _speed = Mathf.Round(_speed * 1000f) / 1000f;
-            }
-            else
-            {
-                _speed = targetSpeed;
-            }
-
-            _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-            if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-            // normalise input direction
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-
-            // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is a move input rotate player when the player is moving
-            if (_input.move != Vector2.zero)
-            {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                    RotationSmoothTime);
-
-                if (_rotateOnMove)
-                {
-                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-                }
-            }
-
-
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
-            // move the player
-            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-
-            // update animator if using character
-            if (_hasAnimator)
-            {
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-            }
+            Stamina = 0;
+            canSprint = false; // 体力耗尽，不能再奔跑
         }
+    }
+
+    UpdateStamina();
+
+    if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+
+    float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+
+    float speedOffset = 0.1f;
+    float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+
+    if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
+    {
+        _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
+        _speed = Mathf.Round(_speed * 1000f) / 1000f;
+    }
+    else
+    {
+        _speed = targetSpeed;
+    }
+
+    _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+    if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+    // Rotate player based on camera direction, regardless of movement
+    float targetRotation = _mainCamera.transform.eulerAngles.y;
+    if (_input.move != Vector2.zero)
+    {
+        Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+        targetRotation += Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
+    }
+
+    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref _rotationVelocity, RotationSmoothTime);
+    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+    Vector3 targetDirection = Quaternion.Euler(0.0f, targetRotation, 0.0f) * Vector3.forward;
+
+    _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+    if (_hasAnimator)
+    {
+        _animator.SetFloat(_animIDSpeed, _animationBlend);
+        _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+    }
+}
 
         private void UpdateStamina()
         {
