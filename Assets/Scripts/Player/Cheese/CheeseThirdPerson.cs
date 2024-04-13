@@ -121,6 +121,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private bool _hasAnimator;
 
         private Recorder _recorder;
+        public AudioClip _onFireSound;
+        private AudioSource _audioSource; 
 
 
         private bool IsCurrentDeviceMouse
@@ -138,6 +140,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         private void Awake()
         {
+            _audioSource = GetComponent<AudioSource>();
             _input = GetComponent<CheeseControllerInputs>();
             // get a reference to our main camera
             if (_mainCamera == null)
@@ -519,6 +522,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         public void ActivateOnFireSystem()
         {
             OnFireSystemPrefab.gameObject.SetActive(true);
+            PlayOnFireSound();
         }
         
         [PunRPC]
@@ -534,6 +538,14 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         public void DeactivateOnFireSystem()
         {
             OnFireSystemPrefab.gameObject.SetActive(false);
+        }
+        
+        private void PlayOnFireSound()
+        {
+            if (_audioSource != null && _onFireSound != null)
+            {
+                _audioSource.PlayOneShot(_onFireSound);
+            }
         }
     }
 }

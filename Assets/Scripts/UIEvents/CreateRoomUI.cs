@@ -7,7 +7,6 @@ using Photon.Realtime;
 
 public class CreateRoomUI : MonoBehaviourPunCallbacks
 {
-
     private InputField _roomNameInput;
     // Start is called before the first frame update
     void Start()

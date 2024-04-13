@@ -10,14 +10,34 @@ public class LoginUI : MonoBehaviour, IConnectionCallbacks
     private bool _isTryingToConnect = false;
     private float _connectionTimeout = 10.0f; // 10 seconds for timeout
     private float _connectionStartTime;
+    private AudioClip _buttonClickSound;
+    private AudioSource _audioSource; 
 
     // Start is called before the first frame update
     void Start()
     {
-        transform.Find("startBtn").GetComponent<Button>().onClick.AddListener(OnStartBtn);
-        transform.Find("quitBtn").GetComponent<Button>().onClick.AddListener(OnQuitBtn);
+        _audioSource = transform.Find("audioSource").GetComponent<AudioSource>();
+        _buttonClickSound = Resources.Load<AudioClip>("Button");
+
+        var startBtn = transform.Find("startBtn").GetComponent<Button>();
+        startBtn.onClick.AddListener(OnStartBtn);
+        startBtn.onClick.AddListener(PlayButtonClickSound); 
+
+        var quitBtn = transform.Find("quitBtn").GetComponent<Button>();
+        quitBtn.onClick.AddListener(OnQuitBtn);
+        quitBtn.onClick.AddListener(PlayButtonClickSound);
+
         PhotonNetwork.AddCallbackTarget(this);
     }
+    
+    private void PlayButtonClickSound()
+    {
+        if (_audioSource != null && _buttonClickSound != null)
+        {
+            _audioSource.PlayOneShot(_buttonClickSound);
+        }
+    }
+
 
     public void OnStartBtn()
     {

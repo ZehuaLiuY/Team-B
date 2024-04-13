@@ -984,6 +984,7 @@ MonoBehaviour:
   isDie: 0
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
+  _onFireSound: {fileID: 8300000, guid: 7aebbe0a86df544e19dd2931881d0a0c, type: 3}
 --- !u!114 &1178353275039107980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1282,6 +1283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0c9e618f37724559a3c1fb2168e19dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _skillAcquiredSound: {fileID: 8300000, guid: 723ba989c7bcd4c0c8829af87319fa74, type: 3}
 --- !u!114 &2640526418510578346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1322,7 +1324,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillDuration: 5
-  trail: {fileID: 0}
+  trail: {fileID: 5225884884396166529}
 --- !u!114 &8155168758065590833
 MonoBehaviour:
   m_ObjectHideFlags: 0

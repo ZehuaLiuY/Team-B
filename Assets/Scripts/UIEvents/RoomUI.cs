@@ -13,18 +13,35 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
     Transform contentTf;
     GameObject roomPrefab;
     public List<RoomItem> roomList;
+    private AudioClip _buttonClickSound;
+    private AudioSource _audioSource; 
 
     private void Awake()
     {
+        _audioSource = transform.Find("audioSource").GetComponent<AudioSource>();
+        _buttonClickSound = Resources.Load<AudioClip>("Button");
+        
         roomList = new List<RoomItem>();
         contentTf = transform.Find("bg/Content");
         roomPrefab = transform.Find("bg/roomItem").gameObject;
-        transform.Find("bg/title/closeBtn").GetComponent<Button>().onClick.AddListener(OncloseBtn);
+        
         startTf = transform.Find("bg/startBtn");
         startTf.GetComponent<Button>().onClick.AddListener(OnStartBtn);
+        startTf.GetComponent<Button>().onClick.AddListener(PlayButtonClickSound);
+
+        Button closeBtn = transform.Find("bg/title/closeBtn").GetComponent<Button>();
+        closeBtn.onClick.AddListener(OncloseBtn);
+        closeBtn.onClick.AddListener(PlayButtonClickSound);
 
         PhotonNetwork.AutomaticallySyncScene = true;
-
+    }
+    
+    private void PlayButtonClickSound()
+    {
+        if (_audioSource != null && _buttonClickSound != null)
+        {
+            _audioSource.PlayOneShot(_buttonClickSound);
+        }
     }
 
     // Start is called before the first frame update
