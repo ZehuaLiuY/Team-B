@@ -898,7 +898,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 100
-  SprintSpeed: 120
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   JumpHeight: 10
@@ -920,6 +919,7 @@ MonoBehaviour:
   isDie: 0
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
+  _onFireSound: {fileID: 0}
 --- !u!114 &1178353275039107980
 MonoBehaviour:
   m_ObjectHideFlags: 0

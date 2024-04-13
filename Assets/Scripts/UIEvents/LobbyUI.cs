@@ -11,18 +11,39 @@ public class LobbyUI : MonoBehaviourPunCallbacks
 
     private Transform _contentTf;
     private GameObject _roomPrefab;
+    private AudioClip _buttonClickSound;
+    private AudioSource _audioSource; 
 
     void Start()
     {
-        transform.Find("content/title/closeBtn").GetComponent<Button>().onClick.AddListener(OnCloseBtn);
-        transform.Find("content/createBtn").GetComponent<Button>().onClick.AddListener(OnCreateRoomBtn);
-        transform.Find("content/updateBtn").GetComponent<Button>().onClick.AddListener(OnUpdateRoomBtn);
+        _audioSource = transform.Find("audioSource").GetComponent<AudioSource>();
+        _buttonClickSound = Resources.Load<AudioClip>("Button");
+        
+        Button closeBtn = transform.Find("content/title/closeBtn").GetComponent<Button>();
+        closeBtn.onClick.AddListener(OnCloseBtn);
+        closeBtn.onClick.AddListener(PlayButtonClickSound);
+
+        Button createBtn = transform.Find("content/createBtn").GetComponent<Button>();
+        createBtn.onClick.AddListener(OnCreateRoomBtn);
+        createBtn.onClick.AddListener(PlayButtonClickSound);
+
+        Button updateBtn = transform.Find("content/updateBtn").GetComponent<Button>();
+        updateBtn.onClick.AddListener(OnUpdateRoomBtn);
+        updateBtn.onClick.AddListener(PlayButtonClickSound);
 
         _contentTf = transform.Find("content/Scroll View/Viewport/Content");
         _roomPrefab = transform.Find("content/Scroll View/Viewport/item").gameObject;
         // join lobby
         _lobby = new TypedLobby("myLobby", LobbyType.SqlLobby);
         PhotonNetwork.JoinLobby(_lobby);
+    }
+    
+    private void PlayButtonClickSound()
+    {
+        if (_audioSource != null && _buttonClickSound != null)
+        {
+            _audioSource.PlayOneShot(_buttonClickSound);
+        }
     }
 
     public override void OnJoinedLobby()

@@ -5,17 +5,19 @@ using Photon.Pun;
 using UnityEngine;
 public class GetSkill : MonoBehaviourPunCallbacks
 {
-    private bool hasSkill = false;
+    public AudioClip _skillAcquiredSound;
 
+    private bool hasSkill = false;
     private string _invisible = "Invisible Skill";
     private string _clone = "Clone Skill";
     private string _detector = "Detector Skill";
     private string _sprint = "Sprint Skill";
     private string _jump = "Jump Skill";
+    private AudioSource _audioSource;
     // Start is called before the first frame update
     void Start()
     {
-        
+        _audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -75,6 +77,11 @@ public class GetSkill : MonoBehaviourPunCallbacks
                 photonView.RPC("HideSkillBall", RpcTarget.All, other.gameObject.GetPhotonView().ViewID);
                 ActivateSkill(skillTag);
                 hasSkill = true;
+                
+                if (_audioSource && _skillAcquiredSound)
+                {
+                    _audioSource.PlayOneShot(_skillAcquiredSound);
+                }
             }
         }
     }

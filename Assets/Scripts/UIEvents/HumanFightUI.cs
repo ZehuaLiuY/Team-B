@@ -16,6 +16,10 @@ public class HumanFightUI : MonoBehaviour
     private Transform _tutorialPanel;
     private Image _staminaBar;
     private TMP_Text _cheeseCaughtText;
+    private TMP_Text _catchText;
+    private AudioSource _countdownMusic;
+    private AudioClip _last10SecondsSound;
+    private bool _last10SecondsSoundPlayed = false;
 
 
     private float _previousTime;
@@ -42,6 +46,9 @@ public class HumanFightUI : MonoBehaviour
         _countdownText = transform.Find("CountdownText").GetComponent<Text>();
         _tutorialPanel = transform.Find("TutorialPanel");
         _cheeseCaughtText = transform.Find("CheeseCaughtText").GetComponent<TMP_Text>();
+        _catchText = transform.Find("CatchText").GetComponent<TMP_Text>();
+        _countdownMusic = transform.Find("countdownMusic").GetComponent<AudioSource>();
+        _last10SecondsSound = Resources.Load<AudioClip>("10s");
      
         Transform hpTransform = transform.Find("hp");
         if (hpTransform != null && hpTransform.childCount > 0) {
@@ -71,12 +78,19 @@ public class HumanFightUI : MonoBehaviour
 
     IEnumerator ResetCheeseCaught()
     { 
-        
-        // wait for 2 seconds
         yield return new WaitForSeconds(2f);
-        // hide the cheese caught text
         _cheeseCaughtText.gameObject.SetActive(false);
 
+    }
+    
+    public void showCatchText()
+    {
+        _catchText.gameObject.SetActive(true);
+    }
+    
+    public void stopCatchText()
+    {
+        _catchText.gameObject.SetActive(false);
     }
 
     public void UpdateStaminaBar(float fillAmount)
@@ -144,6 +158,11 @@ public class HumanFightUI : MonoBehaviour
                 //}
 
                 //this.GetComponent<AudioSource>().PlayOneShot(countSound);
+                if (!_last10SecondsSoundPlayed)
+                {
+                    _countdownMusic.PlayOneShot(_last10SecondsSound);
+                    _last10SecondsSoundPlayed = true; 
+                }
             }
             else if (Mathf.Floor(countdownTimer) == 0f)
             {

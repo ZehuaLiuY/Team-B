@@ -10,15 +10,17 @@ using UnityEngine.VFX;
 
 public class DoorInteraction : MonoBehaviour
 {
-    public GameObject text; // 开门提示的UI元素引用
+    public GameObject text; 
     public GameObject vfxSmell;
     private Animator _characterAnimator;
-
+    public AudioClip _doorOpenSound;
+    
+    private AudioSource _doorAudioSource; 
     private Animator _doorAnimator;
     private bool _isPlayerNear;
     private bool _doorIsOpen;
     private PhotonView _photonView;
-    private GameObject _currentVFXInstance; // 用于存储当前播放的 Visual Effect 实例
+    private GameObject _currentVFXInstance; 
     private PlayerIK _playerIK;
     private Transform _targetChild;
     private PhotonView _playerPhotonView;
@@ -28,10 +30,11 @@ public class DoorInteraction : MonoBehaviour
 
     void Awake()
     {
-        text.SetActive(false); // 开始时禁用提示
+        text.SetActive(false); 
         _photonView = transform.GetComponent<PhotonView>();
         _doorAnimator = GetComponent<Animator>();
         _playerIK = GetComponent<PlayerIK>();
+        _doorAudioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -90,6 +93,11 @@ public class DoorInteraction : MonoBehaviour
             if (_characterAnimator != null)
             {
                 _characterAnimator.SetTrigger("OpenDoorTrigger");
+            }
+            
+            if (_doorAudioSource != null && _doorOpenSound != null)
+            {
+                _doorAudioSource.PlayOneShot(_doorOpenSound);
             }
             
             //Debug.Log("_cheeseInSide: " + _cheeseInSide);

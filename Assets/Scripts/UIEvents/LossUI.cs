@@ -7,13 +7,27 @@ using UnityEngine.SceneManagement;
 
 public class LossUI : MonoBehaviourPunCallbacks
 {
+    private AudioClip _buttonClickSound;
+    private AudioSource _audioSource; 
     void Start()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        
+        _audioSource = transform.Find("audioSource").GetComponent<AudioSource>();
+        _buttonClickSound = Resources.Load<AudioClip>("Button");
 
-        // Assuming the button is called "resetBtn" in your scene
-        transform.Find("resetBtn").GetComponent<Button>().onClick.AddListener(OnQuitBtn);
+        Button resetButton = transform.Find("resetBtn").GetComponent<Button>();
+        resetButton.onClick.AddListener(OnQuitBtn);
+        resetButton.onClick.AddListener(PlayButtonClickSound);
+    }
+    
+    private void PlayButtonClickSound()
+    {
+        if (_audioSource != null && _buttonClickSound != null)
+        {
+            _audioSource.PlayOneShot(_buttonClickSound);
+        }
     }
 
     public void OnQuitBtn()

@@ -13,6 +13,10 @@ public class CheeseFightUI : MonoBehaviour
     private Text _countdownText;
     private Image _skillIcon;
     private Transform _tutorialPanel;
+    
+    private AudioSource _countdownMusic;
+    private AudioClip _last10SecondsSound;
+    private bool _last10SecondsSoundPlayed = false;
 
     private float _previousTime;
     private bool _iscount;
@@ -30,6 +34,12 @@ public class CheeseFightUI : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+    
+    private void Start()
+    {
+        _countdownMusic = transform.Find("countdownMusic").GetComponent<AudioSource>();
+        _last10SecondsSound = Resources.Load<AudioClip>("10s");
     }
 
     
@@ -131,6 +141,11 @@ public class CheeseFightUI : MonoBehaviour
                 //}
 
                 //this.GetComponent<AudioSource>().PlayOneShot(countSound);
+                if (!_last10SecondsSoundPlayed)
+                {
+                    _countdownMusic.PlayOneShot(_last10SecondsSound);
+                    _last10SecondsSoundPlayed = true; 
+                }
             }
             else if (Mathf.Floor(countdownTimer) == 0f)
             {

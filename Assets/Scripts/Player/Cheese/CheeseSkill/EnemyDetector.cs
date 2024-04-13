@@ -139,7 +139,16 @@ public class EnemyDetector : MonoBehaviourPunCallbacks
     {
         _skillUsed = true; // mark the skill as used
         _skillTimer = detectionDuration; // reset the skill timer
-
+        Camera mainCamera = Camera.main;
+        bool originalOcclusionSetting = false;
+        
+        if (mainCamera != null)
+        {
+            // 保存原始的遮挡剔除设置
+            originalOcclusionSetting = mainCamera.useOcclusionCulling;
+            // 禁用遮挡剔除
+            mainCamera.useOcclusionCulling = false;
+        }
         // highlight all enemies in the detection range
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius, LayerMask.GetMask("Human"));
         foreach (var hitCollider in hitColliders)
@@ -166,6 +175,11 @@ public class EnemyDetector : MonoBehaviourPunCallbacks
             _skillTimer -= Time.deltaTime;
             UpdateIcon(_skillTimer / detectionDuration);
             yield return null;
+        }
+        
+        if (mainCamera != null)
+        {
+            mainCamera.useOcclusionCulling = originalOcclusionSetting;
         }
         
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
