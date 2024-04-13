@@ -7,16 +7,35 @@ using Photon.Realtime;
 
 public class CreateRoomUI : MonoBehaviourPunCallbacks
 {
+    private AudioClip _buttonClickSound;
+    private AudioSource _audioSource; 
     private InputField _roomNameInput;
     // Start is called before the first frame update
     void Start()
     {
-        transform.Find("bg/okBtn").GetComponent<Button>().onClick.AddListener(OnCreateBtn);
-        transform.Find("bg/title/closeBtn").GetComponent<Button>().onClick.AddListener(OnCloseBtn);
+        _audioSource = transform.Find("audioSource").GetComponent<AudioSource>();
+        _buttonClickSound = Resources.Load<AudioClip>("Button");
+       
+        Button okBtn = transform.Find("bg/okBtn").GetComponent<Button>();
+        okBtn.onClick.AddListener(OnCreateBtn);
+        okBtn.onClick.AddListener(PlayButtonClickSound);  
+
+        Button closeBtn = transform.Find("bg/title/closeBtn").GetComponent<Button>();
+        closeBtn.onClick.AddListener(OnCloseBtn);
+        closeBtn.onClick.AddListener(PlayButtonClickSound); 
         _roomNameInput = transform.Find("bg/InputField").GetComponent<InputField>();
 
         _roomNameInput.text = "Room_" + Random.Range(0, 1000);
     }
+    
+    private void PlayButtonClickSound()
+    {
+        if (_audioSource != null && _buttonClickSound != null)
+        {
+            _audioSource.PlayOneShot(_buttonClickSound);
+        }
+    }
+
 
 
     public void OnCreateBtn()

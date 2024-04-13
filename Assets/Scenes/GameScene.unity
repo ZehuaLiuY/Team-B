@@ -9,7 +9,7 @@ OcclusionCullingSettings:
     smallestHole: 0.25
     backfaceThreshold: 100
   m_SceneGUID: 9fc0d4010bbf28b4594072e72b8655ab
-  m_OcclusionCullingData: {fileID: 36300000, guid: 0bf1d3f77b7456d4eb457404c20a111f,
+  m_OcclusionCullingData: {fileID: 36300000, guid: 1c7976aebbc454b828aec5a2326987df,
     type: 2}
 --- !u!104 &2
 RenderSettings:
@@ -22590,7 +22590,7 @@ Camera:
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 0
+  m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!4 &828077417
