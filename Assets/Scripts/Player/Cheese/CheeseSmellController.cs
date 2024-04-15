@@ -20,7 +20,7 @@ public class CheeseSmellController : MonoBehaviourPun
 
     private bool _enable = true;
 
-    private bool _disable = false;
+    private bool _isWind = false;
 
     private void Start()
     {
@@ -32,12 +32,9 @@ public class CheeseSmellController : MonoBehaviourPun
         while (_enable)
         {
             yield return new WaitForSeconds(0.5f);
-            photonView.RPC("GenerateSmell", RpcTarget.All, _disable);
+            photonView.RPC("GenerateSmellRPC", RpcTarget.All);
 
-            if (_disable)
-            {
-                break;
-            }
+
         }
     }
 
@@ -46,15 +43,28 @@ public class CheeseSmellController : MonoBehaviourPun
         _enable = enable;
     }
 
-    public void setDisable(bool disable)
+    public void setWind(bool isWind)
     {
-        _disable = disable;
+        _isWind = isWind;
     }
 
     [PunRPC]
-    void GenerateSmell(bool disable)
+    void GenerateSmellRPC()
     {
-        if (!disable && !_isFan)
+        if (_isWind)
+        {
+
+            ParticleSystem smellParticle = Instantiate(smellEverywhere, transform.position, Quaternion.identity);
+
+            smellParticle.Play();
+            
+        }
+        else if(_isFan) 
+        {
+            GameObject smellParticle = Instantiate(smellParticlePrefab, transform.position, Quaternion.identity).gameObject;
+            SetFanEffect(smellParticle);
+        }
+        else
         {
             // generate smell particle at the player position
             ParticleSystem smellParticle = Instantiate(smellParticlePrefab, transform.position, Quaternion.identity);
@@ -62,18 +72,6 @@ public class CheeseSmellController : MonoBehaviourPun
             // continue to play the particle
             smellParticle.Play();
         }
-        else if(!disable && _isFan) 
-        {
-            GameObject smellParticle = Instantiate(smellParticlePrefab, transform.position, Quaternion.identity).gameObject;
-            SetFanEffect(smellParticle);
-        }
-        else
-        {
-            ParticleSystem smellParticle = Instantiate(smellEverywhere, transform.position, Quaternion.identity);
-
-            smellParticle.Play();
-        }
-
     }
 
     public void setFan(bool isFan, Transform targetFan)
