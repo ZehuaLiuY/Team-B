@@ -11,7 +11,7 @@ public class WindAffect : MonoBehaviour
         {
             // Debug.Log("cheese in trigger");
             _cheeseSmellController = other.GetComponent<CheeseSmellController>();
-            _cheeseSmellController.setDisable(true);
+            _cheeseSmellController.setWind(true);
         }
     }
 
@@ -21,7 +21,7 @@ public class WindAffect : MonoBehaviour
         {
             // Debug.Log("cheese leave trigger");
             _cheeseSmellController = other.GetComponent<CheeseSmellController>();
-            _cheeseSmellController.setDisable(false);
+            _cheeseSmellController.setWind(false);
         }
     }
 }

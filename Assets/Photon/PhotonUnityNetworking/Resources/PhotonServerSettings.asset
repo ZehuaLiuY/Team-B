@@ -93,6 +93,7 @@ MonoBehaviour:
   - DeleteExistingSkillBalls
   - DeleteExistingSkillBallsRPC
   - InstantiateSkillBallsRPC
+  - GenerateSmellRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

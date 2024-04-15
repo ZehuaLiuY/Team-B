@@ -7175,7 +7175,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 000715b32cd785344a95adee930fc2c4,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.71353
+      value: -0.671
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 000715b32cd785344a95adee930fc2c4,
         type: 3}
@@ -26834,9 +26834,9 @@ GameObject:
   - component: {fileID: 1114060980}
   - component: {fileID: 1114060979}
   - component: {fileID: 1114060978}
-  - component: {fileID: 1114060977}
   - component: {fileID: 1114060981}
   - component: {fileID: 1114060982}
+  - component: {fileID: 1114060983}
   m_Layer: 13
   m_Name: Door
   m_TagString: Untagged
@@ -26860,22 +26860,6 @@ Transform:
   - {fileID: 1767398112}
   m_Father: {fileID: 1959012060}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1114060977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1114060975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e66a194b9a68264f837dec722bc7a66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 1972149480}
-  vfxSmell: {fileID: 3901856751001337287, guid: 88808b8a15a8e214e9d259c5ac243a34,
-    type: 3}
-  _doorOpenSound: {fileID: 8300000, guid: e3a6d931cb015416d9d87d91282265b7, type: 3}
 --- !u!114 &1114060978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27061,6 +27045,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1114060983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114060975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72381065823426847af7796918dbe127, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 1972149480}
+  _doorOpenSound: {fileID: 8300000, guid: e3a6d931cb015416d9d87d91282265b7, type: 3}
 --- !u!64 &1115774505
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -38489,7 +38487,7 @@ GameObject:
   - component: {fileID: 1535068487}
   - component: {fileID: 1535068486}
   - component: {fileID: 1535068485}
-  - component: {fileID: 1535068484}
+  - component: {fileID: 1535068489}
   - component: {fileID: 1535068483}
   - component: {fileID: 1535068488}
   m_Layer: 13
@@ -38536,22 +38534,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.15062171
   m_Center: {x: -6.440235e-17, y: 0, z: 0.04937833}
---- !u!114 &1535068484
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1535068481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e66a194b9a68264f837dec722bc7a66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 1972149480}
-  vfxSmell: {fileID: 3901856751001337287, guid: 88808b8a15a8e214e9d259c5ac243a34,
-    type: 3}
-  _doorOpenSound: {fileID: 8300000, guid: e3a6d931cb015416d9d87d91282265b7, type: 3}
 --- !u!114 &1535068485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38716,6 +38698,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1535068489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1535068481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72381065823426847af7796918dbe127, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 1972149480}
+  _doorOpenSound: {fileID: 8300000, guid: e3a6d931cb015416d9d87d91282265b7, type: 3}
 --- !u!64 &1536146258
 MeshCollider:
   m_ObjectHideFlags: 0
