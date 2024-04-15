@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class SmellBombSkill : MonoBehaviourPun
 {
-
-
     void Update()
     {
         if (photonView.IsMine)
@@ -21,7 +19,6 @@ public class SmellBombSkill : MonoBehaviourPun
     void DeploySmellBomb()
     {
         // generate a smell bomb at the player's position
-        PhotonNetwork.Instantiate("OdorParticle", transform.position, Quaternion.identity);
-
+        PhotonNetwork.Instantiate("SmellBomb Skill", transform.position, Quaternion.identity);
     }
 }

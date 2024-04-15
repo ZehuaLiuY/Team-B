@@ -13,6 +13,7 @@ public class GetSkill : MonoBehaviourPunCallbacks
     private string _detector = "Detector Skill";
     private string _sprint = "Sprint Skill";
     private string _jump = "Jump Skill";
+    private string _smell = "SmellBomb Skill";
     private AudioSource _audioSource;
     // Start is called before the first frame update
     void Start()
@@ -70,6 +71,7 @@ public class GetSkill : MonoBehaviourPunCallbacks
             else if (other.CompareTag(_detector) && !hasSkill) skillTag = _detector;
             else if (other.CompareTag(_sprint) && !hasSkill) skillTag = _sprint;
             else if (other.CompareTag(_jump) && !hasSkill) skillTag = _jump;
+            else if (other.CompareTag(_smell) && !hasSkill) skillTag = _smell;
 
             if (skillTag != null)
             {
@@ -96,8 +98,6 @@ public class GetSkill : MonoBehaviourPunCallbacks
         }
     }
     
-    
-    
     public void ActivateSkill(string skills)
     {
         if (skills == _invisible)
@@ -108,7 +108,8 @@ public class GetSkill : MonoBehaviourPunCallbacks
                 invisibilityEffect.enabled = true;
                 CheeseFightUI.Instance.ShowSkillUI(true, _invisible);
             }
-        } else if (skills == _clone)
+        }
+        else if (skills == _clone)
         {
             Clone_Skill cloneSkill = GetComponent<Clone_Skill>();
             if (cloneSkill != null && CheeseFightUI.Instance != null)
@@ -116,7 +117,8 @@ public class GetSkill : MonoBehaviourPunCallbacks
                 cloneSkill.enabled = true; 
                 CheeseFightUI.Instance.ShowSkillUI(true, _clone);
             }
-        } else if (skills == _detector)
+        }
+        else if (skills == _detector)
         {
             EnemyDetector enemyDetector = GetComponentInChildren<EnemyDetector>();
             if (enemyDetector != null && CheeseFightUI.Instance != null)
@@ -124,7 +126,8 @@ public class GetSkill : MonoBehaviourPunCallbacks
                 enemyDetector.enabled = true; 
                 CheeseFightUI.Instance.ShowSkillUI(true, _detector);
             }
-        } else if (skills == _sprint)
+        }
+        else if (skills == _sprint)
         {
             Sprint_Skill sprintSkill = GetComponent<Sprint_Skill>();
             if (sprintSkill != null && CheeseFightUI.Instance != null)
@@ -132,13 +135,23 @@ public class GetSkill : MonoBehaviourPunCallbacks
                 sprintSkill.enabled = true; 
                 CheeseFightUI.Instance.ShowSkillUI(true, _sprint);
             }
-        } else if (skills == _jump)
+        }
+        else if (skills == _jump)
         {
             Jump_Skill jumpSkill = GetComponent<Jump_Skill>();
             if (jumpSkill != null && CheeseFightUI.Instance != null)
             {
                 jumpSkill.enabled = true; 
                 CheeseFightUI.Instance.ShowSkillUI(true, _jump);
+            }
+        }
+        else if (skills == _smell)
+        {
+            SmellBombSkill smellBomb = GetComponent<SmellBombSkill>();
+            if (smellBomb != null && CheeseFightUI.Instance != null)
+            {
+                smellBomb.enabled = true;
+                CheeseFightUI.Instance.ShowSkillUI(true, _smell);
             }
         }
     }
@@ -154,7 +167,8 @@ public class GetSkill : MonoBehaviourPunCallbacks
                 invisibilityEffect.enabled = false;
                 CheeseFightUI.Instance.ShowSkillUI(false, _invisible);
             }
-        } else if (skills == _clone)
+        }
+        else if (skills == _clone)
         {
             hasSkill = false; 
             Clone_Skill cloneSkill = GetComponent<Clone_Skill>();
@@ -163,7 +177,8 @@ public class GetSkill : MonoBehaviourPunCallbacks
                 cloneSkill.enabled = false; 
                 CheeseFightUI.Instance.ShowSkillUI(false, _clone);
             }
-        } else if (skills == _detector)
+        }
+        else if (skills == _detector)
         {
             hasSkill = false;
             EnemyDetector enemyDetector = GetComponentInChildren<EnemyDetector>();
@@ -172,7 +187,8 @@ public class GetSkill : MonoBehaviourPunCallbacks
                 enemyDetector.enabled = false; 
                 CheeseFightUI.Instance.ShowSkillUI(false, _detector);
             }
-        } else if (skills == _sprint)
+        }
+        else if (skills == _sprint)
         {
             hasSkill = false; 
             Sprint_Skill sprintSkill = GetComponent<Sprint_Skill>();
@@ -181,7 +197,8 @@ public class GetSkill : MonoBehaviourPunCallbacks
                 sprintSkill.enabled = false;
                 CheeseFightUI.Instance.ShowSkillUI(false, _sprint);
             }
-        } else if (skills == _jump)
+        }
+        else if (skills == _jump)
         {
             hasSkill = false; 
             Jump_Skill jumpSkill = GetComponent<Jump_Skill>();
@@ -189,6 +206,16 @@ public class GetSkill : MonoBehaviourPunCallbacks
             {
                 jumpSkill.enabled = false;
                 CheeseFightUI.Instance.ShowSkillUI(false, _jump);
+            }
+        }
+        else if (skills == _smell)
+        {
+            hasSkill = false;
+            SmellBombSkill smellBomb = GetComponent<SmellBombSkill>();
+            if (smellBomb != null)
+            {
+                smellBomb.enabled = false;
+                CheeseFightUI.Instance.ShowSkillUI(false, _smell);
             }
         }
     }
