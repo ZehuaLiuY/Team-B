@@ -29,7 +29,11 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        
+      
+      - name: Clean up after test
+        run: |
+          rm -rf Library/Temp
+          rm -rf Library/Logs
 
   build:
     name: Build my project ✨
@@ -41,6 +45,13 @@ jobs:
 
         with:
           lfs: true
+
+      - name: Docker cleanup
+        run: |
+            docker system prune -af
+            docker volume prune -f
+            docker image prune -af
+            docker network prune -f
 
       # Cache
       - uses: actions/cache@v4.0.2
@@ -66,3 +77,9 @@ jobs:
         with:
           name: Build
           path: build
+
+      - name: Clean up after build
+        run: |
+          rm -rf Library/Temp
+          rm -rf Library/Logs
+          docker system prune -f --volumes
