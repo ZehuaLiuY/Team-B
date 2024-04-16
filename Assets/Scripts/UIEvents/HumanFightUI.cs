@@ -172,7 +172,7 @@ public class HumanFightUI : MonoBehaviour
             else
             {
                 // if the countdown time is more than 10 seconds, change the color to black
-                _countdownText.color = Color.black;
+                _countdownText.color = Color.white;
             }
             _countdownText.text = "Time: " + formattedTime;
             // update the previous time
