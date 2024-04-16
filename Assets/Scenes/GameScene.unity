@@ -1412,7 +1412,7 @@ Camera:
     height: 1
   near clip plane: 0.2
   far clip plane: 1000
-  field of view: 34
+  field of view: 40
   orthographic: 0
   orthographic size: 10
   m_Depth: 0
@@ -2089,7 +2089,7 @@ MonoBehaviour:
   CameraDistance: 100
   CameraCollisionFilter:
     serializedVersion: 2
-    m_Bits: 337920
+    m_Bits: 3483648
   IgnoreTag: Player
   CameraRadius: 0.2
   DampingIntoCollision: 0
@@ -4480,7 +4480,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 34
+    FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.2
     FarClipPlane: 1000
