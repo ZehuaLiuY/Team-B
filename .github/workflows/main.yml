@@ -46,6 +46,13 @@ jobs:
         with:
           lfs: true
 
+      - name: Docker cleanup
+        run: |
+            docker system prune -af
+            docker volume prune -f
+            docker image prune -af
+            docker network prune -f
+
       # Cache
       - uses: actions/cache@v4.0.2
         with:
