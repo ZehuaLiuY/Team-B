@@ -44,7 +44,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private CheeseFightUI fightUI1;
 
     // countdown timer and game end event
-    public static float countdownTimer = 3f;
+    public static float countdownTimer = 180f;
     public event Action<bool> OnGameEnd;
     private bool _isHumanWin = false;
     private int _remainingCheeseCount;
