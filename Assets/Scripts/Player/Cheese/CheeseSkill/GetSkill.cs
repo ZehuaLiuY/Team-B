@@ -90,9 +90,10 @@ public class GetSkill : MonoBehaviourPunCallbacks
     void HideSkillBall(int ballViewID)
     {
         PhotonView ballPhotonView = PhotonView.Find(ballViewID);
+        Debug.Log("HideSkillBall: " + ballPhotonView.gameObject.name);
         if (ballPhotonView != null)
         {
-            ballPhotonView.gameObject.SetActive(false);
+            SkillBallPoolManager.Instance.ReturnSkillBall(ballPhotonView.gameObject.name, ballPhotonView);
         }
     }
     
