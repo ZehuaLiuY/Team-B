@@ -713,7 +713,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 336802100}
-  - component: {fileID: 336802099}
   - component: {fileID: 336802101}
   - component: {fileID: 336802102}
   m_Layer: 0
@@ -723,18 +722,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &336802099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 336802098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a4f0b52b7f2f4551b7456aa47bc348c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &336802100
 Transform:
   m_ObjectHideFlags: 0
@@ -779,17 +766,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 336802098}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fdab99b571192a4196428174b5d16c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pvCache: {fileID: 0}
   skillBallPrefabs:
   - {fileID: 1402390600775885671, guid: 7404057bfe4ce49c4bb84a99991bb72d, type: 3}
   - {fileID: 1402390600775885671, guid: 78bfef230bd99429eac6d535419e77b9, type: 3}
   - {fileID: 1402390600775885671, guid: eeded8882f65f4894aceb2a737e960d7, type: 3}
   - {fileID: 1402390600775885671, guid: 2df958c8b1f424c5cad41a2781a4023f, type: 3}
   - {fileID: 1402390600775885671, guid: a849ea6d15c4c486da1f10c8fd9cf6f9, type: 3}
+  skillPoints: []
   poolSize: 3
   skillPointTf: {fileID: 1653419560}
 --- !u!64 &338274352
@@ -6864,6 +6853,15 @@ MonoBehaviour:
   humanSpawnPoints: {fileID: 919194738}
   playerName: 
   timeManager: {fileID: 584660738}
+  skillBallPrefabs:
+  - {fileID: 1402390600775885671, guid: 7404057bfe4ce49c4bb84a99991bb72d, type: 3}
+  - {fileID: 1402390600775885671, guid: 78bfef230bd99429eac6d535419e77b9, type: 3}
+  - {fileID: 1402390600775885671, guid: eeded8882f65f4894aceb2a737e960d7, type: 3}
+  - {fileID: 1402390600775885671, guid: 2df958c8b1f424c5cad41a2781a4023f, type: 3}
+  - {fileID: 1402390600775885671, guid: 9bfdbe18c7f9eae49b2fdfcdbdb0bb44, type: 3}
+  - {fileID: 1402390600775885671, guid: a849ea6d15c4c486da1f10c8fd9cf6f9, type: 3}
+  skillPointTf: {fileID: 1653419560}
+  refreshInterval: 60
   miniMapController: {fileID: 2071515260}
 --- !u!4 &474629508
 Transform:

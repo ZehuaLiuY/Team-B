@@ -67,7 +67,9 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         
         public ParticleSystem OnFireSystemPrefab;
 
-        
+        // leaderboard
+        public GameObject leaderboardUIPrefab;
+        private GameObject leaderboardInstance;
 
         //cheese state
         public bool isDie = false;
@@ -206,7 +208,26 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 {
                     _recorder.TransmitEnabled = false;
                 }
-                
+
+                // leaderboard display when player hold tab
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+
+                    if (leaderboardInstance == null)
+                    {
+                        leaderboardInstance = Instantiate(leaderboardUIPrefab);
+                        leaderboardInstance.SetActive(true);
+                    }
+                }
+
+                if (Input.GetKeyUp(KeyCode.Tab))
+                {
+                    if (leaderboardInstance != null)
+                    {
+                        Destroy(leaderboardInstance);
+                        leaderboardInstance = null;
+                    }
+                }
             }
             else
             {

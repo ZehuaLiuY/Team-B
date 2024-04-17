@@ -985,6 +985,8 @@ MonoBehaviour:
   CameraAngleOverride: 0
   LockCameraPosition: 0
   OnFireSystemPrefab: {fileID: 5182372049307940432}
+  leaderboardUIPrefab: {fileID: 4798937858454763949, guid: eafe3205efd861c4e8b83b843c4c69e7,
+    type: 3}
   isDie: 0
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
