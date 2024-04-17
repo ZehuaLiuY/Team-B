@@ -536,17 +536,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 250
+      value: 310
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 250
+      value: 310
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 250
+      value: 310
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 76b1db43dfbc346c5b159481488ae965,
         type: 3}
@@ -929,7 +929,7 @@ CharacterController:
   m_Height: 0.045
   m_Radius: 0.015
   m_SlopeLimit: 45
-  m_StepOffset: 0
+  m_StepOffset: 7
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0.023, z: 0}
@@ -978,7 +978,7 @@ MonoBehaviour:
   GroundedRadius: 0.28
   GroundLayers:
     serializedVersion: 2
-    m_Bits: 2176
+    m_Bits: 3147904
   CinemachineCameraTarget: {fileID: 274595904318390932}
   TopClamp: 70
   BottomClamp: -30
@@ -1454,6 +1454,11 @@ PrefabInstance:
         type: 3}
       propertyPath: SizeModule.enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198714429152696258, guid: ea4fb55d0227e604386f44f905cfe7c0,
+        type: 3}
+      propertyPath: InitialModule.maxNumParticles
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 198714429152696258, guid: ea4fb55d0227e604386f44f905cfe7c0,
         type: 3}

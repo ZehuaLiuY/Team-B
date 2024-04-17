@@ -10,16 +10,16 @@ public class CheeseFightUI : MonoBehaviour
     public static CheeseFightUI Instance { get; private set; }
 
     //private GameManager gameManager;
-    private Text _countdownText;
+    //private Text _countdownText;
     private Image _skillIcon;
     private Transform _tutorialPanel;
     
-    private AudioSource _countdownMusic;
-    private AudioClip _last10SecondsSound;
-    private bool _last10SecondsSoundPlayed = false;
+    //private AudioSource _countdownMusic;
+    //private AudioClip _last10SecondsSound;
+    //private bool _last10SecondsSoundPlayed = false;
 
-    private float _previousTime;
-    private bool _iscount;
+    //private float _previousTime;
+    //private bool _iscount;
 
     void Awake()
     {
@@ -38,16 +38,15 @@ public class CheeseFightUI : MonoBehaviour
     
     private void Start()
     {
-        _countdownMusic = transform.Find("countdownMusic").GetComponent<AudioSource>();
-        _last10SecondsSound = Resources.Load<AudioClip>("10s");
+        //_countdownMusic = transform.Find("countdownMusic").GetComponent<AudioSource>();
+        //_last10SecondsSound = Resources.Load<AudioClip>("10s");
     }
 
     
     public void InitializeUI(string playerType)
     {
         // Debug.Log($"Initializing UI for playerType: {playerType}");
-        _iscount = true;
-        _countdownText = transform.Find("CountdownText").GetComponent<Text>();
+        //_countdownText = transform.Find("CountdownText").GetComponent<Text>();
         _tutorialPanel = transform.Find($"TutorialPanel_{playerType}");
         StartCoroutine(BeginStartSequence());
     }
@@ -113,53 +112,5 @@ public class CheeseFightUI : MonoBehaviour
     void Update()
     {
 
-    }
-
-    public void SetCountdownTimer(float countdownTimer) 
-    {
-        // get the countdown time from the game manager
-        //float countdownTime = gameManager.GetCountdownTime();
-
-        // standard time format
-        string formattedTime = string.Format("{0:0}:{1:00}", Mathf.Floor(countdownTimer / 60), Mathf.Floor(countdownTimer % 60));
-
-
-
-        // update the countdown text
-        if (_countdownText != null && _iscount)
-        {
-            // if the countdown time is less than 10 seconds, change the color to red
-            if (Mathf.Floor(countdownTimer) <= 10 && Mathf.Floor(countdownTimer) > 0f)
-            {
-                _countdownText.color = Color.red;
-                // play the countdown sound
-                //if(Mathf.Floor(countdownTime) != previousTime)
-                //{
-                //    this.GetComponent<AudioSource>().PlayOneShot(countSound);
-                //    //Debug.Log("countdownTime:" + countdownTime);
-
-                //}
-
-                //this.GetComponent<AudioSource>().PlayOneShot(countSound);
-                if (!_last10SecondsSoundPlayed)
-                {
-                    _countdownMusic.PlayOneShot(_last10SecondsSound);
-                    _last10SecondsSoundPlayed = true; 
-                }
-            }
-            else if (Mathf.Floor(countdownTimer) == 0f)
-            {
-                //this.GetComponent<AudioSource>().PlayOneShot(timesupSound);
-                _iscount = false;
-            }
-            else
-            {
-                // if the countdown time is more than 10 seconds, change the color to black
-                _countdownText.color = Color.white;
-            }
-            _countdownText.text = "Time: " + formattedTime;
-            // update the previous time
-            _previousTime = Mathf.Floor(countdownTimer);
-        }
     }
 }
