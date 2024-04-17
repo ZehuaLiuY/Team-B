@@ -5,6 +5,7 @@ using Photon.Pun;
 using Photon.Voice.Unity;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
+
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -379,6 +380,11 @@ namespace StarterAssets
         void TriggerPickupAnimation()
         {
             _animator.SetTrigger("pickup");
+        }
+
+        public void endGame()
+        {
+            gameObject.SetActive(false);
         }
 
         private void LateUpdate()

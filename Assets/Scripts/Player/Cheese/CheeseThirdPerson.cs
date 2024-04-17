@@ -14,6 +14,7 @@ namespace CheeseController
 #endif
 public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 {
+
         [Header("Player")] [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
 
@@ -472,6 +473,13 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 }
             }
         }
+        
+        public void endGame()
+        {
+            // 游戏结束，不让所有玩家移动
+            gameObject.SetActive(false);
+            _cheeseSmellController.setEnable(false);
+        }
 
         [PunRPC]
         public void showDeiUI()
@@ -486,7 +494,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             Destroy(gameObject);
 
             // 通过 RPC 通知其他客户端隐藏奶酪对象和它的smell
-            photonView.RPC("HideCheeseAndSmell", RpcTarget.Others);
+            photonView.RPC("HideCheeseAndSmell", RpcTarget.All);
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
