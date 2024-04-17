@@ -19,6 +19,7 @@ TagManager:
   - Jump Skill
   - Invisible Skill
   - Clone
+  - SmellBomb Skill
   layers:
   - Default
   - TransparentFX
