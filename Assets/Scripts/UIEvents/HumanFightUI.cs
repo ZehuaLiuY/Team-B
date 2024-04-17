@@ -12,18 +12,18 @@ public class HumanFightUI : MonoBehaviour
     // public Image StaminaBar; // make sure to assign this in the inspector
     public static HumanFightUI Instance { get; private set; }
     //private GameManager gameManager;
-    private Text _countdownText;
+    //private Text _countdownText;
     private Transform _tutorialPanel;
     private Image _staminaBar;
     private TMP_Text _cheeseCaughtText;
     private TMP_Text _catchText;
-    private AudioSource _countdownMusic;
-    private AudioClip _last10SecondsSound;
-    private bool _last10SecondsSoundPlayed = false;
+    //private AudioSource _countdownMusic;
+    //private AudioClip _last10SecondsSound;
+    //private bool _last10SecondsSoundPlayed = false;
 
 
-    private float _previousTime;
-    private bool _iscount;
+    //private float _previousTime;
+    //private bool _iscount;
     //public static float countdownTimer = 180f;
 
     private void Awake()
@@ -42,13 +42,13 @@ public class HumanFightUI : MonoBehaviour
     }
     private void Start()
     {
-        _iscount = true;
-        _countdownText = transform.Find("CountdownText").GetComponent<Text>();
+        //_iscount = true;
+        //_countdownText = transform.Find("CountdownText").GetComponent<Text>();
         _tutorialPanel = transform.Find("TutorialPanel");
         _cheeseCaughtText = transform.Find("CheeseCaughtText").GetComponent<TMP_Text>();
         _catchText = transform.Find("CatchText").GetComponent<TMP_Text>();
-        _countdownMusic = transform.Find("countdownMusic").GetComponent<AudioSource>();
-        _last10SecondsSound = Resources.Load<AudioClip>("10s");
+        //_countdownMusic = transform.Find("countdownMusic").GetComponent<AudioSource>();
+        //_last10SecondsSound = Resources.Load<AudioClip>("10s");
      
         Transform hpTransform = transform.Find("hp");
         if (hpTransform != null && hpTransform.childCount > 0) {
@@ -132,51 +132,51 @@ public class HumanFightUI : MonoBehaviour
 
     }
 
-    public void SetCountdownTimer(float countdownTimer) 
-    {
-        // get the countdown time from the game manager
-        //float countdownTime = gameManager.GetCountdownTime();
+    //public void SetCountdownTimer(float countdownTimer) 
+    //{
+    //    // get the countdown time from the game manager
+    //    //float countdownTime = gameManager.GetCountdownTime();
 
-        // format the time to minutes and seconds
-        string formattedTime = string.Format("{0:0}:{1:00}", Mathf.Floor(countdownTimer / 60), Mathf.Floor(countdownTimer % 60));
+    //    // format the time to minutes and seconds
+    //    string formattedTime = string.Format("{0:0}:{1:00}", Mathf.Floor(countdownTimer / 60), Mathf.Floor(countdownTimer % 60));
 
 
 
-        // update the countdown text
-        if (_countdownText != null && _iscount)
-        {
-            // if the countdown time is less than 10 seconds, change the color to red
-            if (Mathf.Floor(countdownTimer) <= 10 && Mathf.Floor(countdownTimer) > 0f)
-            {
-                _countdownText.color = Color.red;
-                // play the countdown sound
-                //if(Mathf.Floor(countdownTime) != previousTime)
-                //{
-                //    this.GetComponent<AudioSource>().PlayOneShot(countSound);
-                //    //Debug.Log("countdownTime:" + countdownTime);
+    //    // update the countdown text
+    //    if (_countdownText != null && _iscount)
+    //    {
+    //        // if the countdown time is less than 10 seconds, change the color to red
+    //        if (Mathf.Floor(countdownTimer) <= 10 && Mathf.Floor(countdownTimer) > 0f)
+    //        {
+    //            _countdownText.color = Color.red;
+    //            // play the countdown sound
+    //            //if(Mathf.Floor(countdownTime) != previousTime)
+    //            //{
+    //            //    this.GetComponent<AudioSource>().PlayOneShot(countSound);
+    //            //    //Debug.Log("countdownTime:" + countdownTime);
 
-                //}
+    //            //}
 
-                //this.GetComponent<AudioSource>().PlayOneShot(countSound);
-                if (!_last10SecondsSoundPlayed)
-                {
-                    _countdownMusic.PlayOneShot(_last10SecondsSound);
-                    _last10SecondsSoundPlayed = true; 
-                }
-            }
-            else if (Mathf.Floor(countdownTimer) == 0f)
-            {
-                //this.GetComponent<AudioSource>().PlayOneShot(timesupSound);
-                _iscount = false;
-            }
-            else
-            {
-                // if the countdown time is more than 10 seconds, change the color to black
-                _countdownText.color = Color.black;
-            }
-            _countdownText.text = "Time: " + formattedTime;
-            // update the previous time
-            _previousTime = Mathf.Floor(countdownTimer);
-        }
-    }
+    //            //this.GetComponent<AudioSource>().PlayOneShot(countSound);
+    //            if (!_last10SecondsSoundPlayed)
+    //            {
+    //                _countdownMusic.PlayOneShot(_last10SecondsSound);
+    //                _last10SecondsSoundPlayed = true; 
+    //            }
+    //        }
+    //        else if (Mathf.Floor(countdownTimer) == 0f)
+    //        {
+    //            //this.GetComponent<AudioSource>().PlayOneShot(timesupSound);
+    //            _iscount = false;
+    //        }
+    //        else
+    //        {
+    //            // if the countdown time is more than 10 seconds, change the color to black
+    //            _countdownText.color = Color.black;
+    //        }
+    //        _countdownText.text = "Time: " + formattedTime;
+    //        // update the previous time
+    //        _previousTime = Mathf.Floor(countdownTimer);
+    //    }
+    //}
 }
