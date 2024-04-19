@@ -12,6 +12,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;
 using CheeseController;
 using StarterAssets;
+using Photon.Pun.UtilityScripts;
 
 
 public class FightManager : MonoBehaviourPunCallbacks
@@ -43,7 +44,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private CheeseFightUI fightUI1;
 
     // countdown timer and game end event
-    public static float countdownTimer = 3f;
+    public static float countdownTimer;
     public event Action<bool> OnGameEnd;
     private bool _isHumanWin = false;
     private int _remainingCheeseCount;
@@ -69,6 +70,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        countdownTimer = 180f;
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
 
