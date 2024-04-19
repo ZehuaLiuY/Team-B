@@ -30,7 +30,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     public string playerName;
     public TimeManager timeManager;
 
-    private HashSet<int> _humanPlayerActorNumbers = new HashSet<int>();
+    private HashSet<int> _humanPlayerActorNumbers;
     
     // skill balls
     public GameObject[] skillBallPrefabs;
@@ -71,6 +71,8 @@ public class FightManager : MonoBehaviourPunCallbacks
     void Start()
     {
         countdownTimer = 180f;
+        _humanPlayerActorNumbers = new HashSet<int>();
+
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
 
