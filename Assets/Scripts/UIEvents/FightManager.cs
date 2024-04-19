@@ -46,22 +46,24 @@ public class FightManager : MonoBehaviourPunCallbacks
     // countdown timer and game end event
     public static float countdownTimer;
     public event Action<bool> OnGameEnd;
-    private bool _isHumanWin = false;
+    private bool _isHumanWin;
     private int _remainingCheeseCount;
-    private bool _gameOver = false;
+    private bool _gameOver;
 
     // minimap
     public MiniMapController miniMapController;
     private PhotonView _miniMapPhotonView;
 
     // player's controller
-    private GameObject localPlayer;
-
-    
+    private GameObject _localPlayer;
 
     void Awake()
     {
         _miniMapPhotonView = miniMapController.GetComponent<PhotonView>();
+        _humanPlayerActorNumbers = new HashSet<int>();
+        _isHumanWin = false;
+        _gameOver = false;
+
         if (PhotonNetwork.IsMasterClient)
         {
             AssignRoles();
@@ -71,7 +73,6 @@ public class FightManager : MonoBehaviourPunCallbacks
     void Start()
     {
         countdownTimer = 180f;
-        _humanPlayerActorNumbers = new HashSet<int>();
 
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
@@ -98,7 +99,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         _vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
 
-     
     }
 
     void OnDestroy()
@@ -273,7 +273,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         // spawn the player
         playerObject = PhotonNetwork.Instantiate(prefabName, spawnPos, Quaternion.identity);
-        localPlayer = playerObject;
+        _localPlayer = playerObject;
 
         // minimap icon display
         _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
@@ -380,14 +380,14 @@ public class FightManager : MonoBehaviourPunCallbacks
             }
         }
 
-        if (localPlayer.CompareTag("Player"))
+        if (_localPlayer.CompareTag("Player"))
         {
-            ThirdPersonController humanController =  localPlayer.GetComponent<ThirdPersonController>();
+            ThirdPersonController humanController =  _localPlayer.GetComponent<ThirdPersonController>();
             humanController.endGame();
         }
-        else if (localPlayer.CompareTag("Target"))
+        else if (_localPlayer.CompareTag("Target"))
         {
-            CheeseThirdPerson cheeseController = localPlayer.GetComponent<CheeseThirdPerson>();
+            CheeseThirdPerson cheeseController = _localPlayer.GetComponent<CheeseThirdPerson>();
             cheeseController.endGame();
         }
 
