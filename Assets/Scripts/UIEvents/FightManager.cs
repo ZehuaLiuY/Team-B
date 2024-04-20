@@ -26,6 +26,8 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     private List<Transform> _cheeseAvailablePoints;
     private List<Transform> _humanAvailablePoints;
+    private int _cheeseSpawnIndex = 0;
+    private int _humanSpawnIndex = 0;
     private CinemachineVirtualCamera _vc;
     public string playerName;
     public TimeManager timeManager;
@@ -44,6 +46,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     private CheeseFightUI fightUI1;
 
     // countdown timer and game end event
+    private int _targetScore;
     public static float countdownTimer;
     public event Action<bool> OnGameEnd;
     private bool _isHumanWin = false;
@@ -55,13 +58,14 @@ public class FightManager : MonoBehaviourPunCallbacks
     private PhotonView _miniMapPhotonView;
 
     // player's controller
-    private GameObject localPlayer;
+    private GameObject _localPlayer;
 
     
 
     void Awake()
     {
         _miniMapPhotonView = miniMapController.GetComponent<PhotonView>();
+        _humanPlayerActorNumbers = new HashSet<int>();
         if (PhotonNetwork.IsMasterClient)
         {
             AssignRoles();
@@ -71,8 +75,6 @@ public class FightManager : MonoBehaviourPunCallbacks
     void Start()
     {
         countdownTimer = 180f;
-        _humanPlayerActorNumbers = new HashSet<int>();
-
         Game.uiManager.CloseAllUI();
         _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
 
@@ -198,6 +200,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         HashSet<int> humanIndices = new HashSet<int>();
 
         int numberOfHumans = Math.Max(1, players.Length / 4);
+        _targetScore = numberOfHumans * 4;
 
         for (int i = 0; i < numberOfHumans; i++)
         {
@@ -256,24 +259,26 @@ public class FightManager : MonoBehaviourPunCallbacks
         // check the player type
         if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
-            spawnPoint = _humanAvailablePoints[Random.Range(0, _humanAvailablePoints.Count)];
-            spawnPos = spawnPoint.position;
+            spawnPoint = _humanAvailablePoints[_humanSpawnIndex % _humanAvailablePoints.Count];
+            _humanSpawnIndex++;
             prefabName = "Human";
             interestGroup = 1;
             Destroy(spawnPoint.gameObject);
         }
         else
         {
-            spawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
-            spawnPos = spawnPoint.position;
+            spawnPoint = _cheeseAvailablePoints[_cheeseSpawnIndex % _cheeseAvailablePoints.Count];
+            _cheeseSpawnIndex++;
             prefabName = "Cheese";
             interestGroup = 2;
             Destroy(spawnPoint.gameObject);
         }
 
+        spawnPos = spawnPoint.position;
+
         // spawn the player
         playerObject = PhotonNetwork.Instantiate(prefabName, spawnPos, Quaternion.identity);
-        localPlayer = playerObject;
+        _localPlayer = playerObject;
 
         // minimap icon display
         _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
@@ -380,14 +385,14 @@ public class FightManager : MonoBehaviourPunCallbacks
             }
         }
 
-        if (localPlayer.CompareTag("Player"))
+        if (_localPlayer.CompareTag("Player"))
         {
-            ThirdPersonController humanController =  localPlayer.GetComponent<ThirdPersonController>();
+            ThirdPersonController humanController =  _localPlayer.GetComponent<ThirdPersonController>();
             humanController.endGame();
         }
-        else if (localPlayer.CompareTag("Target"))
+        else if (_localPlayer.CompareTag("Target"))
         {
-            CheeseThirdPerson cheeseController = localPlayer.GetComponent<CheeseThirdPerson>();
+            CheeseThirdPerson cheeseController = _localPlayer.GetComponent<CheeseThirdPerson>();
             cheeseController.endGame();
         }
 
@@ -423,5 +428,41 @@ public class FightManager : MonoBehaviourPunCallbacks
         SceneManager.LoadScene("login");
         Game.uiManager.CloseAllUI();
         Game.uiManager.ShowUI<LoginUI>("LoginUI");
+    }
+
+    public void RespawnCheese()
+    {
+        Game.uiManager.CloseAllUI();
+        Transform respawnPoint = _cheeseAvailablePoints[_cheeseSpawnIndex];
+        _cheeseSpawnIndex = (_cheeseSpawnIndex + 1) % _cheeseAvailablePoints.Count;
+
+        _localPlayer.transform.position = respawnPoint.position;
+
+        // destroy the player
+        PhotonNetwork.Destroy(_localPlayer);
+
+        // respawn the player
+        GameObject playerObject = PhotonNetwork.Instantiate("Cheese", respawnPoint.position, Quaternion.identity);
+        _localPlayer = playerObject;
+
+        // minimap icon display
+        _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, _localPlayer.GetComponent<PhotonView>().ViewID);
+
+        // camera follow
+        _vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
+
+        // display the player name
+        PlayerNameDisplay nameDisplay = playerObject.GetComponentInChildren<PlayerNameDisplay>();
+        if (nameDisplay != null)
+        {
+            nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
+        }
+
+        // voice channel interest group
+        Recorder recorder = playerObject.GetComponent<Recorder>();
+        if (recorder != null)
+        {
+            recorder.InterestGroup = 2;
+        }
     }
 }

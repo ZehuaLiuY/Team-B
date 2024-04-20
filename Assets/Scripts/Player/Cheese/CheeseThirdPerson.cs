@@ -508,11 +508,11 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             isDie = true;
 
             // Game.uiManager.CloseAllUI();
-            Game.uiManager.ShowUI<DieUI>("DieUI");
+            Game.uiManager.ShowUI<RespawnUI>("RespawnUI");
             // hide minimap
             _miniMapController.photonView.RPC("HidePlayerIconRPC", RpcTarget.All, photonView.ViewID);
 
-            Destroy(gameObject);
+            gameObject.SetActive(false);
 
             // 通过 RPC 通知其他客户端隐藏奶酪对象和它的smell
             photonView.RPC("HideCheeseAndSmell", RpcTarget.All);
