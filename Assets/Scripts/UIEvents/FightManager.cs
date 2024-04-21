@@ -41,10 +41,10 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     // countdown timer and game end event
     private int _targetScore;
+    private int _currentScore;
     public static float countdownTimer;
-    public event Action<bool> OnGameEnd;
     private bool _isHumanWin;
-    private int _remainingCheeseCount;
+
     private bool _gameOver;
 
     // minimap
@@ -69,16 +69,14 @@ public class FightManager : MonoBehaviourPunCallbacks
     void Start()
     {
         countdownTimer = 180f;
+        _currentScore = 0;
         Game.uiManager.CloseAllUI();
-        _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
 
         if (PhotonNetwork.IsMasterClient)
         {
             StartCoroutine(CountdownTimerCoroutine());
             StartCoroutine(SpawnSkillBallsPeriodically());
         }
-
-        OnGameEnd += HandleGameEnd;
 
         _humanAvailablePoints = new List<Transform>();
         for (int i = 0; i < humanSpawnPoints.childCount; i++)
@@ -95,11 +93,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         _vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
 
      
-    }
-
-    void OnDestroy()
-    {
-        OnGameEnd -= HandleGameEnd;
     }
 
     IEnumerator SpawnSkillBallsPeriodically()
@@ -124,7 +117,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             {
                 _gameOver = true;
                 _isHumanWin = false;
-                OnGameEnd?.Invoke(_isHumanWin);
+                HandleGameEnd(false);
                 yield break;
             }
         }
@@ -194,7 +187,9 @@ public class FightManager : MonoBehaviourPunCallbacks
         HashSet<int> humanIndices = new HashSet<int>();
 
         int numberOfHumans = Math.Max(1, players.Length / 4);
+
         _targetScore = numberOfHumans * 4;
+        Debug.Log(_targetScore);
 
         for (int i = 0; i < numberOfHumans; i++)
         {
@@ -306,27 +301,27 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     public void CheeseDied()
     {
-        _remainingCheeseCount--;
+        _currentScore += 1;
+        Debug.Log("CheeseDied Called");
+        Debug.Log(_currentScore);
 
-        if (_remainingCheeseCount <= 0)
+        if (_currentScore >= _targetScore)
         {
-            _isHumanWin = true;
-            _gameOver = true;
-
-            timeManager.setIsCount(false);
-
-            // when all cheese die, the obeserved also show the lose UI
-            Game.uiManager.CloseAllUI();
-            // ShowEndGameUI(false);
-            OnGameEnd?.Invoke(_isHumanWin);
+            HandleGameEnd(true);
         }
     }
 
     private void HandleGameEnd(bool isHumanWin)
     {
-        photonView.RPC("EndGame", RpcTarget.All, isHumanWin);
-    }
+        Debug.Log("HandleGameEnd Called");
+        if (_gameOver) return;
 
+        _gameOver = true;
+        _isHumanWin = isHumanWin;
+
+        photonView.RPC("EndGame", RpcTarget.All, isHumanWin);
+        Debug.Log("EndGame Called via HandleGameEnd");
+    }
 
     [PunRPC]
     private void UpdateCountdownTimerRPC(float newTimer)
@@ -342,9 +337,9 @@ public class FightManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void EndGame(bool isHumanWin)
+    private void EndGame(bool isHumanWin)
     {
-
+        Debug.Log("EndGame RPC called");
         //Game.uiManager.CloseUI("DieUI");
         Game.uiManager.CloseAllUI();
 
@@ -375,15 +370,19 @@ public class FightManager : MonoBehaviourPunCallbacks
             }
         }
 
-        if (_localPlayer.CompareTag("Player"))
+        if (_localPlayer != null && _localPlayer.CompareTag("Player"))
         {
             ThirdPersonController humanController =  _localPlayer.GetComponent<ThirdPersonController>();
-            humanController.endGame();
+            if (humanController != null) {
+                humanController.endGame();
+            }
         }
-        else if (_localPlayer.CompareTag("Target"))
+        else if (_localPlayer != null && _localPlayer.CompareTag("Target"))
         {
             CheeseThirdPerson cheeseController = _localPlayer.GetComponent<CheeseThirdPerson>();
-            cheeseController.endGame();
+            if (cheeseController != null) {
+                cheeseController.endGame();
+            }
         }
 
         Cursor.lockState = CursorLockMode.None;
