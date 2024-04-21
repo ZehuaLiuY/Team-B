@@ -5,7 +5,7 @@ OcclusionCullingSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_OcclusionBakeSettings:
-    smallestOccluder: 5
+    smallestOccluder: 3
     smallestHole: 0.25
     backfaceThreshold: 100
   m_SceneGUID: 9fc0d4010bbf28b4594072e72b8655ab
@@ -1701,16 +1701,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fdab99b571192a4196428174b5d16c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pvCache: {fileID: 0}
-  skillBallPrefabs:
-  - {fileID: 1402390600775885671, guid: 7404057bfe4ce49c4bb84a99991bb72d, type: 3}
-  - {fileID: 1402390600775885671, guid: 78bfef230bd99429eac6d535419e77b9, type: 3}
-  - {fileID: 1402390600775885671, guid: eeded8882f65f4894aceb2a737e960d7, type: 3}
-  - {fileID: 1402390600775885671, guid: 2df958c8b1f424c5cad41a2781a4023f, type: 3}
-  - {fileID: 1402390600775885671, guid: a849ea6d15c4c486da1f10c8fd9cf6f9, type: 3}
-  skillPoints: []
-  poolSize: 3
-  skillPointTf: {fileID: 1653419560}
 --- !u!1 &395801775
 GameObject:
   m_ObjectHideFlags: 0
