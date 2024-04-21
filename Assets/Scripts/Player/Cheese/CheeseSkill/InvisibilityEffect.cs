@@ -10,14 +10,14 @@ public class InvisibilityEffect : MonoBehaviourPunCallbacks
     public float skillDuration = 3f;
     private Material[] _originalMaterials;
     private SkinnedMeshRenderer[] _childRenderers;
-    private bool _skillUsed = false;
+    private bool _skillUsed;
     private float _skillDurationTimer;
 
     void Start()
     {
         _childRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
         _originalMaterials = new Material[_childRenderers.Length];
-        
+        _skillUsed = false;
 
         for (int i = 0; i < _childRenderers.Length; i++)
         {

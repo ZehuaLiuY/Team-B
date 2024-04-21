@@ -6,8 +6,13 @@ using UnityEngine.Serialization;
 public class Clone_Skill : MonoBehaviourPunCallbacks
 {
     public float skillDuration = 10f; // Clone duration
-    private bool _skillUsed = false;
+    private bool _skillUsed;
     private float _skillTimer; // Timer to track skill duration
+
+    private void Start()
+    {
+        _skillUsed = false;
+    }
 
     void Update()
     {
@@ -43,14 +48,14 @@ public class Clone_Skill : MonoBehaviourPunCallbacks
         _skillUsed = false;
     }
 
-         void Clone()
-     {
+    void Clone()
+    {
          Debug.Log("Attempting to clone character.");
          // GameObject clone = PhotonNetwork.Instantiate(this.gameObject.name.Replace("(Clone)",""), transform.position, transform.rotation);
          GameObject clone = PhotonNetwork.Instantiate("Clone", transform.position, transform.rotation);
          var cloneMovement = clone.AddComponent<CloneMovement>();
          StartCoroutine(DestroyNetworkObject(clone, skillDuration));
-     }
+    }
 
     IEnumerator DestroyNetworkObject(GameObject target, float delay)
     {

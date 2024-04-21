@@ -7,7 +7,7 @@ public class GetSkill : MonoBehaviourPunCallbacks
 {
     public AudioClip _skillAcquiredSound;
 
-    private bool hasSkill = false;
+    private bool hasSkill;
     private string _invisible = "Invisible Skill";
     private string _clone = "Clone Skill";
     private string _detector = "Detector Skill";
@@ -19,6 +19,7 @@ public class GetSkill : MonoBehaviourPunCallbacks
     void Start()
     {
         _audioSource = GetComponent<AudioSource>();
+        hasSkill = false;
     }
 
     // Update is called once per frame
@@ -26,39 +27,6 @@ public class GetSkill : MonoBehaviourPunCallbacks
     {
         
     }
-
-    // private void OnTriggerEnter(Collider other)
-    // {
-    //     if (photonView.IsMine)
-    //     {
-    //         if (other.CompareTag(Invisible) && !hasSkill)
-    //         {
-    //             other.gameObject.SetActive(false);
-    //             ActivateSkill(Invisible);
-    //             hasSkill = true;
-    //         } else if (other.CompareTag(Clone) && !hasSkill)
-    //         {
-    //             other.gameObject.SetActive(false);
-    //             ActivateSkill(Clone);
-    //             hasSkill = true;
-    //         } else if (other.CompareTag(Detector) && !hasSkill)
-    //         {
-    //             other.gameObject.SetActive(false);
-    //             ActivateSkill(Detector);
-    //             hasSkill = true;
-    //         } else if (other.CompareTag(Sprint) && !hasSkill)
-    //         {
-    //             other.gameObject.SetActive(false);
-    //             ActivateSkill(Sprint);
-    //             hasSkill = true; 
-    //         } else if (other.CompareTag(Jump) && !hasSkill)
-    //         {
-    //             other.gameObject.SetActive(false);
-    //             ActivateSkill(Jump);
-    //             hasSkill = true; 
-    //         }
-    //     }
-    // }
     
     private void OnTriggerEnter(Collider other)
     {

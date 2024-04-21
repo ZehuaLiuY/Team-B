@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager
 {
@@ -16,9 +17,30 @@ public class UIManager
         _uiList = new List<GameObject>();
     }
 
+    private void FindOrCreateCanvas()
+    {
+        if (_canvasTf == null || _canvasTf.gameObject == null)
+        {
+            GameObject canvasObj = GameObject.Find("Canvas");
+            if (canvasObj == null) // Canvas does not exist, create a new one
+            {
+                canvasObj = new GameObject("Canvas");
+                canvasObj.AddComponent<Canvas>();
+                canvasObj.AddComponent<CanvasScaler>();
+                canvasObj.AddComponent<GraphicRaycaster>();
+                canvasObj.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+                CanvasScaler scaler = canvasObj.GetComponent<CanvasScaler>();
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920, 1080);
+            }
+            _canvasTf = canvasObj.transform;
+        }
+    }
+
     // Show
     public T ShowUI<T>(string uiName) where T : Component
     {
+        FindOrCreateCanvas();
         T ui = Find<T>(uiName);
         if (ui == null)
         {
@@ -80,9 +102,11 @@ public class UIManager
     {
         for (int i = 0; i < _uiList.Count; i++)
         {
-            if (_uiList[i].name == uiName)
+            if (_uiList[i] != null && _uiList[i].name == uiName)
             {
-                return _uiList[i].GetComponent<T>();
+                T component = _uiList[i].GetComponent<T>();
+                if (component != null)
+                    return component;
             }
         }
         return null;

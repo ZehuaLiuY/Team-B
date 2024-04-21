@@ -9,7 +9,6 @@ public class CheeseFightUI : MonoBehaviour
 {
     public static CheeseFightUI Instance { get; private set; }
 
-    //private GameManager gameManager;
     //private Text _countdownText;
     private Image _skillIcon;
     private Transform _tutorialPanel;

@@ -12,13 +12,10 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;
 using CheeseController;
 using StarterAssets;
-using Photon.Pun.UtilityScripts;
 
 
 public class FightManager : MonoBehaviourPunCallbacks
 {
-    // private bool _gameOver = false;
-
     // Instantiate the player
     // spawn points
     public Transform cheeseSpawnPoints; // respawn points
@@ -26,8 +23,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     private List<Transform> _cheeseAvailablePoints;
     private List<Transform> _humanAvailablePoints;
-    private int _cheeseSpawnIndex = 0;
-    private int _humanSpawnIndex = 0;
     private CinemachineVirtualCamera _vc;
     public string playerName;
     public TimeManager timeManager;
@@ -42,16 +37,15 @@ public class FightManager : MonoBehaviourPunCallbacks
     private HashSet<GameObject> skillBalls = new HashSet<GameObject>();
 
     // UI
-    private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
 
     // countdown timer and game end event
     private int _targetScore;
     public static float countdownTimer;
     public event Action<bool> OnGameEnd;
-    private bool _isHumanWin = false;
+    private bool _isHumanWin;
     private int _remainingCheeseCount;
-    private bool _gameOver = false;
+    private bool _gameOver;
 
     // minimap
     public MiniMapController miniMapController;
@@ -60,12 +54,12 @@ public class FightManager : MonoBehaviourPunCallbacks
     // player's controller
     private GameObject _localPlayer;
 
-    
-
     void Awake()
     {
         _miniMapPhotonView = miniMapController.GetComponent<PhotonView>();
         _humanPlayerActorNumbers = new HashSet<int>();
+        _isHumanWin = false;
+        _gameOver = false;
         if (PhotonNetwork.IsMasterClient)
         {
             AssignRoles();
@@ -182,7 +176,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         switch (playerType)
         {
             case "Human":
-                fightUI = Game.uiManager.ShowUI<HumanFightUI>("HumanFightUI");
+                Game.uiManager.ShowUI<HumanFightUI>("HumanFightUI");
                 break;
             case "Cheese":
                 fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
@@ -259,19 +253,15 @@ public class FightManager : MonoBehaviourPunCallbacks
         // check the player type
         if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
-            spawnPoint = _humanAvailablePoints[_humanSpawnIndex % _humanAvailablePoints.Count];
-            _humanSpawnIndex++;
+            spawnPoint = _humanAvailablePoints[Random.Range(0, _humanAvailablePoints.Count)];
             prefabName = "Human";
             interestGroup = 1;
-            Destroy(spawnPoint.gameObject);
         }
         else
         {
-            spawnPoint = _cheeseAvailablePoints[_cheeseSpawnIndex % _cheeseAvailablePoints.Count];
-            _cheeseSpawnIndex++;
+            spawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
             prefabName = "Cheese";
             interestGroup = 2;
-            Destroy(spawnPoint.gameObject);
         }
 
         spawnPos = spawnPoint.position;
@@ -433,20 +423,15 @@ public class FightManager : MonoBehaviourPunCallbacks
     public void RespawnCheese()
     {
         Game.uiManager.CloseAllUI();
-        Transform respawnPoint = _cheeseAvailablePoints[_cheeseSpawnIndex];
-        _cheeseSpawnIndex = (_cheeseSpawnIndex + 1) % _cheeseAvailablePoints.Count;
+        Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
 
-        _localPlayer.transform.position = respawnPoint.position;
-
-        // destroy the player
-        PhotonNetwork.Destroy(_localPlayer);
+        Transform respawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
 
         // respawn the player
         GameObject playerObject = PhotonNetwork.Instantiate("Cheese", respawnPoint.position, Quaternion.identity);
-        _localPlayer = playerObject;
 
         // minimap icon display
-        _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, _localPlayer.GetComponent<PhotonView>().ViewID);
+        _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
 
         // camera follow
         _vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
