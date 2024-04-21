@@ -3147,7 +3147,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.2
-  far clip plane: 1000
+  far clip plane: 2000
   field of view: 40
   orthographic: 0
   orthographic size: 10
@@ -6768,14 +6768,15 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 9189233091702630515, guid: 38614d43a5ed342949a17bc9831332cf, type: 3}
     - {fileID: 1489139277062890965, guid: 38614d43a5ed342949a17bc9831332cf, type: 3}
+    - {fileID: 1973764189464500013, guid: 38614d43a5ed342949a17bc9831332cf, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5174713122023995912, guid: 38614d43a5ed342949a17bc9831332cf,
         type: 3}
-      insertIndex: 19
+      insertIndex: 18
       addedObject: {fileID: 161568534}
     - targetCorrespondingSourceObject: {fileID: 5174713122023995912, guid: 38614d43a5ed342949a17bc9831332cf,
         type: 3}
-      insertIndex: 20
+      insertIndex: 19
       addedObject: {fileID: 1294764594}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4117285159139477845, guid: 38614d43a5ed342949a17bc9831332cf,
@@ -8748,7 +8749,7 @@ MonoBehaviour:
     FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.2
-    FarClipPlane: 1000
+    FarClipPlane: 2000
     Dutch: 0
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
