@@ -52,9 +52,14 @@ public class LossUI : MonoBehaviourPunCallbacks
     {
 
         var voiceBridge = GameObject.Find("VoiceBridge");
+        var voiceLogger = GameObject.Find("VoiceLogger");
         if (voiceBridge != null)
         {
             Destroy(voiceBridge);
+        }
+        if (voiceLogger != null)
+        {
+            Destroy(voiceLogger);
         }
 
         // Show a loading mask or any other indication to the player
