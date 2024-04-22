@@ -13,6 +13,7 @@ using Random = UnityEngine.Random;
 using CheeseController;
 using StarterAssets;
 using UnityEngine.Serialization;
+using UnityEditor.Rendering;
 
 
 public class FightManager : MonoBehaviourPunCallbacks
@@ -38,7 +39,9 @@ public class FightManager : MonoBehaviourPunCallbacks
     private HashSet<GameObject> skillBalls = new HashSet<GameObject>();
 
     // UI
+    private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
+    private CheeseFightUI respawnCheeseUI;
 
     // countdown timer and game end event
     public static float countdownTimer;
@@ -70,7 +73,8 @@ public class FightManager : MonoBehaviourPunCallbacks
     void Start()
     {
         countdownTimer = 180f;
-        targetScore = PhotonNetwork.CurrentRoom.PlayerCount * 3;
+        targetScore = PhotonNetwork.CurrentRoom.PlayerCount * 2;
+        
         currentScore = 0;
 
         Game.uiManager.CloseAllUI();
@@ -171,11 +175,13 @@ public class FightManager : MonoBehaviourPunCallbacks
         switch (playerType)
         {
             case "Human":
-                Game.uiManager.ShowUI<HumanFightUI>("HumanFightUI");
+                fightUI = Game.uiManager.ShowUI<HumanFightUI>("HumanFightUI");
+                fightUI.setTargetScore(targetScore);
                 break;
             case "Cheese":
                 fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
                 fightUI1.InitializeUI(playerType);
+                fightUI1.setRemainingLife(targetScore);
                 break;
             default:
                 Debug.LogError("Unknown player type: " + playerType);
@@ -302,6 +308,19 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
         targetScore--;
         currentScore++;
+        if(fightUI != null)
+        {
+            fightUI.updateCurrentScore(currentScore);
+        }
+        if(fightUI1 != null)
+        {
+            fightUI1.updateRemainingLife(targetScore);
+        }
+        if(respawnCheeseUI != null)
+        {
+            respawnCheeseUI.updateRemainingLife(targetScore);
+        }
+        
 
         if (targetScore <= 0)
         {
@@ -414,8 +433,8 @@ public class FightManager : MonoBehaviourPunCallbacks
     public void RespawnCheese()
     {
         Game.uiManager.CloseAllUI();
-        Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
-
+        respawnCheeseUI = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
+        respawnCheeseUI.setRemainingLife(targetScore);
         Transform respawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
 
         // respawn the player

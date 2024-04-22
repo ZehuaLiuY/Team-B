@@ -2263,6 +2263,8 @@ MonoBehaviour:
   - {fileID: 1402390600775885671, guid: a849ea6d15c4c486da1f10c8fd9cf6f9, type: 3}
   skillPointTf: {fileID: 1653419560}
   refreshInterval: 60
+  targetScore: 0
+  currentScore: 0
   miniMapController: {fileID: 2071515260}
 --- !u!4 &474629508
 Transform:
@@ -5154,7 +5156,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 1294764599}
-  sceneViewId: 16
+  sceneViewId: 20
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &1294764599

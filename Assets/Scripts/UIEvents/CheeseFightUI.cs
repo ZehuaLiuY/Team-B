@@ -12,6 +12,8 @@ public class CheeseFightUI : MonoBehaviour
     //private Text _countdownText;
     private Image _skillIcon;
     private Transform _tutorialPanel;
+    private int _remainingLife = 0;
+    private TMP_Text _remainingLifeText;
     
     //private AudioSource _countdownMusic;
     //private AudioClip _last10SecondsSound;
@@ -39,6 +41,19 @@ public class CheeseFightUI : MonoBehaviour
     {
         //_countdownMusic = transform.Find("countdownMusic").GetComponent<AudioSource>();
         //_last10SecondsSound = Resources.Load<AudioClip>("10s");
+        _remainingLifeText = transform.Find("RemainingLife").GetComponent<TMP_Text>();
+        _remainingLifeText.text = _remainingLife + "";
+
+    }
+    public void setRemainingLife(int remainingLife)
+    {
+        _remainingLife = remainingLife;
+    }
+
+    public void updateRemainingLife(int remainingLife)
+    {
+        _remainingLife = remainingLife;
+        _remainingLifeText.text = _remainingLife + "";
     }
 
     
