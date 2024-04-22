@@ -9,7 +9,6 @@ using StarterAssets;
 public class Flamethrower : MonoBehaviourPun
 {
     [SerializeField] private ParticleSystem ShootingSystem;
-    [SerializeField] private ParticleSystem OnFireSystemPrefab;
     [SerializeField] private FlamethrowerAttackRadius AttackRadius;
     [SerializeField] private AudioSource audioSource;
     public AudioClip introClip; 

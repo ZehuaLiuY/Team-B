@@ -302,7 +302,7 @@ namespace StarterAssets
 
         private void pickup()
         {
-            if (photonView.IsMine && Keyboard.current.rKey.wasPressedThisFrame && canPickup)
+            if (photonView.IsMine && _input.pickup && canPickup)
             {
                 canPickup = false;
                 photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
@@ -330,7 +330,6 @@ namespace StarterAssets
                         break;
                     }
                 }
-
                 StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
                 StartCoroutine(ResetPickupAfterDelay());
             }
