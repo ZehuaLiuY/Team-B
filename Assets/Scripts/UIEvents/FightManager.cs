@@ -12,13 +12,12 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;
 using CheeseController;
 using StarterAssets;
-using Photon.Pun.UtilityScripts;
+using UnityEngine.Serialization;
+using UnityEditor.Rendering;
 
 
 public class FightManager : MonoBehaviourPunCallbacks
 {
-    // private bool _gameOver = false;
-
     // Instantiate the player
     // spawn points
     public Transform cheeseSpawnPoints; // respawn points
@@ -42,12 +41,14 @@ public class FightManager : MonoBehaviourPunCallbacks
     // UI
     private HumanFightUI fightUI;
     private CheeseFightUI fightUI1;
+    private CheeseFightUI respawnCheeseUI;
 
     // countdown timer and game end event
     public static float countdownTimer;
-    public event Action<bool> OnGameEnd;
     private bool _isHumanWin;
-    private int _remainingCheeseCount;
+    public int targetScore;
+    public int currentScore;
+
     private bool _gameOver;
 
     // minimap
@@ -63,7 +64,6 @@ public class FightManager : MonoBehaviourPunCallbacks
         _humanPlayerActorNumbers = new HashSet<int>();
         _isHumanWin = false;
         _gameOver = false;
-
         if (PhotonNetwork.IsMasterClient)
         {
             AssignRoles();
@@ -73,17 +73,17 @@ public class FightManager : MonoBehaviourPunCallbacks
     void Start()
     {
         countdownTimer = 180f;
+        targetScore = PhotonNetwork.CurrentRoom.PlayerCount * 2;
+        
+        currentScore = 0;
 
         Game.uiManager.CloseAllUI();
-        _remainingCheeseCount = PhotonNetwork.CurrentRoom.PlayerCount - 1;
 
         if (PhotonNetwork.IsMasterClient)
         {
             StartCoroutine(CountdownTimerCoroutine());
             StartCoroutine(SpawnSkillBallsPeriodically());
         }
-
-        OnGameEnd += HandleGameEnd;
 
         _humanAvailablePoints = new List<Transform>();
         for (int i = 0; i < humanSpawnPoints.childCount; i++)
@@ -99,11 +99,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         _vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
 
-    }
-
-    void OnDestroy()
-    {
-        OnGameEnd -= HandleGameEnd;
     }
 
     IEnumerator SpawnSkillBallsPeriodically()
@@ -128,7 +123,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             {
                 _gameOver = true;
                 _isHumanWin = false;
-                OnGameEnd?.Invoke(_isHumanWin);
+                HandleGameEnd(false);
                 yield break;
             }
         }
@@ -181,10 +176,12 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             case "Human":
                 fightUI = Game.uiManager.ShowUI<HumanFightUI>("HumanFightUI");
+                fightUI.setTargetScore(targetScore);
                 break;
             case "Cheese":
                 fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
                 fightUI1.InitializeUI(playerType);
+                fightUI1.setRemainingLife(targetScore);
                 break;
             default:
                 Debug.LogError("Unknown player type: " + playerType);
@@ -257,19 +254,17 @@ public class FightManager : MonoBehaviourPunCallbacks
         if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
             spawnPoint = _humanAvailablePoints[Random.Range(0, _humanAvailablePoints.Count)];
-            spawnPos = spawnPoint.position;
             prefabName = "Human";
             interestGroup = 1;
-            Destroy(spawnPoint.gameObject);
         }
         else
         {
             spawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
-            spawnPos = spawnPoint.position;
             prefabName = "Cheese";
             interestGroup = 2;
-            Destroy(spawnPoint.gameObject);
         }
+
+        spawnPos = spawnPoint.position;
 
         // spawn the player
         playerObject = PhotonNetwork.Instantiate(prefabName, spawnPos, Quaternion.identity);
@@ -311,46 +306,52 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     public void CheeseDied()
     {
-        _remainingCheeseCount--;
-
-        if (_remainingCheeseCount <= 0)
+        targetScore--;
+        currentScore++;
+        if(fightUI != null)
         {
-            _isHumanWin = true;
-            _gameOver = true;
+            fightUI.updateCurrentScore(currentScore);
+        }
+        if(fightUI1 != null)
+        {
+            fightUI1.updateRemainingLife(targetScore);
+        }
+        if(respawnCheeseUI != null)
+        {
+            respawnCheeseUI.updateRemainingLife(targetScore);
+        }
+        
 
-            timeManager.setIsCount(false);
-
-            // when all cheese die, the obeserved also show the lose UI
-            Game.uiManager.CloseAllUI();
-            // ShowEndGameUI(false);
-            OnGameEnd?.Invoke(_isHumanWin);
+        if (targetScore <= 0)
+        {
+            HandleGameEnd(true);
         }
     }
 
     private void HandleGameEnd(bool isHumanWin)
     {
+        if (_gameOver) return;
+
+        _gameOver = true;
+        _isHumanWin = isHumanWin;
+
         photonView.RPC("EndGame", RpcTarget.All, isHumanWin);
     }
-
 
     [PunRPC]
     private void UpdateCountdownTimerRPC(float newTimer)
     {
-
         if (timeManager != null)
         {
             //Debug.Log("update time");
             timeManager.SetCountdownTimer(newTimer);
         }
 
-      
     }
 
     [PunRPC]
-    void EndGame(bool isHumanWin)
+    private void EndGame(bool isHumanWin)
     {
-
-        //Game.uiManager.CloseUI("DieUI");
         Game.uiManager.CloseAllUI();
 
         if (isHumanWin)
@@ -380,15 +381,19 @@ public class FightManager : MonoBehaviourPunCallbacks
             }
         }
 
-        if (_localPlayer.CompareTag("Player"))
+        if (_localPlayer != null && _localPlayer.CompareTag("Player"))
         {
             ThirdPersonController humanController =  _localPlayer.GetComponent<ThirdPersonController>();
-            humanController.endGame();
+            if (humanController != null) {
+                humanController.endGame();
+            }
         }
-        else if (_localPlayer.CompareTag("Target"))
+        else if (_localPlayer != null && _localPlayer.CompareTag("Target"))
         {
             CheeseThirdPerson cheeseController = _localPlayer.GetComponent<CheeseThirdPerson>();
-            cheeseController.endGame();
+            if (cheeseController != null) {
+                cheeseController.endGame();
+            }
         }
 
         Cursor.lockState = CursorLockMode.None;
@@ -423,5 +428,36 @@ public class FightManager : MonoBehaviourPunCallbacks
         SceneManager.LoadScene("login");
         Game.uiManager.CloseAllUI();
         Game.uiManager.ShowUI<LoginUI>("LoginUI");
+    }
+
+    public void RespawnCheese()
+    {
+        Game.uiManager.CloseAllUI();
+        respawnCheeseUI = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
+        respawnCheeseUI.setRemainingLife(targetScore);
+        Transform respawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
+
+        // respawn the player
+        GameObject playerObject = PhotonNetwork.Instantiate("Cheese", respawnPoint.position, Quaternion.identity);
+
+        // minimap icon display
+        _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
+
+        // camera follow
+        _vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
+
+        // display the player name
+        PlayerNameDisplay nameDisplay = playerObject.GetComponentInChildren<PlayerNameDisplay>();
+        if (nameDisplay != null)
+        {
+            nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
+        }
+
+        // voice channel interest group
+        Recorder recorder = playerObject.GetComponent<Recorder>();
+        if (recorder != null)
+        {
+            recorder.InterestGroup = 2;
+        }
     }
 }

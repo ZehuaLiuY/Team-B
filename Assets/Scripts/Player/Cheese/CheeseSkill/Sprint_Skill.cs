@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 public class Sprint_Skill : MonoBehaviourPun
 {
-    private bool _skillUsed = false;
+    private bool _skillUsed;
     public float skillDuration = 5f;
     public GameObject trail;
     private float _skillDurationTimer;
@@ -15,6 +15,7 @@ public class Sprint_Skill : MonoBehaviourPun
     // Start is called before the first frame update
     void Start()
     {
+        _skillUsed = false;
         _cheeseThirdPerson = GetComponent<CheeseThirdPerson>();
         if (_cheeseThirdPerson == null)
         {

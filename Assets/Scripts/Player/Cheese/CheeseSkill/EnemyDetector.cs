@@ -118,8 +118,13 @@ public class EnemyDetector : MonoBehaviourPunCallbacks
     public Material highlightMaterial; // using to highlight the enemy
     private Dictionary<Renderer, Material[]> _originalMaterials = new Dictionary<Renderer, Material[]>();
     public float detectionDuration = 5f; // detection duration
-    private bool _skillUsed = false; // skill used flag
+    private bool _skillUsed; // skill used flag
     private float _skillTimer; // skill timer to track skill duration
+
+    private void Start()
+    {
+        _skillUsed = false;
+    }
 
     void Update()
     {
