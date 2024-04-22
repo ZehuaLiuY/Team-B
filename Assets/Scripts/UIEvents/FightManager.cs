@@ -12,6 +12,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;
 using CheeseController;
 using StarterAssets;
+using UnityEngine.Serialization;
 
 
 public class FightManager : MonoBehaviourPunCallbacks
@@ -40,10 +41,10 @@ public class FightManager : MonoBehaviourPunCallbacks
     private CheeseFightUI fightUI1;
 
     // countdown timer and game end event
-    private int _targetScore;
-    private int _currentScore;
     public static float countdownTimer;
     private bool _isHumanWin;
+    public int targetScore;
+    public int currentScore;
 
     private bool _gameOver;
 
@@ -69,7 +70,9 @@ public class FightManager : MonoBehaviourPunCallbacks
     void Start()
     {
         countdownTimer = 180f;
-        _currentScore = 0;
+        targetScore = PhotonNetwork.CurrentRoom.PlayerCount * 3;
+        currentScore = 0;
+
         Game.uiManager.CloseAllUI();
 
         if (PhotonNetwork.IsMasterClient)
@@ -188,9 +191,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         int numberOfHumans = Math.Max(1, players.Length / 4);
 
-        _targetScore = numberOfHumans * 4;
-        Debug.Log(_targetScore);
-
         for (int i = 0; i < numberOfHumans; i++)
         {
             int humanIndex = Random.Range(0, players.Length);
@@ -301,11 +301,10 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     public void CheeseDied()
     {
-        _currentScore += 1;
-        Debug.Log("CheeseDied Called");
-        Debug.Log(_currentScore);
+        targetScore--;
+        currentScore++;
 
-        if (_currentScore >= _targetScore)
+        if (targetScore <= 0)
         {
             HandleGameEnd(true);
         }
@@ -313,34 +312,28 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     private void HandleGameEnd(bool isHumanWin)
     {
-        Debug.Log("HandleGameEnd Called");
         if (_gameOver) return;
 
         _gameOver = true;
         _isHumanWin = isHumanWin;
 
         photonView.RPC("EndGame", RpcTarget.All, isHumanWin);
-        Debug.Log("EndGame Called via HandleGameEnd");
     }
 
     [PunRPC]
     private void UpdateCountdownTimerRPC(float newTimer)
     {
-
         if (timeManager != null)
         {
             //Debug.Log("update time");
             timeManager.SetCountdownTimer(newTimer);
         }
 
-      
     }
 
     [PunRPC]
     private void EndGame(bool isHumanWin)
     {
-        Debug.Log("EndGame RPC called");
-        //Game.uiManager.CloseUI("DieUI");
         Game.uiManager.CloseAllUI();
 
         if (isHumanWin)
