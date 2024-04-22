@@ -95,7 +95,6 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         _vc = GameObject.Find("PlayerFollowCamera").GetComponent<CinemachineVirtualCamera>();
 
-     
     }
 
     IEnumerator SpawnSkillBallsPeriodically()

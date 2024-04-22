@@ -263,7 +263,7 @@ namespace StarterAssets
                 { "CheeseCount", caughtCheeseCount }
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-            Debug.Log("Cheese count: " + caughtCheeseCount);
+            // Debug.Log("Cheese count: " + caughtCheeseCount);
         }
         
         private void ShowPickupPrompt(bool show)
@@ -323,6 +323,7 @@ namespace StarterAssets
                             {
                                 HumanFightUI.Instance.stopCatchText();
                                 HumanFightUI.Instance.showCheeseCaught();
+                                IncrementCheeseCount();
                             }
                         }
 
