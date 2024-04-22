@@ -9909,6 +9909,11 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 125
       objectReference: {fileID: 0}
+    - target: {fileID: 4737022412678226643, guid: 38614d43a5ed342949a17bc9831332cf,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.0529
+      objectReference: {fileID: 0}
     - target: {fileID: 4740952514862168730, guid: 38614d43a5ed342949a17bc9831332cf,
         type: 3}
       propertyPath: m_StaticEditorFlags
@@ -11864,11 +11869,19 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
+    - target: {fileID: 9199221747628261859, guid: 38614d43a5ed342949a17bc9831332cf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 9189233091702630515, guid: 38614d43a5ed342949a17bc9831332cf, type: 3}
     - {fileID: 1489139277062890965, guid: 38614d43a5ed342949a17bc9831332cf, type: 3}
     - {fileID: 1973764189464500013, guid: 38614d43a5ed342949a17bc9831332cf, type: 3}
+    - {fileID: 4318108984107563743, guid: 38614d43a5ed342949a17bc9831332cf, type: 3}
+    - {fileID: 7246220806913639043, guid: 38614d43a5ed342949a17bc9831332cf, type: 3}
+    - {fileID: 2863506598836145201, guid: 38614d43a5ed342949a17bc9831332cf, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5174713122023995912, guid: 38614d43a5ed342949a17bc9831332cf,
         type: 3}
@@ -11876,11 +11889,11 @@ PrefabInstance:
       addedObject: {fileID: 1441611097}
     - targetCorrespondingSourceObject: {fileID: 5174713122023995912, guid: 38614d43a5ed342949a17bc9831332cf,
         type: 3}
-      insertIndex: 19
+      insertIndex: 18
       addedObject: {fileID: 161568534}
     - targetCorrespondingSourceObject: {fileID: 5174713122023995912, guid: 38614d43a5ed342949a17bc9831332cf,
         type: 3}
-      insertIndex: 20
+      insertIndex: 19
       addedObject: {fileID: 1294764594}
     - targetCorrespondingSourceObject: {fileID: 3474866591337254582, guid: 38614d43a5ed342949a17bc9831332cf,
         type: 3}
@@ -13164,7 +13177,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1739679124
 Transform:
   m_ObjectHideFlags: 0
@@ -13174,7 +13187,7 @@ Transform:
   m_GameObject: {fileID: 1739679123}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 49.8, z: 0}
+  m_LocalPosition: {x: -6, y: 113.6, z: 12.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
