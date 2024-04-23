@@ -3879,7 +3879,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShootingSystem: {fileID: 1343101111139099627}
-  OnFireSystemPrefab: {fileID: 0}
   AttackRadius: {fileID: 6963517813285058631}
   audioSource: {fileID: 2790635736629601203}
   introClip: {fileID: 8300000, guid: 1c0d7529950fd4b60b6a2ce1cf63aeed, type: 3}

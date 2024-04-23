@@ -116,7 +116,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private CharacterController _controller;
         private CheeseControllerInputs _input;
         private GameObject _mainCamera;
-        private bool IsWalking = false; // 添加isRunning布尔值
+        private bool IsWalking = false;
         
 
         private const float _threshold = 0.01f;
@@ -262,14 +262,29 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         }
 
         
+        // private void GroundedCheck()
+        // {
+        //     // set sphere position, with offset
+        //     Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
+        //         transform.position.z);
+        //     Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
+        //         QueryTriggerInteraction.Ignore);
+        // }
+
         private void GroundedCheck()
         {
-            // set sphere position, with offset
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
-                transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-                QueryTriggerInteraction.Ignore);
+
+            Vector3 rayStart = transform.position + (Vector3.up * 0.1f);
+
+            float rayLength = Mathf.Abs(GroundedOffset) + 0.2f;
+     
+            Vector3 rayDirection = Vector3.down;
+
+            Debug.DrawRay(rayStart, rayDirection * rayLength, Color.red);
+
+            Grounded = Physics.Raycast(rayStart, rayDirection, rayLength, GroundLayers, QueryTriggerInteraction.Ignore);
         }
+
 
         private void CameraRotation()
         {
@@ -377,10 +392,10 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-                
+                    
                     if (_hasAnimator)
                     {
-                        _animator.SetBool("IsJumping", false);
+                        _animator.SetTrigger("IsJumping");
                     }
                 }
 
