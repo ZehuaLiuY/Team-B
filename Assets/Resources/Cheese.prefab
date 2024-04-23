@@ -5924,7 +5924,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Avatar
       value: 
-      objectReference: {fileID: 9000000, guid: 91f8f2719cc104c0689ead920f838961, type: 3}
+      objectReference: {fileID: 9000000, guid: ae91dbfe906334fedaa3c7a7401dda28, type: 3}
     - target: {fileID: 5866666021909216657, guid: 08c23f79d4b444fa59d57614eb76a686,
         type: 3}
       propertyPath: m_Controller
@@ -6293,6 +6293,9 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 1
     Name: IsJumping
+  - Type: 9
+    SynchronizeType: 0
+    Name: StartDancing
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -6554,7 +6557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a0e2476d99e5c64eb9fc7342a31687a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillDuration: 10
+  skillDuration: 8
 --- !u!114 &5759729721757442101
 MonoBehaviour:
   m_ObjectHideFlags: 0

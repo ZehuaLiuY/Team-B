@@ -54,14 +54,14 @@ public class Clone_Skill : MonoBehaviourPunCallbacks
          // GameObject clone = PhotonNetwork.Instantiate(this.gameObject.name.Replace("(Clone)",""), transform.position, transform.rotation);
          GameObject clone = PhotonNetwork.Instantiate("Clone", transform.position, transform.rotation);
          var cloneMovement = clone.AddComponent<CloneMovement>();
-         StartCoroutine(DestroyNetworkObject(clone, skillDuration));
+         // StartCoroutine(DestroyNetworkObject(clone, skillDuration));
     }
 
-    IEnumerator DestroyNetworkObject(GameObject target, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        PhotonNetwork.Destroy(target);
-    }
+    // IEnumerator DestroyNetworkObject(GameObject target, float delay)
+    // {
+    //     yield return new WaitForSeconds(delay);
+    //     PhotonNetwork.Destroy(target);
+    // }
     private void UpdateIcon(float fillAmount)
     {
         if (CheeseFightUI.Instance != null)
