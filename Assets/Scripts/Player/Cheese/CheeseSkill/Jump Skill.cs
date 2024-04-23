@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 public class Jump_Skill : MonoBehaviourPun
 {
-    private bool _skillUsed = false;
+    private bool _skillUsed;
     public float skillDuration = 5f;
     private float _skillDurationTimer;
     private CheeseThirdPerson _cheeseThirdPerson;
@@ -15,6 +15,7 @@ public class Jump_Skill : MonoBehaviourPun
     void Start()
     {
         _cheeseThirdPerson = GetComponent<CheeseThirdPerson>();
+        _skillUsed = false;
         if (_cheeseThirdPerson == null)
         {
             Debug.LogWarning("PlayerMovement component not found on the game object.");

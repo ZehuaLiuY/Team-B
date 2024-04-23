@@ -6,13 +6,14 @@ using Photon.Pun;
 
 public class SmellBombSkill : MonoBehaviourPun
 {
-    private bool _skillUsed = false;
+    private bool _skillUsed;
     public float skillDuration = 10f;
     private float _skillDurationTimer;
     private CheeseThirdPerson _cheeseThirdPerson;
 
     void Start()
     {
+        _skillUsed = false;
         _cheeseThirdPerson = GetComponent<CheeseThirdPerson>();
     }
 
