@@ -79,11 +79,11 @@ jobs:
           targetPlatform: StandaloneWindows64
           allowDirtyBuild: true
 
-      # Output
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Build
-          path: build
+      # # Output
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: Build
+      #     path: build
 
       - name: Clean up after build
         run: |
