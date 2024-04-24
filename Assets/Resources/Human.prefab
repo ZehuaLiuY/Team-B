@@ -1210,6 +1210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cd44f02fdc69492f93eca238d5c2c64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lastBurnEnd: -5
 --- !u!1 &3364183147137699624
 GameObject:
   m_ObjectHideFlags: 0
@@ -2865,9 +2866,10 @@ MonoBehaviour:
   SprintSpeed: 120
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
-  Footstep: {fileID: 8300000, guid: 3ee37ed1e41754c8aa301fefadc5a136, type: 3}
+  Footstep: {fileID: 8300000, guid: 278f1a6be3f0c4705be07a6c155c8a97, type: 3}
+  SprintFootstep: {fileID: 8300000, guid: 5c7563e4bbe484d0c8d3a3b00873e879, type: 3}
   FootstepAudioClips: []
-  FootstepAudioVolume: 0.3
+  FootstepAudioVolume: 0.5
   Gravity: -15
   JumpTimeout: 0.3
   FallTimeout: 0.15

@@ -34,6 +34,7 @@ namespace StarterAssets
         public float SpeedChangeRate = 10.0f;
 
         public AudioClip Footstep;
+        public AudioClip SprintFootstep;
         public AudioClip[] FootstepAudioClips;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
@@ -531,7 +532,14 @@ namespace StarterAssets
         {
             if (!audioSource.isPlaying)
             {
-                audioSource.PlayOneShot(Footstep);
+                if (_input.sprint && canSprint && Stamina > 0 && _input.move != Vector2.zero && canShift)
+                {
+                    audioSource.PlayOneShot(SprintFootstep);
+                }
+                else
+                {
+                    audioSource.PlayOneShot(Footstep);
+                }
             }
         }
         
