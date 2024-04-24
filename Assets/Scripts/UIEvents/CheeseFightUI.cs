@@ -43,7 +43,8 @@ public class CheeseFightUI : MonoBehaviour
         //_last10SecondsSound = Resources.Load<AudioClip>("10s");
         _remainingLifeText = transform.Find("RemainingLife").GetComponent<TMP_Text>();
         _remainingLifeText.text = _remainingLife + "";
-
+        _tutorialPanel = transform.Find($"TutorialPanel");
+        StartCoroutine(BeginStartSequence());
     }
     public void setRemainingLife(int remainingLife)
     {
@@ -54,15 +55,6 @@ public class CheeseFightUI : MonoBehaviour
     {
         _remainingLife = remainingLife;
         _remainingLifeText.text = _remainingLife + "";
-    }
-
-    
-    public void InitializeUI(string playerType)
-    {
-        // Debug.Log($"Initializing UI for playerType: {playerType}");
-        //_countdownText = transform.Find("CountdownText").GetComponent<Text>();
-        _tutorialPanel = transform.Find($"TutorialPanel_{playerType}");
-        StartCoroutine(BeginStartSequence());
     }
 
   

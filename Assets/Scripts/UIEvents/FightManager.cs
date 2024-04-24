@@ -180,7 +180,6 @@ public class FightManager : MonoBehaviourPunCallbacks
                 break;
             case "Cheese":
                 fightUI1 = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
-                fightUI1.InitializeUI(playerType);
                 fightUI1.setRemainingLife(targetScore);
                 break;
             default:

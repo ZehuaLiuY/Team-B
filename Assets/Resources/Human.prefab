@@ -2893,7 +2893,7 @@ MonoBehaviour:
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
   caughtCheeseCount: 0
-  caughtSound: {fileID: 8300000, guid: b2c00637f96f14e5cac279075e5cbcb7, type: 3}
+  caughtSound: {fileID: 8300000, guid: c530076ab3db04ef3850b59100053e2b, type: 3}
 --- !u!114 &895068226843850010
 MonoBehaviour:
   m_ObjectHideFlags: 0

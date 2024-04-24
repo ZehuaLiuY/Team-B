@@ -16,7 +16,7 @@ public class Clone_Skill : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (photonView.IsMine && !_skillUsed && Input.GetKeyDown(KeyCode.F))
+        if (photonView.IsMine && !_skillUsed && Input.GetMouseButtonDown(1))
         {
             StartCoroutine(ApplyCloneEffect());
         }
