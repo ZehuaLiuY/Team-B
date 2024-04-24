@@ -33,7 +33,7 @@ namespace StarterAssets
         [Tooltip("Acceleration and deceleration")]
         public float SpeedChangeRate = 10.0f;
 
-        public AudioClip LandingAudioClip;
+        public AudioClip Footstep;
         public AudioClip[] FootstepAudioClips;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
@@ -138,6 +138,10 @@ namespace StarterAssets
 
         public int caughtCheeseCount = 0;
         
+        public AudioClip caughtSound;
+        private AudioSource _audioSource;  
+        private AudioSource audioSource; 
+        
         public void EnableSprinting(bool enable)
         {
             canShift = enable;
@@ -161,6 +165,7 @@ namespace StarterAssets
         private void Awake()
         {
             _input = GetComponent<StarterAssetsInputs>();
+            audioSource = GetComponent<AudioSource>();
             // get a reference to our main camera
             if (_mainCamera == null)
             {
@@ -177,6 +182,7 @@ namespace StarterAssets
             _cachedTransform = transform;
             _miniMapController = FindObjectOfType<MiniMapController>();
             _recorder = GetComponent<Recorder>();
+            
 
             Hashtable props = new Hashtable {
                 { "CheeseCount", caughtCheeseCount }
@@ -186,6 +192,13 @@ namespace StarterAssets
 
         private void Start()
         {
+            
+            _audioSource = GetComponent<AudioSource>();
+            if (_audioSource == null)
+            {
+                _audioSource = gameObject.AddComponent<AudioSource>();
+            }
+            
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
             _controller = GetComponent<CharacterController>();
@@ -214,8 +227,11 @@ namespace StarterAssets
                 JumpAndGravity();
                 GroundedCheck();
                 Move();
-                pickup();
-
+                if (photonView.IsMine && _input.pickup && canPickup && currentTarget != null)
+                {
+                    Pickup();
+                }
+           
                 if (Vector3.Distance(transform.position, currentPos) > 0.1f)
                 {
                     _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
@@ -280,11 +296,14 @@ namespace StarterAssets
                 }
             }
         }
+        
+        private Collider currentTarget = null;
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.CompareTag("Target"))
             {
+                currentTarget = other;
                 ShowPickupPrompt(true);
                 canPickup = true;
             }
@@ -292,49 +311,38 @@ namespace StarterAssets
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.gameObject.CompareTag("Target"))
+            if (other.gameObject.CompareTag("Target") && other == currentTarget)
             {
+                currentTarget = null;
                 ShowPickupPrompt(false);
                 canPickup = false;
             }
         }
-
-
-        private void pickup()
-        {
-            if (photonView.IsMine && _input.pickup && canPickup)
-            {
-                canPickup = false;
-                photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
-                _animator.SetTrigger("pickup");
-                photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
-                
-                Collider[] colliders = Physics.OverlapBox(transform.position, GetComponent<BoxCollider>().size, Quaternion.identity);
-                foreach (Collider collider in colliders)
-                {
-                    if (collider.gameObject.CompareTag("Target"))
-                    {
-                        PhotonView targetPhotonView = collider.gameObject.GetComponent<PhotonView>();
-                        
-                        if (targetPhotonView != null)
-                        {
-                            targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
-                            if (HumanFightUI.Instance != null)
-                            {
-                                HumanFightUI.Instance.stopCatchText();
-                                HumanFightUI.Instance.showCheeseCaught();
-                                IncrementCheeseCount();
-                            }
-                        }
-
-                        break;
-                    }
-                }
-                StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
-                StartCoroutine(ResetPickupAfterDelay());
-            }
-        }
         
+        private void Pickup()
+        {
+            canPickup = false;
+            photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
+            _animator.SetTrigger("pickup");
+            photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
+        
+            PhotonView targetPhotonView = currentTarget.GetComponent<PhotonView>();
+        
+            if (targetPhotonView != null)
+            {
+                targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+                if (HumanFightUI.Instance != null)
+                {
+                    HumanFightUI.Instance.stopCatchText();
+                    HumanFightUI.Instance.showCheeseCaught();
+                    _audioSource.PlayOneShot(caughtSound);
+                    IncrementCheeseCount();
+                }
+            }
+        
+            StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
+            StartCoroutine(ResetPickupAfterDelay());
+        }
         
         [PunRPC]
         public void SetPlayerIK_FlameThrower(bool state)
@@ -455,20 +463,27 @@ namespace StarterAssets
                 _cinemachineTargetYaw, 0.0f);
         }
 
+        private int currentFootstepSoundIndex = 0;
         private void Move()
 {
     float targetSpeed = (_input.move != Vector2.zero && canSprint && Stamina > 0 && _input.sprint && canShift) ? SprintSpeed : MoveSpeed;
+    
     if (_input.sprint && canSprint && Stamina > 0 && _input.move != Vector2.zero && canShift)
     {
         Stamina -= StaminaDecreaseRate * Time.deltaTime;
         if (Stamina <= 0)
         {
             Stamina = 0;
-            canSprint = false; // 体力耗尽，不能再奔跑
+            canSprint = false; 
         }
     }
 
     UpdateStamina();
+    
+    if (_input.move != Vector2.zero)
+    {
+        PlayFootstepSound();
+    }
 
     if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
@@ -511,7 +526,15 @@ namespace StarterAssets
         _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
     }
 }
-
+        
+        private void PlayFootstepSound()
+        {
+            if (!audioSource.isPlaying)
+            {
+                audioSource.PlayOneShot(Footstep);
+            }
+        }
+        
         private void UpdateStamina()
         {
             if (!_input.sprint || !canSprint || _input.move != Vector2.zero || !canSprint)
@@ -604,13 +627,13 @@ namespace StarterAssets
             }
         }
 
-        private void OnLand(AnimationEvent animationEvent)
-        {
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
-            {
-                AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
-            }
-        }
+        // private void OnLand(AnimationEvent animationEvent)
+        // {
+        //     if (animationEvent.animatorClipInfo.weight > 0.5f)
+        //     {
+        //         AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+        //     }
+        // }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {

@@ -227,7 +227,7 @@
                 {
                     "name": "",
                     "id": "1967de6a-7c96-4916-9674-11514eb350c2",
-                    "path": "<Keyboard>/r",
+                    "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
