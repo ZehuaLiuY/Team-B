@@ -126,15 +126,15 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private Recorder _recorder;
         public AudioClip _onFireSound;
         private AudioSource _audioSource; 
-        public bool IsImmuneToSpeedReduction { get; private set; }
-        
+        private Coroutine _currentReduceSpeedCoroutine;
+        private bool _isImmuneToSpeedReduction = false;
 
-        public void SetImmunityToSpeedReduction(bool state)
+
+        public void SetImmunityToSpeedReduction(bool state)  // 允许外部设置免疫状态
         {
-            IsImmuneToSpeedReduction = state;
+            _isImmuneToSpeedReduction = state;
         }
-
-
+        
         private bool IsCurrentDeviceMouse
         {
             get
@@ -169,7 +169,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private void Start()
         {
 
-            IsImmuneToSpeedReduction = false;
+            // IsImmuneToSpeedReduction = false;
             _fightManager = FindObjectOfType<FightManager>();
 
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
@@ -556,20 +556,66 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             _fightManager.CheeseDied();
 
         }
+        // [PunRPC]
+        // public void ReduceSpeed()
+        // {
+        //     if (_isImmuneToSpeedReduction) 
+        //         return;
+        //     
+        //     if (!OnFireSystemPrefab.gameObject.activeSelf)
+        //     {
+        //         photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
+        //     }
+        //     MoveSpeed -= 20f;
+        //     MoveSpeed = Mathf.Max(MoveSpeed, 20f); 
+        //     StartCoroutine(RestoreSpeedAfterDelay(5));
+        // }
+        
         [PunRPC]
         public void ReduceSpeed()
         {
-            if (IsImmuneToSpeedReduction)
+            if (_isImmuneToSpeedReduction) 
                 return;
-            
+
             if (!OnFireSystemPrefab.gameObject.activeSelf)
             {
                 photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
             }
-            MoveSpeed -= 20f; // 减少MoveSpeed
-            MoveSpeed = Mathf.Max(MoveSpeed, 20f); // 确保MoveSpeed不会小于0
+            MoveSpeed -= 20f;
+            MoveSpeed = Mathf.Max(MoveSpeed, 20f); 
 
-            StartCoroutine(RestoreSpeedAfterDelay(5)); // 5秒后恢复速度
+            if (_currentReduceSpeedCoroutine != null)
+                StopCoroutine(_currentReduceSpeedCoroutine);
+            _currentReduceSpeedCoroutine = StartCoroutine(RestoreSpeedAfterDelay(5));
+        }
+
+        private IEnumerator RestoreSpeedAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
+            OnFireSystemPrefab.gameObject.SetActive(false);
+            MoveSpeed = 100.0f;
+        }
+
+        public void CancelSpeedReduction()
+        {
+            if (_currentReduceSpeedCoroutine != null)
+            {
+                StopCoroutine(_currentReduceSpeedCoroutine);
+                _currentReduceSpeedCoroutine = null;
+            }
+            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
+        }
+        
+        public void CancelJumpReduction()
+        {
+            if (_currentReduceSpeedCoroutine != null)
+            {
+                StopCoroutine(_currentReduceSpeedCoroutine);
+                _currentReduceSpeedCoroutine = null;
+            }
+            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
+            MoveSpeed = 120f;
         }
         
         [PunRPC]
@@ -579,15 +625,16 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             PlayOnFireSound();
         }
         
-        [PunRPC]
-        private IEnumerator RestoreSpeedAfterDelay(float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
-     
-            OnFireSystemPrefab.gameObject.SetActive(false);
-            MoveSpeed = 100.0f;
-        }
+        // [PunRPC]
+        // private IEnumerator RestoreSpeedAfterDelay(float delay)
+        // {
+        //     yield return new WaitForSeconds(delay);
+        //     photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
+        //
+        //     OnFireSystemPrefab.gameObject.SetActive(false);
+        //     MoveSpeed = 100.0f;
+        // }
+        
         [PunRPC]
         public void DeactivateOnFireSystem()
         {

@@ -6560,4 +6560,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invisibleMaterial: {fileID: 2100000, guid: ae5e97af3ce8d3d4fa7e8bbd7adce3a7, type: 2}
-  skillDuration: 3
+  skillDuration: 10

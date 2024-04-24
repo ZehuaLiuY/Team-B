@@ -12,7 +12,7 @@ public class Sprint_Skill : MonoBehaviourPun
     public GameObject trail;
     private float _skillDurationTimer;
     private CheeseThirdPerson _cheeseThirdPerson;
-    // Start is called before the first frame update
+    
     void Start()
     {
         _skillUsed = false;
@@ -22,8 +22,7 @@ public class Sprint_Skill : MonoBehaviourPun
             Debug.LogWarning("PlayerMovement component not found on the game object.");
         }
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
         if (photonView.IsMine && !_skillUsed && Input.GetKeyDown(KeyCode.F))
@@ -36,7 +35,6 @@ public class Sprint_Skill : MonoBehaviourPun
     {
         _skillUsed = true;
         photonView.RPC("SprintSkill", RpcTarget.All, true); // 启动 sprint，激活 trail
-        _cheeseThirdPerson.SetImmunityToSpeedReduction(true); 
 
         _skillDurationTimer = skillDuration;
         UpdateIcon(1f);
@@ -47,8 +45,7 @@ public class Sprint_Skill : MonoBehaviourPun
             UpdateIcon(_skillDurationTimer / skillDuration);
             yield return null;
         }
-
-        _cheeseThirdPerson.SetImmunityToSpeedReduction(false); 
+        
         photonView.RPC("SprintSkill", RpcTarget.All, false); // 结束 sprint，关闭 trail
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
         GetComponent<GetSkill>().DeactivateSkill("Sprint Skill");
@@ -61,30 +58,15 @@ public class Sprint_Skill : MonoBehaviourPun
     {
         if (_cheeseThirdPerson != null)
         {
-            _cheeseThirdPerson.MoveSpeed = activate ? 250f : 100.0f; // 如果激活则加速，否则恢复原速度
-            trail.gameObject.SetActive(activate); // 根据 activate 参数激活或关闭 trail
+            _cheeseThirdPerson.MoveSpeed = activate ? 250f : 100.0f;
+            trail.gameObject.SetActive(activate);
+            _cheeseThirdPerson.SetImmunityToSpeedReduction(activate);
+            if (activate)
+                _cheeseThirdPerson.CancelSpeedReduction();  
         }
+      
     }
-
-    // public void SprintSkill()
-    // {
-    //     if (_cheeseThirdPerson != null)
-    //     {
-    //         _cheeseThirdPerson.MoveSpeed = 250f;
-    //         StartCoroutine(RestoreSpeed(5f));
-    //         trail.gameObject.SetActive(true);
-    //     }
-    // }
-
-    // private IEnumerator RestoreSpeed(float delay)
-    // {
-    //     yield return new WaitForSeconds(delay);
-    //     if (_cheeseThirdPerson != null)
-    //     {
-    //         _cheeseThirdPerson.MoveSpeed = 100.0f;
-    //     }
-    //     trail.gameObject.SetActive(false);
-    // }
+    
     
     private void UpdateIcon(float fillAmount)
     {

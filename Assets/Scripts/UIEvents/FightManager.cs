@@ -72,7 +72,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        countdownTimer = 60f;
+        countdownTimer = 180f;
         targetScore = PhotonNetwork.CurrentRoom.PlayerCount * 2;
         
         currentScore = 0;
