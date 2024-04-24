@@ -121,7 +121,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
             if (countdownTimer <= 0)
             {
-                _gameOver = true;
+                // _gameOver = true;
                 _isHumanWin = false;
                 HandleGameEnd(false);
                 yield break;
