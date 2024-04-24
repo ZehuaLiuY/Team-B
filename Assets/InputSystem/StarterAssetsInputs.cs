@@ -55,10 +55,6 @@ namespace StarterAssets
 		{
 			PickupInput(value.isPressed);
 		}
-		public void OnShoot(InputValue value)
-		{
-			ShootInput(value.isPressed);
-		}
 #endif
 
 
@@ -89,12 +85,6 @@ namespace StarterAssets
 		{
 			pickup = newPickupState;
 		}
-
-		public void ShootInput(bool newShootState)
-		{
-			shoot = newShootState;
-		}
-		
 		public void OpenInput(bool newOpenState)
 		{
 			open = newOpenState;

@@ -7,6 +7,8 @@ using UnityEngine.UI;
 using StarterAssets;
 using Photon.Pun;
 using UnityEngine.VFX;
+using UnityEngine.InputSystem;
+
 
 public class DoorInteraction : MonoBehaviour
 {
@@ -15,6 +17,11 @@ public class DoorInteraction : MonoBehaviour
     private Animator _characterAnimator;
     public AudioClip _doorOpenSound;
     
+    
+// #if ENABLE_INPUT_SYSTEM
+//     private PlayerInput _playerInput;
+// #endif
+    private StarterAssetsInputs _input;
     private AudioSource _doorAudioSource; 
     private Animator _doorAnimator;
     private bool _isPlayerNear;
@@ -35,6 +42,7 @@ public class DoorInteraction : MonoBehaviour
         _doorAnimator = GetComponent<Animator>();
         _playerIK = GetComponent<PlayerIK>();
         _doorAudioSource = GetComponent<AudioSource>();
+        _input = GetComponent<StarterAssetsInputs>();
     }
 
     private void Start()

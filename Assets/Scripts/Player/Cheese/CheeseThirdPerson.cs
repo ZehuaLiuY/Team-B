@@ -116,7 +116,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private CharacterController _controller;
         private CheeseControllerInputs _input;
         private GameObject _mainCamera;
-        private bool IsWalking = false; // 添加isRunning布尔值
+        private bool IsWalking = false;
         
 
         private const float _threshold = 0.01f;
@@ -126,8 +126,15 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private Recorder _recorder;
         public AudioClip _onFireSound;
         private AudioSource _audioSource; 
+        private Coroutine _currentReduceSpeedCoroutine;
+        private bool _isImmuneToSpeedReduction = false;
 
 
+        public void SetImmunityToSpeedReduction(bool state)  // 允许外部设置免疫状态
+        {
+            _isImmuneToSpeedReduction = state;
+        }
+        
         private bool IsCurrentDeviceMouse
         {
             get
@@ -162,6 +169,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private void Start()
         {
 
+            // IsImmuneToSpeedReduction = false;
             _fightManager = FindObjectOfType<FightManager>();
 
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
@@ -262,14 +270,29 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         }
 
         
+        // private void GroundedCheck()
+        // {
+        //     // set sphere position, with offset
+        //     Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
+        //         transform.position.z);
+        //     Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
+        //         QueryTriggerInteraction.Ignore);
+        // }
+
         private void GroundedCheck()
         {
-            // set sphere position, with offset
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
-                transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-                QueryTriggerInteraction.Ignore);
+
+            Vector3 rayStart = transform.position + (Vector3.up * 0.1f);
+
+            float rayLength = Mathf.Abs(GroundedOffset) + 0.2f;
+     
+            Vector3 rayDirection = Vector3.down;
+
+            Debug.DrawRay(rayStart, rayDirection * rayLength, Color.red);
+
+            Grounded = Physics.Raycast(rayStart, rayDirection, rayLength, GroundLayers, QueryTriggerInteraction.Ignore);
         }
+
 
         private void CameraRotation()
         {
@@ -377,10 +400,10 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-                
+                    
                     if (_hasAnimator)
                     {
-                        _animator.SetBool("IsJumping", false);
+                        _animator.SetTrigger("IsJumping");
                     }
                 }
 
@@ -533,17 +556,66 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             _fightManager.CheeseDied();
 
         }
+        // [PunRPC]
+        // public void ReduceSpeed()
+        // {
+        //     if (_isImmuneToSpeedReduction) 
+        //         return;
+        //     
+        //     if (!OnFireSystemPrefab.gameObject.activeSelf)
+        //     {
+        //         photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
+        //     }
+        //     MoveSpeed -= 20f;
+        //     MoveSpeed = Mathf.Max(MoveSpeed, 20f); 
+        //     StartCoroutine(RestoreSpeedAfterDelay(5));
+        // }
+        
         [PunRPC]
         public void ReduceSpeed()
         {
+            if (_isImmuneToSpeedReduction) 
+                return;
+
             if (!OnFireSystemPrefab.gameObject.activeSelf)
             {
                 photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
             }
-            MoveSpeed -= 20f; // 减少MoveSpeed
-            MoveSpeed = Mathf.Max(MoveSpeed, 20f); // 确保MoveSpeed不会小于0
+            MoveSpeed -= 20f;
+            MoveSpeed = Mathf.Max(MoveSpeed, 20f); 
 
-            StartCoroutine(RestoreSpeedAfterDelay(5)); // 5秒后恢复速度
+            if (_currentReduceSpeedCoroutine != null)
+                StopCoroutine(_currentReduceSpeedCoroutine);
+            _currentReduceSpeedCoroutine = StartCoroutine(RestoreSpeedAfterDelay(5));
+        }
+
+        private IEnumerator RestoreSpeedAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
+            OnFireSystemPrefab.gameObject.SetActive(false);
+            MoveSpeed = 100.0f;
+        }
+
+        public void CancelSpeedReduction()
+        {
+            if (_currentReduceSpeedCoroutine != null)
+            {
+                StopCoroutine(_currentReduceSpeedCoroutine);
+                _currentReduceSpeedCoroutine = null;
+            }
+            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
+        }
+        
+        public void CancelJumpReduction()
+        {
+            if (_currentReduceSpeedCoroutine != null)
+            {
+                StopCoroutine(_currentReduceSpeedCoroutine);
+                _currentReduceSpeedCoroutine = null;
+            }
+            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
+            MoveSpeed = 120f;
         }
         
         [PunRPC]
@@ -553,15 +625,16 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             PlayOnFireSound();
         }
         
-        [PunRPC]
-        private IEnumerator RestoreSpeedAfterDelay(float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
-     
-            OnFireSystemPrefab.gameObject.SetActive(false);
-            MoveSpeed = 100.0f;
-        }
+        // [PunRPC]
+        // private IEnumerator RestoreSpeedAfterDelay(float delay)
+        // {
+        //     yield return new WaitForSeconds(delay);
+        //     photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
+        //
+        //     OnFireSystemPrefab.gameObject.SetActive(false);
+        //     MoveSpeed = 100.0f;
+        // }
+        
         [PunRPC]
         public void DeactivateOnFireSystem()
         {

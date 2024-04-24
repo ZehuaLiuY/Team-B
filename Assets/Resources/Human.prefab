@@ -1194,10 +1194,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1.4825841
+  m_Radius: 0.3271729
+  m_Height: 1.2252734
   m_Direction: 1
-  m_Center: {x: -0.00000011082884, y: -0.25871384, z: 0.00000005897027}
+  m_Center: {x: -0.0000001867521, y: -0.38736716, z: 0.051513348}
 --- !u!114 &6963517813285058631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2865,19 +2865,10 @@ MonoBehaviour:
   SprintSpeed: 120
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
-  LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
-  FootstepAudioClips:
-  - {fileID: 8300000, guid: 72f526a6a9890f643a88e85a61c86c8a, type: 3}
-  - {fileID: 8300000, guid: 85016e0f2b01da248b9663dd49a161b0, type: 3}
-  - {fileID: 8300000, guid: 186de84b3207156479abe98f4958fed0, type: 3}
-  - {fileID: 8300000, guid: 1a91fcd19acf1e54bba0945d9f390849, type: 3}
-  - {fileID: 8300000, guid: 14e8a8d2158bec840b56c54f5266e692, type: 3}
-  - {fileID: 8300000, guid: 29841e7d5bbfb5b419c9ad16ca8bc4c1, type: 3}
-  - {fileID: 8300000, guid: dd1af302b8902684d9381de1f2d3a5af, type: 3}
-  - {fileID: 8300000, guid: 67c8b33e424ccdc4486edf538ab91c5a, type: 3}
-  - {fileID: 8300000, guid: 274649b0e221539409070ebf6c18918b, type: 3}
-  - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
-  FootstepAudioVolume: 0.3
+  Footstep: {fileID: 8300000, guid: 278f1a6be3f0c4705be07a6c155c8a97, type: 3}
+  SprintFootstep: {fileID: 8300000, guid: 5c7563e4bbe484d0c8d3a3b00873e879, type: 3}
+  FootstepAudioClips: []
+  FootstepAudioVolume: 0.5
   Gravity: -15
   JumpTimeout: 0.3
   FallTimeout: 0.15
@@ -2902,6 +2893,7 @@ MonoBehaviour:
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
   caughtCheeseCount: 0
+  caughtSound: {fileID: 8300000, guid: c530076ab3db04ef3850b59100053e2b, type: 3}
 --- !u!114 &895068226843850010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3045,8 +3037,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.122106, y: 1.8189098, z: 2.733427}
-  m_Center: {x: 0.21313737, y: 0.8806687, z: 0.3716609}
+  m_Size: {x: 4, y: 2, z: 4}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!82 &1070235142365333318
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3879,7 +3871,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShootingSystem: {fileID: 1343101111139099627}
-  OnFireSystemPrefab: {fileID: 0}
   AttackRadius: {fileID: 6963517813285058631}
   audioSource: {fileID: 2790635736629601203}
   introClip: {fileID: 8300000, guid: 1c0d7529950fd4b60b6a2ce1cf63aeed, type: 3}

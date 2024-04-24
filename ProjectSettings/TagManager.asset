@@ -20,6 +20,7 @@ TagManager:
   - Invisible Skill
   - Clone
   - SmellBomb Skill
+  - Invisible
   layers:
   - Default
   - TransparentFX

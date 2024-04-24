@@ -51,15 +51,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "shoot",
-                    "type": "PassThrough",
-                    "id": "eeea4434-7098-4296-9b6a-cee651286f60",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "open",
                     "type": "Button",
                     "id": "88d1d71d-56a5-46a1-bf1f-bb4f08cacac9",
@@ -224,17 +215,6 @@
                 },
                 {
                     "name": "",
-                    "id": "7a774126-0ad7-450c-92dd-760394785f89",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "shoot",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "41d4ead6-da73-41b8-9205-4e79665e0490",
                     "path": "<Keyboard>/e",
                     "interactions": "",
@@ -247,10 +227,10 @@
                 {
                     "name": "",
                     "id": "1967de6a-7c96-4916-9674-11514eb350c2",
-                    "path": "<Keyboard>/r",
+                    "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "KeyboardMouse",
                     "action": "pickup",
                     "isComposite": false,
                     "isPartOfComposite": false

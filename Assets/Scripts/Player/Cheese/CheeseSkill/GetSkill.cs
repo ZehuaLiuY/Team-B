@@ -6,7 +6,6 @@ using UnityEngine;
 public class GetSkill : MonoBehaviourPunCallbacks
 {
     public AudioClip _skillAcquiredSound;
-
     private bool hasSkill;
     private string _invisible = "Invisible Skill";
     private string _clone = "Clone Skill";

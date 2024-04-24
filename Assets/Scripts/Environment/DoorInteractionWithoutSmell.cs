@@ -107,7 +107,6 @@ public class DoorInteractionWithoutSmell : MonoBehaviour
     [PunRPC]
     void ToggleDoor()
     {
-
         _doorAnimator.SetBool("IsOpen", !_doorAnimator.GetBool("IsOpen")); // Toggle door state
     }
 
