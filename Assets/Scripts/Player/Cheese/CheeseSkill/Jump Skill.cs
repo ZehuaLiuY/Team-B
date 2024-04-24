@@ -35,6 +35,7 @@ public class Jump_Skill : MonoBehaviourPun
     {
         _skillUsed = true;
         photonView.RPC("JumpSkill", RpcTarget.All);
+        _cheeseThirdPerson.SetImmunityToSpeedReduction(true); 
 
         _skillDurationTimer = skillDuration;
         UpdateIcon(1f);
@@ -46,6 +47,7 @@ public class Jump_Skill : MonoBehaviourPun
             yield return null;
         }
 
+        _cheeseThirdPerson.SetImmunityToSpeedReduction(false); 
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
         GetComponent<GetSkill>().DeactivateSkill("Jump Skill");
         _skillUsed = false;

@@ -31,31 +31,12 @@ public class Sprint_Skill : MonoBehaviourPun
             StartCoroutine(ApplySprintSkill());
         }
     }
-
-    // IEnumerator ApplySprintSkill()
-    // {
-    //     _skillUsed = true;
-    //     photonView.RPC("SprintSkill", RpcTarget.All);
-    //
-    //     _skillDurationTimer = skillDuration;
-    //     UpdateIcon(1f);
-    //
-    //     while (_skillDurationTimer > 0)
-    //     {
-    //         _skillDurationTimer -= Time.deltaTime;
-    //         UpdateIcon(_skillDurationTimer / skillDuration);
-    //         yield return null;
-    //     }
-    //
-    //     CheeseFightUI.Instance.UpdateSkill_Icon(1f);
-    //     GetComponent<GetSkill>().DeactivateSkill("Sprint Skill");
-    //     _skillUsed = false;
-    // }
     
     IEnumerator ApplySprintSkill()
     {
         _skillUsed = true;
         photonView.RPC("SprintSkill", RpcTarget.All, true); // 启动 sprint，激活 trail
+        _cheeseThirdPerson.SetImmunityToSpeedReduction(true); 
 
         _skillDurationTimer = skillDuration;
         UpdateIcon(1f);
@@ -67,6 +48,7 @@ public class Sprint_Skill : MonoBehaviourPun
             yield return null;
         }
 
+        _cheeseThirdPerson.SetImmunityToSpeedReduction(false); 
         photonView.RPC("SprintSkill", RpcTarget.All, false); // 结束 sprint，关闭 trail
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
         GetComponent<GetSkill>().DeactivateSkill("Sprint Skill");

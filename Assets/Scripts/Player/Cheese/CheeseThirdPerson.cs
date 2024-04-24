@@ -126,6 +126,13 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private Recorder _recorder;
         public AudioClip _onFireSound;
         private AudioSource _audioSource; 
+        public bool IsImmuneToSpeedReduction { get; private set; }
+        
+
+        public void SetImmunityToSpeedReduction(bool state)
+        {
+            IsImmuneToSpeedReduction = state;
+        }
 
 
         private bool IsCurrentDeviceMouse
@@ -162,6 +169,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private void Start()
         {
 
+            IsImmuneToSpeedReduction = false;
             _fightManager = FindObjectOfType<FightManager>();
 
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
@@ -551,6 +559,9 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [PunRPC]
         public void ReduceSpeed()
         {
+            if (IsImmuneToSpeedReduction)
+                return;
+            
             if (!OnFireSystemPrefab.gameObject.activeSelf)
             {
                 photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);

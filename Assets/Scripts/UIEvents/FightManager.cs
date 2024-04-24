@@ -72,7 +72,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        countdownTimer = 180f;
+        countdownTimer = 60f;
         targetScore = PhotonNetwork.CurrentRoom.PlayerCount * 2;
         
         currentScore = 0;
@@ -394,6 +394,9 @@ public class FightManager : MonoBehaviourPunCallbacks
             if (cheeseController != null) {
                 cheeseController.endGame();
             }
+        } else if (_localPlayer == null)
+        {
+            Debug.Log("local player is null");
         }
 
         Cursor.lockState = CursorLockMode.None;
@@ -439,7 +442,7 @@ public class FightManager : MonoBehaviourPunCallbacks
 
         // respawn the player
         GameObject playerObject = PhotonNetwork.Instantiate("Cheese", respawnPoint.position, Quaternion.identity);
-
+        _localPlayer = playerObject;
         // minimap icon display
         _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
 
@@ -459,5 +462,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             recorder.InterestGroup = 2;
         }
+        
+         
     }
 }
