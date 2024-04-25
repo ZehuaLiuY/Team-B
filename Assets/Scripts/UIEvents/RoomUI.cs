@@ -14,7 +14,8 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
     GameObject roomPrefab;
     public List<RoomItem> roomList;
     private AudioClip _buttonClickSound;
-    private AudioSource _audioSource; 
+    private AudioSource _audioSource;
+    private bool _isButtonClicked;
 
     private void Awake()
     {
@@ -47,6 +48,7 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
     // Start is called before the first frame update
     void Start()
     {
+        _isButtonClicked = false;
         // generate the player who in the room
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
@@ -65,7 +67,7 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
         PhotonNetwork.RemoveCallbackTarget(this);
     }
 
-    public void CreateRoomItem(Player p)
+    private void CreateRoomItem(Player p)
     {
         GameObject obj = Instantiate(roomPrefab, contentTf);
         obj.SetActive(true);
@@ -85,7 +87,7 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
         }
     }
 
-    public void DeleteRoomItem(Player p)
+    private void DeleteRoomItem(Player p)
     {
         RoomItem item = roomList.Find((RoomItem _item) => {return p.ActorNumber == _item.ownerId;});
 
@@ -96,22 +98,27 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
         }
     }
 
-    void OncloseBtn()
+    private void OncloseBtn()
     {
         PhotonNetwork.Disconnect();
         Game.uiManager.CloseUI(gameObject.name);
         Game.uiManager.ShowUI<LoginUI>("LoginUI");
     }
 
-    void OnStartBtn()
+    private void OnStartBtn()
     {
-        PhotonNetwork.CurrentRoom.IsOpen = false;
-        PhotonNetwork.CurrentRoom.IsVisible = false;
-        StartCoroutine(WaitAndLoadScene());
+        if (!_isButtonClicked)
+        {
+            _isButtonClicked = true;
+
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+            PhotonNetwork.CurrentRoom.IsVisible = false;
+            StartCoroutine(WaitAndLoadScene());
+        }
 
     }
 
-    void ResetAllPlayersReadyState()
+    private void ResetAllPlayersReadyState()
     {
         var playerList = PhotonNetwork.PlayerList;
         foreach (var player in playerList)

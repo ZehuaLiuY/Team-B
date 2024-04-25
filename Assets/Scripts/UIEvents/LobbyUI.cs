@@ -12,7 +12,8 @@ public class LobbyUI : MonoBehaviourPunCallbacks
     private Transform _contentTf;
     private GameObject _roomPrefab;
     private AudioClip _buttonClickSound;
-    private AudioSource _audioSource; 
+    private AudioSource _audioSource;
+    private bool _isButtonClicked;
 
     void Start()
     {
@@ -53,20 +54,41 @@ public class LobbyUI : MonoBehaviourPunCallbacks
 
     public void OnCloseBtn()
     {
-        PhotonNetwork.Disconnect();
-        Game.uiManager.CloseUI(gameObject.name);
-        Game.uiManager.ShowUI<LoginUI>("LoginUI");
+        if (!_isButtonClicked)
+        {
+            PhotonNetwork.Disconnect();
+            Game.uiManager.CloseUI(gameObject.name);
+            Game.uiManager.ShowUI<LoginUI>("LoginUI");
+        }
+        else
+        {
+
+        }
     }
 
     public void OnCreateRoomBtn()
     {
-        Game.uiManager.ShowUI<CreateRoomUI>("CreateRoomUI");
+        if (!_isButtonClicked)
+        {
+            Game.uiManager.ShowUI<CreateRoomUI>("CreateRoomUI");
+        }
+        else
+        {
+
+        }
     }
 
     public void OnUpdateRoomBtn()
     {
-        Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Updating room list...");
-        PhotonNetwork.GetCustomRoomList(_lobby, "1");
+        if (!_isButtonClicked)
+        {
+            Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Updating room list...");
+            PhotonNetwork.GetCustomRoomList(_lobby, "1");
+        }
+        else
+        {
+
+        }
     }
 
     // clear exist room item

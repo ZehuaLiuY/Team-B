@@ -11,13 +11,15 @@ public class LoginUI : MonoBehaviour, IConnectionCallbacks
     private float _connectionTimeout = 10.0f; // 10 seconds for timeout
     private float _connectionStartTime;
     private AudioClip _buttonClickSound;
-    private AudioSource _audioSource; 
+    private AudioSource _audioSource;
+    private bool _isButtonClicked;
 
     // Start is called before the first frame update
     void Start()
     {
         _audioSource = transform.Find("audioSource").GetComponent<AudioSource>();
         _buttonClickSound = Resources.Load<AudioClip>("Button");
+        _isButtonClicked = false;
 
         var startBtn = transform.Find("startBtn").GetComponent<Button>();
         startBtn.onClick.AddListener(OnStartBtn);
@@ -41,17 +43,24 @@ public class LoginUI : MonoBehaviour, IConnectionCallbacks
 
     public void OnStartBtn()
     {
-        if (Application.internetReachability == NetworkReachability.NotReachable)
+        if (!_isButtonClicked)
         {
-            // Debug.Log("No internet connection available. Please connect to the internet and try again.");
-            return; // Exit if no internet
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                // Debug.Log("No internet connection available. Please connect to the internet and try again.");
+                return; // Exit if no internet
+            }
+
+            Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
+
+            _isTryingToConnect = true;
+            _connectionStartTime = Time.time;
+            PhotonNetwork.ConnectUsingSettings();
         }
+        else
+        {
 
-        Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
-
-        _isTryingToConnect = true;
-        _connectionStartTime = Time.time;
-        PhotonNetwork.ConnectUsingSettings();
+        }
     }
 
     private void Update()

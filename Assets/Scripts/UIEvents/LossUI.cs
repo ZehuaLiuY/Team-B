@@ -8,7 +8,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class LossUI : MonoBehaviourPunCallbacks
 {
     private AudioClip _buttonClickSound;
-    private AudioSource _audioSource; 
+    private AudioSource _audioSource;
+    private bool _isButtonClicked;
     void Start()
     {
         Cursor.lockState = CursorLockMode.None;
@@ -16,6 +17,8 @@ public class LossUI : MonoBehaviourPunCallbacks
         
         _audioSource = transform.Find("audioSource").GetComponent<AudioSource>();
         _buttonClickSound = Resources.Load<AudioClip>("Button");
+
+        _isButtonClicked = false;
 
         Button resetButton = transform.Find("resetBtn").GetComponent<Button>();
         Button roomButton = transform.Find("roomBtn").GetComponent<Button>();
@@ -36,46 +39,61 @@ public class LossUI : MonoBehaviourPunCallbacks
     // quit to log-in scene
     private void OnQuitBtn()
     {
-        // Show a loading mask or any other indication to the player
-        Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
-
-        GameObject fightManagerObject = GameObject.Find("fight");
-        if (fightManagerObject != null)
+        if (!_isButtonClicked)
         {
-            FightManager fightManager = fightManagerObject.GetComponent<FightManager>();
-            fightManager.QuitToLoginScene();
+            // Show a loading mask or any other indication to the player
+            Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
+
+            GameObject fightManagerObject = GameObject.Find("fight");
+            if (fightManagerObject != null)
+            {
+                FightManager fightManager = fightManagerObject.GetComponent<FightManager>();
+                fightManager.QuitToLoginScene();
+            }
+        }
+        else
+        {
+
         }
     }
 
     // back to the room
     private void OnBackBtn()
     {
-        var player = PhotonNetwork.LocalPlayer;
-        if (player != null && player.CustomProperties.ContainsKey("PlayerType"))
+        if (!_isButtonClicked)
         {
-            Hashtable props = new Hashtable
+            var player = PhotonNetwork.LocalPlayer;
+            if (player != null && player.CustomProperties.ContainsKey("PlayerType"))
             {
-                { "PlayerType", null }  
-            };
-            player.SetCustomProperties(props);
-        }
+                Hashtable props = new Hashtable
+                {
+                    { "PlayerType", null }
+                };
+                player.SetCustomProperties(props);
+            }
 
-        var voiceBridge = GameObject.Find("VoiceBridge");
-        var voiceLogger = GameObject.Find("VoiceLogger");
-        if (voiceBridge != null)
-        {
-            Destroy(voiceBridge);
-        }
-        if (voiceLogger != null)
-        {
-            Destroy(voiceLogger);
-        }
+            var voiceBridge = GameObject.Find("VoiceBridge");
+            var voiceLogger = GameObject.Find("VoiceLogger");
+            if (voiceBridge != null)
+            {
+                Destroy(voiceBridge);
+            }
 
-        // Show a loading mask or any other indication to the player
-        // Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
-        PhotonNetwork.LoadLevel("Login");
-        Game.uiManager.CloseAllUI();
-        Game.uiManager.ShowUI<RoomUI>("RoomUI");
+            if (voiceLogger != null)
+            {
+                Destroy(voiceLogger);
+            }
+
+            // Show a loading mask or any other indication to the player
+            // Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("Loading...");
+            PhotonNetwork.LoadLevel("Login");
+            Game.uiManager.CloseAllUI();
+            Game.uiManager.ShowUI<RoomUI>("RoomUI");
+        }
+        else
+        {
+
+        }
     }
 }
 
