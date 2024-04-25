@@ -20524,7 +20524,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 1614035900}
-  sceneViewId: 5
+  sceneViewId: 20
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &1614035900
@@ -21679,7 +21679,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 1764051593}
-  sceneViewId: 18
+  sceneViewId: 25
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &1764051593
@@ -23841,7 +23841,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 400, y: 400}
+  m_SizeDelta: {x: 600, y: 400}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &2071515260
 MonoBehaviour:
@@ -23880,7 +23880,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 77eb4b1f86765204899819bbc6742291, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1409ffc7d48a41e41844c469580566e3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -12,15 +12,19 @@ public class MiniMapController : MonoBehaviourPunCallbacks
     private RectTransform _playerIcon;
     private Dictionary<GameObject, RectTransform> _playerIcons = new Dictionary<GameObject, RectTransform>();
 
-    private float _mapScale;
+    private float _mapScaleX;
+    private float _mapScaleY;
     private string _localPlayerType;
     private Vector2 _minimapPosition;
 
     private void InitializeMiniMap()
     {
-        float worldSize = 4000f; // TODO: change it to the real game world size
-        float mapSize = minimapRect.sizeDelta.y; // The height of the minimap UI
-        _mapScale = mapSize / worldSize;
+        float worldSizeWidth = 3154.396f;
+        float worldSizeHeight = 1664.41f;
+        float mapSizeWidth = minimapRect.sizeDelta.x;
+        float mapSizeHeight = minimapRect.sizeDelta.y;
+        _mapScaleX = mapSizeWidth / worldSizeWidth;
+        _mapScaleY = mapSizeHeight / worldSizeHeight;
     }
 
     IEnumerator WaitForPlayerTypeAndInitialize()
@@ -75,7 +79,7 @@ public class MiniMapController : MonoBehaviourPunCallbacks
         if (_playerIcons.ContainsKey(player))
         {
             RectTransform iconTransform = _playerIcons[player];
-            Vector2 minimapPosition = new Vector2(newPosition.x, newPosition.z) * _mapScale;
+            Vector2 minimapPosition = new Vector2(newPosition.x * _mapScaleX, newPosition.z* _mapScaleY);
             iconTransform.anchoredPosition = minimapPosition;
             iconTransform.localEulerAngles = new Vector3(0, 0, -newRotation.eulerAngles.y);
         }
