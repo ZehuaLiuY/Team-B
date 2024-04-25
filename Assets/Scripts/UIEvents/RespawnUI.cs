@@ -7,6 +7,7 @@ public class RespawnUI : MonoBehaviour
     void Start()
     {
         StartCoroutine(RespawnCountdown(5));
+        Cursor.visible = false;
     }
 
     IEnumerator RespawnCountdown(int seconds)
