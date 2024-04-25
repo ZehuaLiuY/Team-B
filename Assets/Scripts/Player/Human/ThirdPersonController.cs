@@ -298,11 +298,69 @@ namespace StarterAssets
             }
         }
         
+
+        // private void OnTriggerEnter(Collider other)
+        // {
+        //     if (other.gameObject.CompareTag("Target"))
+        //     {
+        //         currentTarget = other;
+        //         ShowPickupPrompt(true);
+        //         canPickup = true;
+        //     }
+        // }
+        //
+        // private void OnTriggerExit(Collider other)
+        // {
+        //     if (other.gameObject.CompareTag("Target") && other == currentTarget)
+        //     {
+        //         currentTarget = null;
+        //         ShowPickupPrompt(false);
+        //         canPickup = false;
+        //     }
+        // }
+        //
+        // private void Pickup()
+        // {
+        //     canPickup = false;
+        //     photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
+        //     _animator.SetTrigger("pickup");
+        //     photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
+        //
+        //     PhotonView targetPhotonView = currentTarget.GetComponent<PhotonView>();
+        //
+        //     if (targetPhotonView != null)
+        //     {
+        //         targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+        //         if (HumanFightUI.Instance != null)
+        //         {
+        //             HumanFightUI.Instance.stopCatchText();
+        //             HumanFightUI.Instance.showCheeseCaught();
+        //             _audioSource.PlayOneShot(caughtSound);
+        //             IncrementCheeseCount();
+        //         }
+        //     }
+        //
+        //     StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
+        // }
+        //
+        
+    
+        private float nextPickupTime = 0f;
         private Collider currentTarget = null;
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.CompareTag("Target"))
+            if (other.gameObject.CompareTag("Target") && Time.time >= nextPickupTime)
+            {
+                currentTarget = other;
+                ShowPickupPrompt(true);
+                canPickup = true;
+            }
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (other.gameObject.CompareTag("Target") && Time.time >= nextPickupTime)
             {
                 currentTarget = other;
                 ShowPickupPrompt(true);
@@ -319,16 +377,19 @@ namespace StarterAssets
                 canPickup = false;
             }
         }
-        
+
         private void Pickup()
         {
+            if (!canPickup)
+                return;
+
             canPickup = false;
             photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All, false);
             _animator.SetTrigger("pickup");
             photonView.RPC("TriggerPickupAnimation", RpcTarget.All);
-        
+
             PhotonView targetPhotonView = currentTarget.GetComponent<PhotonView>();
-        
+
             if (targetPhotonView != null)
             {
                 targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
@@ -340,11 +401,10 @@ namespace StarterAssets
                     IncrementCheeseCount();
                 }
             }
-        
+
             StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
-            StartCoroutine(ResetPickupAfterDelay());
+            nextPickupTime = Time.time + 6f;
         }
-        
         [PunRPC]
         public void SetPlayerIK_FlameThrower(bool state)
         {
@@ -358,12 +418,6 @@ namespace StarterAssets
             yield return new WaitForSeconds(2f);
             
             photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,true);
-        }
-       
-        private IEnumerator ResetPickupAfterDelay()
-        {
-            yield return new WaitForSeconds(2f); 
-            canPickup = true;
         }
         
         //private void OnControllerColliderHit(ControllerColliderHit hit)

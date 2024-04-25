@@ -12,7 +12,7 @@ namespace CheeseController
 #if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
 #endif
-public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
+public class CloneThirdPerson : MonoBehaviourPun, IPunObservable
 {
 
         [Header("Player")] [Tooltip("Move speed of the character in m/s")]
@@ -48,37 +48,9 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         [Tooltip("What layers the character uses as ground")]
         public LayerMask GroundLayers;
-
-        [Header("Cinemachine")]
-        [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-        public GameObject CinemachineCameraTarget;
-
-        [Tooltip("How far in degrees can you move the camera up")]
-        public float TopClamp = 70.0f;
-
-        [Tooltip("How far in degrees can you move the camera down")]
-        public float BottomClamp = -30.0f;
-
-        [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
-        public float CameraAngleOverride = 0.0f;
-
-        [Tooltip("For locking the camera position on all axis")]
-        public bool LockCameraPosition = false;
         
         public ParticleSystem OnFireSystemPrefab;
-
-        // leaderboard
-        public GameObject leaderboardUIPrefab;
-        private GameObject leaderboardInstance;
-
-        //cheese state
-        public bool isDie = false;
-
-        private FightManager _fightManager;
-
-        // cinemachine
-        private float _cinemachineTargetYaw;
-        private float _cinemachineTargetPitch;
+    
 
         // player
         private float _speed;
@@ -102,8 +74,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         private Vector2 _lastMoveInput;
         private Vector2 _lastLookInput;
-
-        private MiniMapController _miniMapController;
+    
         private Transform _cachedTransform;
 
         private CheeseSmellController _cheeseSmellController;
@@ -117,24 +88,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private CheeseControllerInputs _input;
         private GameObject _mainCamera;
         private bool IsWalking = false;
-        
-
         private const float _threshold = 0.01f;
-
         private bool _hasAnimator;
-
-        private Recorder _recorder;
-        public AudioClip _onFireSound;
-        private AudioSource _audioSource; 
-        private Coroutine _currentReduceSpeedCoroutine;
-        private bool _isImmuneToSpeedReduction = false;
-
-
-        public void SetImmunityToSpeedReduction(bool state)  // 允许外部设置免疫状态
-        {
-            _isImmuneToSpeedReduction = state;
-        }
-        
         private bool IsCurrentDeviceMouse
         {
             get
@@ -150,30 +105,18 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         private void Awake()
         {
-            _audioSource = GetComponent<AudioSource>();
             _input = GetComponent<CheeseControllerInputs>();
             // get a reference to our main camera
             if (_mainCamera == null)
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
-
             _hasAnimator = TryGetComponent(out _animator);
-
             _cachedTransform = transform;
-            _miniMapController = FindObjectOfType<MiniMapController>();
-
-            _recorder = GetComponent<Recorder>();
         }
 
         private void Start()
         {
-
-            // IsImmuneToSpeedReduction = false;
-            _fightManager = FindObjectOfType<FightManager>();
-
-            _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-
             // _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             // _input = GetComponent<CheeseControllerInputs>();
@@ -201,53 +144,12 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 JumpAndGravity();
                 GroundedCheck();
                 Move();
-
-                if (Vector3.Distance(transform.position, currentPos) > 0.1f)
-                {
-                    _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
-                }
-
-                // voice control
-                if (Input.GetKeyDown(KeyCode.V))
-                {
-                    _recorder.TransmitEnabled = true;
-                }
-                if (Input.GetKeyUp(KeyCode.V))
-                {
-                    _recorder.TransmitEnabled = false;
-                }
-
-                // leaderboard display when player hold tab
-                if (Input.GetKeyDown(KeyCode.Tab))
-                {
-
-                    if (leaderboardInstance == null)
-                    {
-                        leaderboardInstance = Instantiate(leaderboardUIPrefab);
-                        leaderboardInstance.SetActive(true);
-                    }
-                }
-
-                if (Input.GetKeyUp(KeyCode.Tab))
-                {
-                    if (leaderboardInstance != null)
-                    {
-                        Destroy(leaderboardInstance);
-                        leaderboardInstance = null;
-                    }
-                }
             }
             else
             {
                 UpdateOther();
             }
         }
-
-        private void LateUpdate()
-        {
-            CameraRotation();
-        }
-
 
         void UpdateOther()
         {
@@ -265,8 +167,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
             transform.position = Vector3.Lerp(transform.position, currentPos, Time.deltaTime * _lerpRate);
             transform.rotation = Quaternion.Slerp(transform.rotation, currentRot, Time.deltaTime * _lerpRate);
-
-            _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
+            
         }
 
         
@@ -291,28 +192,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             Debug.DrawRay(rayStart, rayDirection * rayLength, Color.red);
 
             Grounded = Physics.Raycast(rayStart, rayDirection, rayLength, GroundLayers, QueryTriggerInteraction.Ignore);
-        }
-
-
-        private void CameraRotation()
-        {
-            // if there is an input and camera position is not fixed
-            if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
-            {
-                //Don't multiply mouse input by Time.deltaTime;
-                float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
-            }
-
-            // clamp our rotations so our values are limited 360 degrees
-            _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-            // Cinemachine will follow this target
-            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
-                _cinemachineTargetYaw, 0.0f);
         }
 
         private void Move()
@@ -524,140 +403,18 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             gameObject.SetActive(false);
             _cheeseSmellController.setEnable(false);
         }
-
-        [PunRPC]
-        public void showDeiUI()
-        {
-            isDie = true;
-            Game.uiManager.CloseAllUI();
-            Game.uiManager.ShowUI<RespawnUI>("RespawnUI");
-            _miniMapController.photonView.RPC("HidePlayerIconRPC", RpcTarget.All, photonView.ViewID);
-            photonView.RPC("HideCheeseAndSmell", RpcTarget.All);
-            GameObject textGameObject = GameObject.Find("DoorOpenText");
-            if (textGameObject != null)
-            {
-                textGameObject.SetActive(false);
-            }
-            else
-            {
-                Debug.LogError("TextGameObject not found in the scene!");
-            }
-
-            EnemyDetector enemyDetector = GetComponentInChildren<EnemyDetector>();
-            if (enemyDetector != null)
-            {
-                enemyDetector.ResetMaterials();
-            }
-            PhotonNetwork.Destroy(gameObject);
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-
-        [PunRPC]
-        private void HideCheeseAndSmell()
-        {
-            // 停止生成粒子系统
-            _cheeseSmellController.setEnable(false);
-
-            gameObject.SetActive(false);
-
-            // 停止粒子系统
-            //_cheeseSmellController.StopParticles();
-
-            _fightManager.CheeseDied();
-
-        }
-        // [PunRPC]
-        // public void ReduceSpeed()
-        // {
-        //     if (_isImmuneToSpeedReduction) 
-        //         return;
-        //     
-        //     if (!OnFireSystemPrefab.gameObject.activeSelf)
-        //     {
-        //         photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
-        //     }
-        //     MoveSpeed -= 20f;
-        //     MoveSpeed = Mathf.Max(MoveSpeed, 20f); 
-        //     StartCoroutine(RestoreSpeedAfterDelay(5));
-        // }
-        
-        [PunRPC]
-        public void ReduceSpeed()
-        {
-            if (_isImmuneToSpeedReduction) 
-                return;
-
-            if (!OnFireSystemPrefab.gameObject.activeSelf)
-            {
-                photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
-            }
-            MoveSpeed -= 20f;
-            MoveSpeed = Mathf.Max(MoveSpeed, 20f); 
-
-            if (_currentReduceSpeedCoroutine != null)
-                StopCoroutine(_currentReduceSpeedCoroutine);
-            _currentReduceSpeedCoroutine = StartCoroutine(RestoreSpeedAfterDelay(5));
-        }
-
-        private IEnumerator RestoreSpeedAfterDelay(float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
-            OnFireSystemPrefab.gameObject.SetActive(false);
-            MoveSpeed = 100.0f;
-        }
-
-        public void CancelSpeedReduction()
-        {
-            if (_currentReduceSpeedCoroutine != null)
-            {
-                StopCoroutine(_currentReduceSpeedCoroutine);
-                _currentReduceSpeedCoroutine = null;
-            }
-            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
-        }
-        
-        public void CancelJumpReduction()
-        {
-            if (_currentReduceSpeedCoroutine != null)
-            {
-                StopCoroutine(_currentReduceSpeedCoroutine);
-                _currentReduceSpeedCoroutine = null;
-            }
-            photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
-            MoveSpeed = 120f;
-        }
         
         [PunRPC]
         public void ActivateOnFireSystem()
         {
             OnFireSystemPrefab.gameObject.SetActive(true);
-            PlayOnFireSound();
         }
         
-        // [PunRPC]
-        // private IEnumerator RestoreSpeedAfterDelay(float delay)
-        // {
-        //     yield return new WaitForSeconds(delay);
-        //     photonView.RPC("DeactivateOnFireSystem", RpcTarget.AllBuffered);
-        //
-        //     OnFireSystemPrefab.gameObject.SetActive(false);
-        //     MoveSpeed = 100.0f;
-        // }
         
         [PunRPC]
         public void DeactivateOnFireSystem()
         {
             OnFireSystemPrefab.gameObject.SetActive(false);
-        }
-        
-        private void PlayOnFireSound()
-        {
-            if (_audioSource != null && _onFireSound != null)
-            {
-                _audioSource.PlayOneShot(_onFireSound);
-            }
         }
     }
 }
