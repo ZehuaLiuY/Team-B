@@ -15,7 +15,7 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
     public List<RoomItem> roomList;
     private AudioClip _buttonClickSound;
     private AudioSource _audioSource;
-    private bool _isButtonClicked = false;
+    private bool _isButtonClicked;
 
     private void Awake()
     {
@@ -48,6 +48,7 @@ public class RoomUI : MonoBehaviour, IInRoomCallbacks
     // Start is called before the first frame update
     void Start()
     {
+        _isButtonClicked = false;
         // generate the player who in the room
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
