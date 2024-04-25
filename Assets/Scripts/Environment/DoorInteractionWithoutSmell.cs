@@ -23,16 +23,16 @@ public class DoorInteractionWithoutSmell : MonoBehaviour
 
     void Awake()
     {
+        
+    }
+
+    private void Start()
+    {
         text.SetActive(false);
         _photonView = transform.GetComponent<PhotonView>();
         _doorAnimator = GetComponent<Animator>();
         _playerIK = GetComponent<PlayerIK>();
         _doorAudioSource = GetComponent<AudioSource>();
-    }
-
-    private void Start()
-    {
-
     }
 
     private void OnTriggerEnter(Collider other)
