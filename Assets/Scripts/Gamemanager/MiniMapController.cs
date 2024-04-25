@@ -19,8 +19,8 @@ public class MiniMapController : MonoBehaviourPunCallbacks
 
     private void InitializeMiniMap()
     {
-        float worldSizeWidth = 3154.396f;
-        float worldSizeHeight = 1664.41f;
+        float worldSizeWidth = 3854.396f;
+        float worldSizeHeight = 2364.41f;
         float mapSizeWidth = minimapRect.sizeDelta.x;
         float mapSizeHeight = minimapRect.sizeDelta.y;
         _mapScaleX = mapSizeWidth / worldSizeWidth;
