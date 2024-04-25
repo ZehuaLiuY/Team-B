@@ -23,6 +23,7 @@ public class RoomItem : MonoBehaviourPunCallbacks
         nameInputField = transform.Find("InputField").GetComponent<InputField>();
         nameInputField.characterLimit = 8;
 
+
         if (ownerId == PhotonNetwork.LocalPlayer.ActorNumber)
         {
             transform.Find("Button").GetComponent<Button>().onClick.AddListener(OnReadyBtn);
@@ -36,6 +37,21 @@ public class RoomItem : MonoBehaviourPunCallbacks
         }
 
         ChangeReady(isReady);
+    }
+
+    void Update()
+    {
+        Button button = transform.Find("Button").GetComponent<Button>();
+        Image buttonImage = button.GetComponent<Image>();
+
+        if (isReady)
+        {
+            buttonImage.color = Color.green;
+        }
+        else
+        {
+            buttonImage.color = new Color(0.506f, 0.035f, 0.890f, 1.0f);
+        }
     }
 
     public void OnReadyBtn()
