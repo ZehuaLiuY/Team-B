@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Voice.PUN;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class LossUI : MonoBehaviourPunCallbacks
 {
@@ -50,6 +50,15 @@ public class LossUI : MonoBehaviourPunCallbacks
     // back to the room
     private void OnBackBtn()
     {
+        var player = PhotonNetwork.LocalPlayer;
+        if (player != null && player.CustomProperties.ContainsKey("PlayerType"))
+        {
+            Hashtable props = new Hashtable
+            {
+                { "PlayerType", null }  
+            };
+            player.SetCustomProperties(props);
+        }
 
         var voiceBridge = GameObject.Find("VoiceBridge");
         var voiceLogger = GameObject.Find("VoiceLogger");
