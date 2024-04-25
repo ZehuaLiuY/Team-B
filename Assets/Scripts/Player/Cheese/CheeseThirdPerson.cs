@@ -533,6 +533,15 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             Game.uiManager.ShowUI<RespawnUI>("RespawnUI");
             _miniMapController.photonView.RPC("HidePlayerIconRPC", RpcTarget.All, photonView.ViewID);
             photonView.RPC("HideCheeseAndSmell", RpcTarget.All);
+            GameObject textGameObject = GameObject.Find("DoorOpenText");
+            if (textGameObject != null)
+            {
+                textGameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.LogError("TextGameObject not found in the scene!");
+            }
 
             EnemyDetector enemyDetector = GetComponentInChildren<EnemyDetector>();
             if (enemyDetector != null)
