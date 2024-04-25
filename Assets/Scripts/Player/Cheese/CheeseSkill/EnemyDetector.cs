@@ -39,9 +39,7 @@ public class EnemyDetector : MonoBehaviourPunCallbacks
         
         if (mainCamera != null)
         {
-            // 保存原始的遮挡剔除设置
             originalOcclusionSetting = mainCamera.useOcclusionCulling;
-            // 禁用遮挡剔除
             mainCamera.useOcclusionCulling = false;
         }
         // highlight all enemies in the detection range
@@ -79,9 +77,14 @@ public class EnemyDetector : MonoBehaviourPunCallbacks
         
         CheeseFightUI.Instance.UpdateSkill_Icon(1f);
         GetComponentInParent<GetSkill>().DeactivateSkill("Detector Skill");
-        _skillUsed = false; // reset the skill used flag
+        _skillUsed = false; 
 
-        // reset the materials of all highlighted enemies
+      
+        ResetMaterials();
+    }
+    
+    public void ResetMaterials()
+    {
         foreach (var renderer in _originalMaterials.Keys)
         {
             if (renderer != null && _originalMaterials.ContainsKey(renderer))
@@ -91,6 +94,8 @@ public class EnemyDetector : MonoBehaviourPunCallbacks
         }
         _originalMaterials.Clear();
     }
+    
+    
 
     private void UpdateIcon(float fillAmount)
     {
