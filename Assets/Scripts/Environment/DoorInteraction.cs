@@ -37,12 +37,6 @@ public class DoorInteraction : MonoBehaviour
 
     void Awake()
     {
-        text.SetActive(false); 
-        _photonView = transform.GetComponent<PhotonView>();
-        _doorAnimator = GetComponent<Animator>();
-        _playerIK = GetComponent<PlayerIK>();
-        _doorAudioSource = GetComponent<AudioSource>();
-        _input = GetComponent<StarterAssetsInputs>();
     }
 
     private void Start()
@@ -50,6 +44,12 @@ public class DoorInteraction : MonoBehaviour
         //_vfxSmell.SetActive(false);
         GameObject detector = GameObject.FindWithTag("Detector");
         _checkCheeseInside = detector.GetComponent<CheckCheeseInside>();
+        text.SetActive(false); 
+        _photonView = transform.GetComponent<PhotonView>();
+        _doorAnimator = GetComponent<Animator>();
+        _playerIK = GetComponent<PlayerIK>();
+        _doorAudioSource = GetComponent<AudioSource>();
+        _input = GetComponent<StarterAssetsInputs>();
     }
     
     private void OnTriggerEnter(Collider other)
