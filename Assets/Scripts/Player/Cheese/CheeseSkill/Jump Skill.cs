@@ -16,10 +16,10 @@ public class Jump_Skill : MonoBehaviourPun
     {
         _skillUsed = false;
         _cheeseThirdPerson = GetComponent<CheeseThirdPerson>();
-        if (_cheeseThirdPerson == null)
-        {
-            Debug.LogWarning("PlayerMovement component not found on the game object.");
-        }
+        // if (_cheeseThirdPerson == null)
+        // {
+        //     Debug.LogWarning("PlayerMovement component not found on the game object.");
+        // }
     }
 
     // Update is called once per frame

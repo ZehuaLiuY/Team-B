@@ -30,7 +30,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     public TimeManager timeManager;
 
     private HashSet<int> _humanPlayerActorNumbers;
-    
+
     // skill balls
     public GameObject[] skillBallPrefabs;
     public Transform skillPointTf;
@@ -74,7 +74,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
         countdownTimer = 180f;
         targetScore = PhotonNetwork.CurrentRoom.PlayerCount * 2;
-        
+
         currentScore = 0;
 
         Game.uiManager.CloseAllUI();
@@ -319,7 +319,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             respawnCheeseUI.updateRemainingLife(targetScore);
         }
-        
+
 
         if (targetScore <= 0)
         {
@@ -439,5 +439,5 @@ public class FightManager : MonoBehaviourPunCallbacks
         return respawnPoint;
     }
 
-    
+
 }

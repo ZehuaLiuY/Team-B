@@ -14,7 +14,7 @@ public class CheeseFightUI : MonoBehaviour
     private Transform _tutorialPanel;
     private int _remainingLife = 0;
     private TMP_Text _remainingLifeText;
-    
+
     //private AudioSource _countdownMusic;
     //private AudioClip _last10SecondsSound;
     //private bool _last10SecondsSoundPlayed = false;
@@ -36,7 +36,7 @@ public class CheeseFightUI : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    
+
     private void Start()
     {
         //_countdownMusic = transform.Find("countdownMusic").GetComponent<AudioSource>();
@@ -57,18 +57,6 @@ public class CheeseFightUI : MonoBehaviour
         _remainingLifeText.text = _remainingLife + "";
     }
 
-    public void showRespawnUI()
-    {
-        GameObject respawnUI = GameObject.Find("Respawn");
-        respawnUI.SetActive(true);
-    }
-
-    public void HideRespawnUI()
-    {
-        GameObject respawnUI = GameObject.Find("Respawn");
-        respawnUI.SetActive(false);
-    }
-
 
     public void ShowSkillUI(bool show, string skills)
     {
@@ -84,7 +72,7 @@ public class CheeseFightUI : MonoBehaviour
             }
         }
     }
-    
+
     IEnumerator ShowSkillsTutorial(Transform skillTutorial)
     {
         skillTutorial.gameObject.SetActive(true); // activate the skill tutorial panel
@@ -99,13 +87,13 @@ public class CheeseFightUI : MonoBehaviour
             _skillIcon.fillAmount = fillAmount;
         }
     }
-    
+
     IEnumerator BeginStartSequence()
     {
         yield return new WaitForSeconds(2); // wait for 2 seconds
         StartCoroutine(ShowTutorialPanel()); // show the tutorial panel
     }
-    
+
     IEnumerator ShowTutorialPanel()
     {
         for (int i = 0; i < _tutorialPanel.childCount; i++)
@@ -142,7 +130,7 @@ public class CheeseFightUI : MonoBehaviour
         }
         respawnUI.SetActive(false);
         Game.uiManager.CloseUI("MaskUI");
-        
+
     }
 
     //public AudioClip countSound;

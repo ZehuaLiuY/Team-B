@@ -62,7 +62,7 @@ public class RoomItem : MonoBehaviourPunCallbacks
 
         Button button = transform.Find("Button").GetComponent<Button>();
         Image buttonImage = button.GetComponent<Image>();
-        Debug.Log("Current Button Color: " + buttonImage.color);
+        // Debug.Log("Current Button Color: " + buttonImage.color);
 
         if (isReady)
         {

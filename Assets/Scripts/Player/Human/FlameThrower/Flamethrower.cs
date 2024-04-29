@@ -56,10 +56,11 @@ public class Flamethrower : MonoBehaviourPun
         if (thirdPersonController != null)
         {
             thirdPersonController.EnableSprinting(false); 
-        }else
-        {
-            Debug.LogWarning("PlayerMovement script not found!");
         }
+        // else
+        // {
+        //     Debug.LogWarning("PlayerMovement script not found!");
+        // }
     }
 
     void StopShooting()
