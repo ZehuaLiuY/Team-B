@@ -129,7 +129,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private Coroutine _currentReduceSpeedCoroutine;
         private bool _isImmuneToSpeedReduction = false;
 
-        private Vector3 _waitingPoint = new Vector3(0, -123.8f, 656.6f);
+        private Vector3 _waitingPoint = new Vector3(889.46f, 0.85f, -555f);
         public void SetImmunityToSpeedReduction(bool state)  // 允许外部设置免疫状态
         {
             _isImmuneToSpeedReduction = state;
@@ -553,7 +553,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-
+            _controller.enabled = false;
             respawn();
 
         }
@@ -579,6 +579,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             }
             StartCoroutine(changeToSpawnPoint());
             
+            
         }
 
         IEnumerator changeToSpawnPoint()
@@ -586,6 +587,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             yield return new WaitForSeconds(5f);
             Transform respawnPoint = _fightManager.getSpawnPoint();
             transform.position = respawnPoint.position;
+            _controller.enabled = true;
         }
        
         
