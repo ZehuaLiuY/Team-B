@@ -57,7 +57,19 @@ public class CheeseFightUI : MonoBehaviour
         _remainingLifeText.text = _remainingLife + "";
     }
 
-  
+    public void showRespawnUI()
+    {
+        GameObject respawnUI = GameObject.Find("Respawn");
+        respawnUI.SetActive(true);
+    }
+
+    public void HideRespawnUI()
+    {
+        GameObject respawnUI = GameObject.Find("Respawn");
+        respawnUI.SetActive(false);
+    }
+
+
     public void ShowSkillUI(bool show, string skills)
     {
         Transform skillTransform = transform.Find(skills);

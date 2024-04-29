@@ -4889,6 +4889,7 @@ GameObject:
   - component: {fileID: 474629508}
   - component: {fileID: 474629507}
   - component: {fileID: 474629509}
+  - component: {fileID: 474629510}
   m_Layer: 0
   m_Name: fight
   m_TagString: Untagged
@@ -4961,6 +4962,18 @@ MonoBehaviour:
   sceneViewId: 3
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &474629510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474629506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d59ae17298ce9d2479f717416df447ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &509476176
 GameObject:
   m_ObjectHideFlags: 0
@@ -11128,6 +11141,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6314570339038128586, guid: dc654e8698b1ffc48af00d96e0cbec14,
         type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6314570339038128586, guid: dc654e8698b1ffc48af00d96e0cbec14,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -11334,7 +11352,7 @@ PrefabInstance:
     - target: {fileID: 9041270684128441372, guid: dc654e8698b1ffc48af00d96e0cbec14,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9041270684128441372, guid: dc654e8698b1ffc48af00d96e0cbec14,
         type: 3}
@@ -18823,7 +18841,7 @@ PrefabInstance:
     - target: {fileID: 7921550871154253558, guid: 38614d43a5ed342949a17bc9831332cf,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7921550871154253558, guid: 38614d43a5ed342949a17bc9831332cf,
         type: 3}
