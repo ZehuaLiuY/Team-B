@@ -4,9 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 public class RespawnUI : MonoBehaviour
 {
+
+
     void Start()
     {
-        StartCoroutine(RespawnCountdown(5));
+        RespawnCountdown(5);
         Cursor.visible = false;
     }
 
@@ -19,11 +21,13 @@ public class RespawnUI : MonoBehaviour
             seconds--;
         }
 
-        GameObject fightManagerObject = GameObject.Find("fight");
-        if (fightManagerObject != null)
-        {
-            FightManager fightManager = fightManagerObject.GetComponent<FightManager>();
-            fightManager.RespawnCheese();
-        }
+
+
+        //GameObject fightManagerObject = GameObject.Find("fight");
+        //if (fightManagerObject != null)
+        //{
+        //    FightManager fightManager = fightManagerObject.GetComponent<FightManager>();
+        //    fightManager.RespawnCheese();
+        //}
     }
 }

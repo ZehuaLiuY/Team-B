@@ -193,7 +193,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         var players = PhotonNetwork.PlayerList;
         HashSet<int> humanIndices = new HashSet<int>();
 
-        int numberOfHumans = Math.Max(1, players.Length / 4);
+        int numberOfHumans = Math.Max(1, players.Length / 2);
 
         for (int i = 0; i < numberOfHumans; i++)
         {
@@ -432,36 +432,12 @@ public class FightManager : MonoBehaviourPunCallbacks
         Game.uiManager.ShowUI<LoginUI>("LoginUI");
     }
 
-    public void RespawnCheese()
+
+    public Transform getSpawnPoint()
     {
-        Game.uiManager.CloseAllUI();
-        respawnCheeseUI = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
-        respawnCheeseUI.setRemainingLife(targetScore);
         Transform respawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
-
-        // respawn the player
-        GameObject playerObject = PhotonNetwork.Instantiate("Cheese", respawnPoint.position, Quaternion.identity);
-        _localPlayer = playerObject;
-        // minimap icon display
-        _miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
-
-        // camera follow
-        _vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
-
-        // display the player name
-        PlayerNameDisplay nameDisplay = playerObject.GetComponentInChildren<PlayerNameDisplay>();
-        if (nameDisplay != null)
-        {
-            nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
-        }
-
-        // voice channel interest group
-        Recorder recorder = playerObject.GetComponent<Recorder>();
-        if (recorder != null)
-        {
-            recorder.InterestGroup = 2;
-        }
-        
-         
+        return respawnPoint;
     }
+
+    
 }

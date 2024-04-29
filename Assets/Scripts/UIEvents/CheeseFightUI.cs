@@ -112,6 +112,27 @@ public class CheeseFightUI : MonoBehaviour
         }
     }
 
+    public void showRespawnUI()
+    {
+        GameObject respawnUI = transform.Find("Respawn").gameObject;
+        StartCoroutine(showRespawn(respawnUI));
+    }
+
+    IEnumerator showRespawn(GameObject respawnUI)
+    {
+        respawnUI.SetActive(true);
+        int seconds = 5;
+        while (seconds >= 0)
+        {
+            Game.uiManager.ShowUI<MaskUI>("MaskUI").ShowMask("You will be respawn in " + seconds + " sec...");
+            yield return new WaitForSeconds(1);
+            seconds--;
+        }
+        respawnUI.SetActive(false);
+        Game.uiManager.CloseUI("MaskUI");
+        
+    }
+
     //public AudioClip countSound;
     //public AudioClip timesupSound;
     //// Update is called once per frame
