@@ -141,8 +141,11 @@ namespace StarterAssets
         
         public AudioClip caughtSound;
         private AudioSource _audioSource;  
-        private AudioSource audioSource; 
-        
+        private AudioSource audioSource;
+
+        private FightManager _fightManager;
+        private RPCManager _rpcManager;
+
         public void EnableSprinting(bool enable)
         {
             canShift = enable;
@@ -215,7 +218,8 @@ namespace StarterAssets
             currentRot = transform.rotation;
 
             GameObject canvasObject = GameObject.Find("Canvas");
-            
+            _fightManager = FindObjectOfType<FightManager>();
+            _rpcManager = FindObjectOfType<RPCManager>();
 
         }
 
@@ -280,7 +284,6 @@ namespace StarterAssets
                 { "CheeseCount", caughtCheeseCount }
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-            // Debug.Log("Cheese count: " + caughtCheeseCount);
         }
         
         private void ShowPickupPrompt(bool show)
@@ -392,7 +395,9 @@ namespace StarterAssets
 
             if (targetPhotonView != null)
             {
-                targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+                _rpcManager.ExecuteTargetRPC("showDeiUI", targetPhotonView, null);
+                //targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
+                _fightManager.showCheeseDie(targetPhotonView.ViewID);
                 if (HumanFightUI.Instance != null)
                 {
                     HumanFightUI.Instance.stopCatchText();

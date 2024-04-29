@@ -27,6 +27,11 @@ public class CheeseSmellController : MonoBehaviourPun
         StartCoroutine(GenerateSmell());
     }
 
+    public void restartSmell()
+    {
+        StartCoroutine(GenerateSmell());
+    }
+
     IEnumerator GenerateSmell()
     {
         while (_enable)

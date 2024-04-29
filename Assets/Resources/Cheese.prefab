@@ -6182,8 +6182,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: KeyboardMouse
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -6223,6 +6223,7 @@ MonoBehaviour:
   isDie: 0
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
+  _cheeseSmellController: {fileID: 0}
   _onFireSound: {fileID: 8300000, guid: 7aebbe0a86df544e19dd2931881d0a0c, type: 3}
 --- !u!114 &488807854451110
 MonoBehaviour:
