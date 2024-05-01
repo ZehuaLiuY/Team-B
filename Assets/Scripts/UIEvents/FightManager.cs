@@ -334,6 +334,19 @@ public class FightManager : MonoBehaviourPunCallbacks
         _gameOver = true;
         _isHumanWin = isHumanWin;
 
+        if (PhotonNetwork.IsMasterClient)
+        {
+            var players = PhotonNetwork.PlayerList;
+            foreach (var player in players)
+            {
+                Hashtable propsToRemove = new Hashtable
+                {
+                    {"PlayerType", null}
+                };
+                player.SetCustomProperties(propsToRemove);
+            }
+        }
+
         photonView.RPC("EndGame", RpcTarget.All, isHumanWin);
     }
 
