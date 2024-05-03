@@ -13,7 +13,7 @@ using UnityEngine.InputSystem;
 public class DoorInteraction : MonoBehaviour
 {
     public GameObject text; 
-    public GameObject vfxSmell;
+    private GameObject vfxSmell;
     private Animator _characterAnimator;
     public AudioClip _doorOpenSound;
     
@@ -44,6 +44,7 @@ public class DoorInteraction : MonoBehaviour
         //_vfxSmell.SetActive(false);
         GameObject detector = GameObject.FindWithTag("Detector");
         _checkCheeseInside = detector.GetComponent<CheckCheeseInside>();
+        vfxSmell = transform.Find("VFXSmell").gameObject;
         text.SetActive(false); 
         _photonView = transform.GetComponent<PhotonView>();
         _doorAnimator = GetComponent<Animator>();
@@ -109,21 +110,24 @@ public class DoorInteraction : MonoBehaviour
             }
             
             //Debug.Log("_cheeseInSide: " + _cheeseInSide);
-            if (_doorAnimator.GetBool("IsOpen") && _cheeseInSide)
+            if (_doorAnimator.GetBool("IsOpen") && _cheeseInSide && !vfxSmell.activeSelf)
             {
                 _photonView.RPC("PlayVFX", RpcTarget.All);
             }
-            else
+            else if(!_doorAnimator.GetBool("IsOpen") && vfxSmell.activeSelf)
+            {
+                _photonView.RPC("StopVFX", RpcTarget.All);
+            }else if(!_cheeseInSide && vfxSmell.activeSelf)
             {
                 _photonView.RPC("StopVFX", RpcTarget.All);
             }
         }
         
-        if (!_cheeseInSide && _currentVFXInstance != null)
+        if (!_cheeseInSide && vfxSmell.activeSelf)
         {
             _photonView.RPC("StopVFX", RpcTarget.All);
         }
-        else if(_cheeseInSide && _currentVFXInstance == null && _doorAnimator.GetBool("IsOpen"))
+        else if(_cheeseInSide && _doorAnimator.GetBool("IsOpen") && !vfxSmell.activeSelf)
         {
             _photonView.RPC("PlayVFX", RpcTarget.All);
         }
@@ -158,8 +162,9 @@ public class DoorInteraction : MonoBehaviour
     void PlayVFX()
     {
         // instantiate visual effect
-        _currentVFXInstance = PhotonNetwork.Instantiate("VFXSmell", transform.position, Quaternion.identity);
-
+        //_currentVFXInstance = PhotonNetwork.Instantiate("VFXSmell", transform.position, Quaternion.identity);
+        vfxSmell.SetActive(true);
+        Debug.Log("play vfx");
         // let the visual effect play
         //currentVFXInstance.GetComponent<VisualEffect>().Play();
     }
@@ -167,12 +172,15 @@ public class DoorInteraction : MonoBehaviour
     [PunRPC]
     void StopVFX()
     {
-        if (_currentVFXInstance != null)
-        {
-            // if the visual effect is playing, stop
-            //currentVFXInstance.GetComponent<VisualEffect>().Stop();
-            PhotonNetwork.Destroy(_currentVFXInstance);
-            _currentVFXInstance = null;
-        }
+        //if (_currentVFXInstance != null)
+        //{
+        //    // if the visual effect is playing, stop
+        //    //currentVFXInstance.GetComponent<VisualEffect>().Stop();
+        //    PhotonNetwork.Destroy(_currentVFXInstance);
+        //    _currentVFXInstance = null;
+        //}
+        
+        vfxSmell.SetActive(false);
+        Debug.Log("stop vfx");
     }
 }
