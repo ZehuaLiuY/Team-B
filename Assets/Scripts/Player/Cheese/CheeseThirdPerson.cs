@@ -551,8 +551,8 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
             transform.position = _waitingPoint;
 
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            //Cursor.lockState = CursorLockMode.None;
+            //Cursor.visible = true;
             _controller.enabled = false;
             respawn();
 
