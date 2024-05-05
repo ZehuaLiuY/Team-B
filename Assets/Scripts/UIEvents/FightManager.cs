@@ -193,7 +193,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         var players = PhotonNetwork.PlayerList;
         HashSet<int> humanIndices = new HashSet<int>();
 
-        int numberOfHumans = Math.Max(1, players.Length / 2);
+        int numberOfHumans = Math.Max(1, players.Length / 4);
 
         for (int i = 0; i < numberOfHumans; i++)
         {
