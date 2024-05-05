@@ -129,9 +129,12 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private AudioSource _audioSource; 
         private Coroutine _currentReduceSpeedCoroutine;
         private bool _isImmuneToSpeedReduction = false;
-
+            
         
-
+    
+        private Vector3 _waitingPoint = new Vector3(889.46f, 0.85f, -555f);
+        public AudioClip JumpSound; 
+        private AudioSource audioSource;
         public void SetImmunityToSpeedReduction(bool state)  // 允许外部设置免疫状态
         {
             _isImmuneToSpeedReduction = state;
@@ -148,10 +151,19 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 #endif
             }
         }
+        
+        private void PlayJumpSound()
+        {
+            if (_audioSource != null && JumpSound != null)
+            {
+                _audioSource.PlayOneShot(JumpSound);
+            }
+        }
 
 
         private void Awake()
         {
+            audioSource = GetComponent<AudioSource>();
             _audioSource = GetComponent<AudioSource>();
             _input = GetComponent<CheeseControllerInputs>();
             // get a reference to our main camera
@@ -421,7 +433,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-                    
+                    PlayJumpSound();
                     if (_hasAnimator)
                     {
                         _animator.SetTrigger("IsJumping");

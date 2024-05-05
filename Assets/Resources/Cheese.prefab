@@ -6223,8 +6223,8 @@ MonoBehaviour:
   isDie: 0
   currentPos: {x: 0, y: 0, z: 0}
   currentRot: {x: 0, y: 0, z: 0, w: 0}
-  _cheeseSmellController: {fileID: 0}
   _onFireSound: {fileID: 8300000, guid: 7aebbe0a86df544e19dd2931881d0a0c, type: 3}
+  JumpSound: {fileID: 8300000, guid: 53346f06f681349cc92cbc99fafedfd0, type: 3}
 --- !u!114 &488807854451110
 MonoBehaviour:
   m_ObjectHideFlags: 0
