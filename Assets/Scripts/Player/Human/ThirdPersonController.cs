@@ -77,7 +77,7 @@ namespace StarterAssets
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
-        
+
         [Header("Stamina Bar")]
         public float Stamina = 1.0f;
         public float StaminaDecreaseRate = 0.2f;
@@ -138,13 +138,10 @@ namespace StarterAssets
         private Transform _cachedTransform;
 
         public int caughtCheeseCount = 0;
-        
-        public AudioClip caughtSound;
-        private AudioSource _audioSource;  
-        private AudioSource audioSource;
 
-        private FightManager _fightManager;
-        private RPCManager _rpcManager;
+        public AudioClip caughtSound;
+        private AudioSource _audioSource;
+        private AudioSource audioSource;
 
         public void EnableSprinting(bool enable)
         {
@@ -186,7 +183,7 @@ namespace StarterAssets
             _cachedTransform = transform;
             _miniMapController = FindObjectOfType<MiniMapController>();
             _recorder = GetComponent<Recorder>();
-            
+
 
             Hashtable props = new Hashtable {
                 { "CheeseCount", caughtCheeseCount }
@@ -196,13 +193,13 @@ namespace StarterAssets
 
         private void Start()
         {
-            
+
             _audioSource = GetComponent<AudioSource>();
             if (_audioSource == null)
             {
                 _audioSource = gameObject.AddComponent<AudioSource>();
             }
-            
+
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
             _controller = GetComponent<CharacterController>();
@@ -212,14 +209,13 @@ namespace StarterAssets
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
-            
+
 
             currentPos = transform.position;
             currentRot = transform.rotation;
 
             GameObject canvasObject = GameObject.Find("Canvas");
-            _fightManager = FindObjectOfType<FightManager>();
-            _rpcManager = FindObjectOfType<RPCManager>();
+
 
         }
 
@@ -236,7 +232,7 @@ namespace StarterAssets
                 {
                     Pickup();
                 }
-           
+
                 if (Vector3.Distance(transform.position, currentPos) > 0.1f)
                 {
                     _miniMapController.UpdatePlayerIcon(gameObject, _cachedTransform.position, _cachedTransform.rotation);
@@ -284,15 +280,16 @@ namespace StarterAssets
                 { "CheeseCount", caughtCheeseCount }
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+            // Debug.Log("Cheese count: " + caughtCheeseCount);
         }
-        
+
         private void ShowPickupPrompt(bool show)
         {
             if (HumanFightUI.Instance != null)
             {
                 if (show)
                 {
-                    HumanFightUI.Instance.showCatchText(); 
+                    HumanFightUI.Instance.showCatchText();
                 }
                 else
                 {
@@ -300,7 +297,7 @@ namespace StarterAssets
                 }
             }
         }
-        
+
 
         // private void OnTriggerEnter(Collider other)
         // {
@@ -346,8 +343,8 @@ namespace StarterAssets
         //     StartCoroutine(ActivatePlayerIK_FlameThrowerAfterDelay());
         // }
         //
-        
-    
+
+
         private float nextPickupTime = 0f;
         private Collider currentTarget = null;
 
@@ -395,9 +392,7 @@ namespace StarterAssets
 
             if (targetPhotonView != null)
             {
-                _rpcManager.ExecuteTargetRPC("showDeiUI", targetPhotonView, null);
-                //targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
-                _fightManager.showCheeseDie(targetPhotonView.ViewID);
+                targetPhotonView.RPC("showDeiUI", targetPhotonView.Owner, null);
                 if (HumanFightUI.Instance != null)
                 {
                     HumanFightUI.Instance.stopCatchText();
@@ -417,14 +412,14 @@ namespace StarterAssets
             PlayerIK playerIK = GetComponent<PlayerIK>();
             playerIK.EnableIK(state);
         }
-        
+
        IEnumerator ActivatePlayerIK_FlameThrowerAfterDelay()
         {
             yield return new WaitForSeconds(2f);
-            
+
             photonView.RPC("SetPlayerIK_FlameThrower", RpcTarget.All,true);
         }
-        
+
         //private void OnControllerColliderHit(ControllerColliderHit hit)
         //{
         //    if (hit.gameObject.CompareTag("Target"))
@@ -527,19 +522,19 @@ namespace StarterAssets
         private void Move()
 {
     float targetSpeed = (_input.move != Vector2.zero && canSprint && Stamina > 0 && _input.sprint && canShift) ? SprintSpeed : MoveSpeed;
-    
+
     if (_input.sprint && canSprint && Stamina > 0 && _input.move != Vector2.zero && canShift)
     {
         Stamina -= StaminaDecreaseRate * Time.deltaTime;
         if (Stamina <= 0)
         {
             Stamina = 0;
-            canSprint = false; 
+            canSprint = false;
         }
     }
 
     UpdateStamina();
-    
+
     if (_input.move != Vector2.zero)
     {
         PlayFootstepSound();
@@ -586,7 +581,7 @@ namespace StarterAssets
         _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
     }
 }
-        
+
         private void PlayFootstepSound()
         {
             if (!audioSource.isPlaying)
@@ -601,7 +596,7 @@ namespace StarterAssets
                 }
             }
         }
-        
+
         private void UpdateStamina()
         {
             if (!_input.sprint || !canSprint || _input.move != Vector2.zero || !canSprint)
@@ -619,7 +614,7 @@ namespace StarterAssets
                 HumanFightUI.Instance.UpdateStaminaBar(Stamina);
             }
         }
-        
+
         private void JumpAndGravity()
         {
             if (Grounded)
@@ -641,7 +636,7 @@ namespace StarterAssets
                 //         _animator.SetBool(_animIDJump, true);
                 //     }
                 // }
-                
+
             }
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
