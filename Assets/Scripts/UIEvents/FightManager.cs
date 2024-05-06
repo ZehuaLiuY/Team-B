@@ -30,7 +30,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     public TimeManager timeManager;
 
     private HashSet<int> _humanPlayerActorNumbers;
-    
+
     // skill balls
     public GameObject[] skillBallPrefabs;
     public Transform skillPointTf;
@@ -58,8 +58,6 @@ public class FightManager : MonoBehaviourPunCallbacks
     // player's controller
     private GameObject _localPlayer;
 
-    private RPCManager _rpcManager;
-
     void Awake()
     {
         _miniMapPhotonView = miniMapController.GetComponent<PhotonView>();
@@ -76,8 +74,6 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
         countdownTimer = 180f;
         targetScore = PhotonNetwork.CurrentRoom.PlayerCount * 2;
-
-        _rpcManager = FindObjectOfType<RPCManager>();
 
         currentScore = 0;
 
@@ -257,7 +253,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
             spawnPoint = _humanAvailablePoints[Random.Range(0, _humanAvailablePoints.Count)];
-            prefabName = "Human";
+            prefabName = "Cheese";
             interestGroup = 1;
         }
         else
@@ -323,7 +319,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         {
             respawnCheeseUI.updateRemainingLife(targetScore);
         }
-        
+
 
         if (targetScore <= 0)
         {
@@ -338,6 +334,19 @@ public class FightManager : MonoBehaviourPunCallbacks
         _gameOver = true;
         _isHumanWin = isHumanWin;
 
+        if (PhotonNetwork.IsMasterClient)
+        {
+            var players = PhotonNetwork.PlayerList;
+            foreach (var player in players)
+            {
+                Hashtable propsToRemove = new Hashtable
+                {
+                    {"PlayerType", null}
+                };
+                player.SetCustomProperties(propsToRemove);
+            }
+        }
+
         photonView.RPC("EndGame", RpcTarget.All, isHumanWin);
     }
 
@@ -346,6 +355,7 @@ public class FightManager : MonoBehaviourPunCallbacks
     {
         if (timeManager != null)
         {
+            //Debug.Log("update time");
             timeManager.SetCountdownTimer(newTimer);
         }
 
@@ -361,10 +371,12 @@ public class FightManager : MonoBehaviourPunCallbacks
             if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
             {
                 Game.uiManager.ShowUI<WinUI>("WinUI");
+                //Debug.Log("showHumanWinUI");
             }
             else
             {
                 Game.uiManager.ShowUI<LossUI>("LossUI");
+                //Debug.Log("showHumanLossUI");
             }
         }
         else
@@ -372,10 +384,12 @@ public class FightManager : MonoBehaviourPunCallbacks
             if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
             {
                 Game.uiManager.ShowUI<LossUI>("LossUI");
+                //Debug.Log("showCheeseWinUI");
             }
             else
             {
                 Game.uiManager.ShowUI<WinUI>("WinUI");
+                //Debug.Log("showCheeseLossUI");
             }
         }
 
@@ -394,7 +408,7 @@ public class FightManager : MonoBehaviourPunCallbacks
             }
         } else if (_localPlayer == null)
         {
-            //Debug.Log("local player is null");
+            Debug.Log("local player is null");
         }
 
         Cursor.lockState = CursorLockMode.None;
@@ -431,94 +445,12 @@ public class FightManager : MonoBehaviourPunCallbacks
         Game.uiManager.ShowUI<LoginUI>("LoginUI");
     }
 
-  
 
-    public void showCheeseDie(int deadCheeseViewID)
+    public Transform getSpawnPoint()
     {
-        _rpcManager.ExecuteRPC("HideCheeseAndSmell", RpcTarget.All, deadCheeseViewID);
-        //photonView.RPC("HideCheeseAndSmell", RpcTarget.All, deadCheeseViewID);
-        //Game.uiManager.CloseAllUI();
-        //Game.uiManager.ShowUI<RespawnUI>("RespawnUI");
-        
-        //Game.uiManager.CloseAllUI();
-        //respawnCheeseUI = Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
-        //respawnCheeseUI.setRemainingLife(targetScore);
-        //Transform respawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
-
-        //// respawn the player
-        //GameObject playerObject = PhotonNetwork.Instantiate("Cheese", respawnPoint.position, Quaternion.identity);
-        //_localPlayer = playerObject;
-        //// minimap icon display
-        //_miniMapPhotonView.RPC("AddPlayerIconRPC", RpcTarget.All, playerObject.GetComponent<PhotonView>().ViewID);
-
-        //// camera follow
-        //_vc.Follow = playerObject.transform.Find("PlayerRoot").transform;
-
-        //// display the player name
-        //PlayerNameDisplay nameDisplay = playerObject.GetComponentInChildren<PlayerNameDisplay>();
-        //if (nameDisplay != null)
-        //{
-        //    nameDisplay.photonView.RPC("SetPlayerNameRPC", RpcTarget.AllBuffered, playerName);
-        //}
-
-        //// voice channel interest group
-        //Recorder recorder = playerObject.GetComponent<Recorder>();
-        //if (recorder != null)
-        //{
-        //    recorder.InterestGroup = 2;
-        //}
-
-
+        Transform respawnPoint = _cheeseAvailablePoints[Random.Range(0, _cheeseAvailablePoints.Count)];
+        return respawnPoint;
     }
 
-    public void respawnCheese(int deadCheeseViewID)
-    {
 
-        Game.uiManager.CloseAllUI();
-        _rpcManager.ExecuteRPC("showCheeseAndSmell", RpcTarget.All, deadCheeseViewID);
-        //photonView.RPC("showCheeseAndSmell", RpcTarget.All, deadCheeseViewID);
-        Game.uiManager.ShowUI<CheeseFightUI>("CheeseFightUI");
-    }
-
-    [PunRPC]
-    void HideCheeseAndSmell(int deadCheeseViewID)
-    {
-
-        GameObject deadCheeseObj = PhotonView.Find(deadCheeseViewID).gameObject;
-
-        CheeseThirdPerson cheeseThirdPerson = deadCheeseObj.GetComponent<CheeseThirdPerson>();
-        
-        // 停止生成粒子系统
-        cheeseThirdPerson._cheeseSmellController.setEnable(false);
-
-        deadCheeseObj.SetActive(false);
-
-        CheeseDied();
-
-        _rpcManager.rpcFinished();
-
-    }
-
-    [PunRPC] 
-    void showCheeseAndSmell(int deadCheeseViewID)
-    {
-        GameObject deadCheeseObj = PhotonView.Find(deadCheeseViewID).gameObject;
-
-        CheeseThirdPerson cheeseThirdPerson = deadCheeseObj.GetComponent<CheeseThirdPerson>();
-
-        
-
-        deadCheeseObj.SetActive(true);
-
-
-        // 启动生成粒子系统
-        cheeseThirdPerson._cheeseSmellController.setEnable(true);
-
-        cheeseThirdPerson._cheeseSmellController.restartSmell();
-
-        // 重新激活用户输入系统
-        cheeseThirdPerson.reSignUpMove();
-
-        _rpcManager.rpcFinished();
-    }
 }

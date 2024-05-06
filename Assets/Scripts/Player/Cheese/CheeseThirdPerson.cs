@@ -75,7 +75,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         public bool isDie = false;
 
         private FightManager _fightManager;
-        private RPCManager _rpcManager;
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -107,7 +106,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private MiniMapController _miniMapController;
         private Transform _cachedTransform;
 
-        public CheeseSmellController _cheeseSmellController;
+        private CheeseSmellController _cheeseSmellController;
 
 
 #if ENABLE_INPUT_SYSTEM
@@ -135,6 +134,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         private Vector3 _waitingPoint = new Vector3(889.46f, 0.85f, -555f);
         public AudioClip JumpSound; 
         private AudioSource audioSource;
+
         public void SetImmunityToSpeedReduction(bool state)  // 允许外部设置免疫状态
         {
             _isImmuneToSpeedReduction = state;
@@ -154,9 +154,9 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         
         private void PlayJumpSound()
         {
-            if (_audioSource != null && JumpSound != null)
+            if (audioSource != null && JumpSound != null)
             {
-                _audioSource.PlayOneShot(JumpSound);
+                audioSource.PlayOneShot(JumpSound);
             }
         }
 
@@ -185,7 +185,7 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
             // IsImmuneToSpeedReduction = false;
             _fightManager = FindObjectOfType<FightManager>();
-            _rpcManager = FindObjectOfType<RPCManager>();
+
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
             // _hasAnimator = TryGetComponent(out _animator);
@@ -331,8 +331,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
 
         private void Move()
         {
-
-            
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = MoveSpeed;
 
@@ -397,23 +395,6 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
             {
                 _animator.SetBool("IsWalking", IsWalking);
             }
-        }
-
-        public void reSignUpMove()
-        {
-            _input = GetComponent<CheeseControllerInputs>();
-
-            // _hasAnimator = TryGetComponent(out _animator);
-            _controller = GetComponent<CharacterController>();
-            // _input = GetComponent<CheeseControllerInputs>();
-#if ENABLE_INPUT_SYSTEM
-            _playerInput = GetComponent<PlayerInput>();
-#else
-			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
-#endif
-
-            // 重新激活输入系统
-            _playerInput.enabled = true;
         }
 
         private void JumpAndGravity()
@@ -561,17 +542,11 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
         [PunRPC]
         public void showDeiUI()
         {
-            isDie = true;
-            Game.uiManager.CloseAllUI();
-            RespawnUI respawnUI = Game.uiManager.ShowUI<RespawnUI>("RespawnUI");
-
-            // 获取自己的 PhotonView
-            PhotonView myPhotonView = GetComponent<PhotonView>();
-
-            respawnUI.setDeadCheese(myPhotonView.ViewID);
-
+            //isDie = true;
+            //Game.uiManager.CloseAllUI();
+            //Game.uiManager.ShowUI<RespawnUI>("RespawnUI");
             //_miniMapController.photonView.RPC("HidePlayerIconRPC", RpcTarget.All, photonView.ViewID);
-            //photonView.RPC("HideCheeseAndSmell", RpcTarget.All);
+            photonView.RPC("HideCheeseAndSmell", RpcTarget.All);
             GameObject textGameObject = GameObject.Find("DoorOpenText");
             if (textGameObject != null)
             {
@@ -588,67 +563,48 @@ public class CheeseThirdPerson : MonoBehaviourPun, IPunObservable
                 enemyDetector.ResetMaterials();
             }
 
-            _rpcManager.rpcFinished();
+            transform.position = _waitingPoint;
+
+            //Cursor.lockState = CursorLockMode.None;
+            //Cursor.visible = true;
+            _controller.enabled = false;
+            respawn();
 
         }
-
-        
-
-        //[PunRPC]
-        //private void HideCheeseAndSmell()
-        //{
-        //    // 停止生成粒子系统
-        //    _cheeseSmellController.setEnable(false);
-
-        //    gameObject.SetActive(false);
-
-        //    // 停止粒子系统
-        //    //_cheeseSmellController.StopParticles();
-
-        //    _fightManager.CheeseDied();
-
-        //    photonView.RPC("RespawnCheese", RpcTarget.All);
-
-        //    //StartCoroutine(respawnTime());
-
-        //}
-
-        //IEnumerator respawnTime()
-        //{
-        //    yield return new WaitForSeconds(5f);
-        //    photonView.RPC("RespawnCheese", RpcTarget.All);
-        //}
 
         [PunRPC]
-        public void RespawnCheese()
+        private void HideCheeseAndSmell()
         {
-            gameObject.SetActive(true);
-            // 开启生成粒子系统
-            _cheeseSmellController.setEnable(true);
-            GameObject textGameObject = GameObject.Find("DoorOpenText");
-            if (textGameObject != null)
-            {
-                textGameObject.SetActive(true);
-            }
+           
 
-            Cursor.visible = false;
+            _fightManager.CheeseDied();
 
         }
-        // [PunRPC]
-        // public void ReduceSpeed()
-        // {
-        //     if (_isImmuneToSpeedReduction) 
-        //         return;
-        //     
-        //     if (!OnFireSystemPrefab.gameObject.activeSelf)
-        //     {
-        //         photonView.RPC("ActivateOnFireSystem", RpcTarget.AllBuffered);
-        //     }
-        //     MoveSpeed -= 20f;
-        //     MoveSpeed = Mathf.Max(MoveSpeed, 20f); 
-        //     StartCoroutine(RestoreSpeedAfterDelay(5));
-        // }
 
+        public void respawn()
+        {
+            if(CheeseFightUI.Instance != null)
+            {
+                CheeseFightUI.Instance.showRespawnUI();
+            }
+            else
+            {
+                Debug.Log("cheeseFightUI is null");
+            }
+            StartCoroutine(changeToSpawnPoint());
+            
+            
+        }
+
+        IEnumerator changeToSpawnPoint()
+        {
+            yield return new WaitForSeconds(5f);
+            Transform respawnPoint = _fightManager.getSpawnPoint();
+            transform.position = respawnPoint.position;
+            _controller.enabled = true;
+        }
+       
+        
         [PunRPC]
         public void ReduceSpeed()
         {
