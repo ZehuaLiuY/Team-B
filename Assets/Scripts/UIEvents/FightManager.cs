@@ -253,7 +253,7 @@ public class FightManager : MonoBehaviourPunCallbacks
         if (_humanPlayerActorNumbers.Contains(PhotonNetwork.LocalPlayer.ActorNumber))
         {
             spawnPoint = _humanAvailablePoints[Random.Range(0, _humanAvailablePoints.Count)];
-            prefabName = "Human";
+            prefabName = "Cheese";
             interestGroup = 1;
         }
         else
